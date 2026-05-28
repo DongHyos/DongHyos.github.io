@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>/dev/donghyo</title>
+  <link>https://donghyos.github.io</link>
+  <description>AI 도구·자동화·콘텐츠 파이프라인을 직접 만들면서 배운 기술 노트</description>
+  <language>ko</language>
+  <item>
+    <title>AI 숏폼 자동화 파이프라인 v1 — 4단계 아키텍처와 프롬프트 변수화 (1편)</title>
+    <link>https://donghyos.github.io/ai-shorts-pipeline-v1-architecture.html</link>
+    <guid isPermaLink="true">https://donghyos.github.io/ai-shorts-pipeline-v1-architecture.html</guid>
+    <pubDate>Thu, 28 May 2026 15:00:00 GMT</pubDate>
+    <description>AI 영상 생성 모델만으로 숏폼 콘텐츠를 엔드투엔드 자동 생성하는 파이프라인 구축이 가능한가</description>
+  </item>
+</channel>
+</rss>
