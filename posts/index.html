@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<title>사이드 프로젝트 — /dev/donghyo</title>
-<meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="author" content="meh">
-<link rel="stylesheet" href="../style.css">
-<link rel="alternate" type="application/rss+xml" title="/dev/donghyo" href="../feed.xml">
+<title>Posts — /dev/donghyo</title>
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="/dev/donghyo" href="/feed.xml">
 <meta name="description" content="AI 도구·자동화·콘텐츠 파이프라인을 직접 만들면서 배운 기술 노트">
 <meta property="og:title" content="/dev/donghyo">
 <meta property="og:description" content="AI 도구·자동화·콘텐츠 파이프라인을 직접 만들면서 배운 기술 노트">
@@ -20,21 +19,41 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
-<script src="../search-index.js" defer></script>
-<script src="../search.js" defer></script>
-
-</head>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script></head>
 <body>
 <header class="topbar">
-<a href="../index.html" class="logo">/dev/donghyo</a>
+  <div class="topbar-inner">
+    <a href="/" class="logo">/dev/donghyo</a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/series/">Series</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
 </header>
-<main class="content">
-<a href="../index.html" class="back-link">← 홈</a>
-<h1>사이드 프로젝트</h1>
+<main class="container">
+<h1>Posts</h1>
 <p class="muted">1편</p>
-<ul class="post-list">
-<li class="post-card"><a href="../ai-shorts-pipeline-v1-architecture.html"><div class="card-meta"><span class="cat-tag-mini">사이드 프로젝트</span><span class="series-tag-mini">ai-shorts-pipeline</span><time>2026-05-29</time></div><h3 class="card-title">AI 숏폼 자동화 파이프라인 v1 — 4단계 아키텍처와 프롬프트 변수화 (1편)</h3><p class="card-desc">AI 영상 생성 모델만으로 숏폼 콘텐츠를 엔드투엔드 자동 생성하는 파이프라인 구축이 가능한가…</p></a></li>
-</ul>
+<div class="post-list">
+<article class="post-card">
+<a href="/posts/ai-shorts-pipeline-v1-architecture/">
+<div class="card-meta">
+  <span class="card-cat">사이드 프로젝트</span>
+  <span class="card-series">ai-shorts-pipeline</span>
+  <time>2026-05-29</time>
+</div>
+<h3>AI 숏폼 자동화 파이프라인 v1 — 4단계 아키텍처와 프롬프트 변수화 (1편)</h3>
+<p>AI 영상 생성 모델만으로 숏폼 콘텐츠를 엔드투엔드 자동 생성하는 파이프라인 구축이 가능한가…</p>
+</a>
+</article>
+</div>
 </main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 meh · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
 </body>
 </html>
