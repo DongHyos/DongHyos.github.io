@@ -50,8 +50,9 @@ code, pre, kbd { font-family: ui-monospace, "JetBrains Mono", SFMono-Regular, Me
   max-width: 720px; margin: 0 auto; padding: 14px 24px;
   display: flex; align-items: center; gap: 24px;
 }
-.logo { font-family: ui-monospace, monospace; font-weight: 700; color: var(--fg); font-size: 15px; }
-.logo:hover { text-decoration: none; }
+.logo { display: inline-flex; align-items: center; color: var(--fg); }
+.logo:hover { text-decoration: none; opacity: 0.85; }
+.logo svg { display: block; }
 .nav { display: flex; gap: 20px; flex: 1; }
 .nav a {
   color: var(--fg); font-size: 14px; padding: 4px 0;
