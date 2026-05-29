@@ -210,6 +210,15 @@ pre.mermaid {
 .series-card-large h3 { margin-bottom: 6px; font-size: 17px; }
 .series-card-large p { font-size: 13px; color: var(--muted); margin: 0; }
 
+.comments {
+  max-width: 720px; margin: 0 auto; padding: 0 24px 40px;
+}
+.comments::before {
+  content: "댓글"; display: block; font-size: 13px; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--muted); font-weight: 600;
+  margin-bottom: 20px; padding-top: 40px; border-top: 1px solid var(--border);
+}
+
 .muted { color: var(--muted); font-size: 13px; }
 
 .footer {
