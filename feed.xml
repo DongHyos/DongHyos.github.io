@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 <channel>
-  <title>/dev/donghyo</title>
+  <title>donghyos</title>
   <link>https://donghyos.github.io</link>
   <description>AI 도구·자동화·콘텐츠 파이프라인을 직접 만들면서 배운 기술 노트</description>
   <language>ko</language>
