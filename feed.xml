@@ -6,6 +6,13 @@
   <description>AI 도구·자동화·콘텐츠 파이프라인을 직접 만들면서 배운 기술 노트</description>
   <language>ko</language>
   <item>
+    <title>상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편)</title>
+    <link>https://donghyos.github.io/posts/ai-shorts-pipeline-v3-diversification/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/ai-shorts-pipeline-v3-diversification/</guid>
+    <pubDate>Fri, 29 May 2026 15:00:00 GMT</pubDate>
+    <description>단일 주제(PC 부품 청소) 파이프라인을 13개 주제로 확장하면서, 주제마다 긴 프롬프트를 손으로 다시 쓰지 않고 자동 복제하는 문제</description>
+  </item>
+  <item>
     <title>AI 숏폼 자동화 파이프라인 v1 — 4단계 아키텍처와 프롬프트 변수화 (1편)</title>
     <link>https://donghyos.github.io/posts/ai-shorts-pipeline-v1-architecture/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/ai-shorts-pipeline-v1-architecture/</guid>

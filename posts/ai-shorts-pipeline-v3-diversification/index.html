@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="meh">
+<title>상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편) — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<meta name="description" content="단일 주제(PC 부품 청소) 파이프라인을 13개 주제로 확장하면서, 주제마다 긴 프롬프트를 손으로 다시 쓰지 않고 자동 복제하는 문제">
+<meta property="og:title" content="상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편) — donghyos">
+<meta property="og:description" content="단일 주제(PC 부품 청소) 파이프라인을 13개 주제로 확장하면서, 주제마다 긴 프롬프트를 손으로 다시 쓰지 않고 자동 복제하는 문제">
+<meta property="og:url" content="https://donghyos.github.io/posts/ai-shorts-pipeline-v3-diversification/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편) — donghyos">
+<meta name="twitter:description" content="단일 주제(PC 부품 청소) 파이프라인을 13개 주제로 확장하면서, 주제마다 긴 프롬프트를 손으로 다시 쓰지 않고 자동 복제하는 문제">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{mermaid.initialize({startOnLoad:true,theme:'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
+  <a href="/series/ai-shorts-pipeline/" class="series-link">시리즈: ai-shorts-pipeline</a>
+  <time>2026-05-30</time>
+</div>
+</div>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 단일 주제(PC 부품 청소) 파이프라인을 13개 주제로 확장하면서, 주제마다 긴 프롬프트를 손으로 다시 쓰지 않고 자동 복제하는 문제</li>
+<li><strong>접근</strong>: "모델이 잘 이해하는 프롬프트 형식"을 먼저 찾아 고정하고, 그 형식을 보존하며 주제 어휘만 LLM이 바꾸게 하는 PromptDiversifier 설계 — 보존 계약 + 검증 게이트 + fallback</li>
+<li><strong>결과·학습</strong>: 13개 주제·201편으로 확장에 성공했지만 노출은 늘지 않았다. 핵심 학습 = 영상 모델엔 '상세함'이 아니라 '모델 친화적 형식'이 레버, 그리고 '주제 수'는 알고리즘 벽을 뚫는 레버가 아니었다</li>
+<li><strong>도움 되는 독자</strong>: LLM을 생성 루프에 넣어 프롬프트를 안전하게 변형·확장하려는 개발자 / 콘텐츠 자동화의 '다양화'가 실제로 어떤 결과를 내는지 궁금한 사람</li>
+</ul></div></aside>
+<h1 id="ai-3">상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편)</h1>
+<p><a href="/posts/ai-shorts-pipeline-v1-architecture/">1편</a>에서 AI 숏폼 자동화 파이프라인을 구축했고, <a href="/posts/ai-shorts-pipeline-v2-iteration/">2편</a>에서 영상 길이를 늘리려다 <em>AI 영상 모델은 시간 순서를 모른다</em>는 벽을 만났다. 이 글은 마지막으로 남은 가설 — <em>주제를 다양화하면 조회수가 오른다</em> — 를 자동화한 기록이자, 숏폼 시리즈를 닫는 글이다.</p>
+<h2 id="1">1. 문제 정의</h2>
+<p>2편 끝에서 두 개의 벽을 만났다. AI 영상 모델의 한계, 그리고 대량 업로드 뒤 노출이 떨어지는 알고리즘 함정. 조회수를 끌어올릴 카드로 <em>주제 다양성</em> 하나가 남아 있었다.</p>
+<p>솔직히 고백하면, 당시 나는 <em>알고리즘 벽을 뚫고 파이프라인을 고도화하고 싶었지만 무엇을 해야 할지 명확하지 않았다.</em> 그래서 일단 손에 잡히는 것 — 주제를 늘리는 것 — 부터 했다. 지금 보면 이건 문제의 본질을 비껴간 선택이었고, 5장에서 다시 짚는다.</p>
+<p>기술적 문제는 분명했다. PC 부품 청소 하나로 검증한 프롬프트 템플릿을, 유리 절단·보석·행성 단면 같은 <em>전혀 다른 주제</em>로 어떻게 옮길 것인가. 주제마다 1,000자가 넘는 프롬프트를 손으로 다시 쓰면 자동화의 의미가 사라진다.</p>
+<h2 id="2">2. 접근</h2>
+<h3 id="_1">주제 선정 — 시장조사와 감</h3>
+<p>주제를 무작정 늘리지 않았다. MCP(외부 도구를 모델에 연결하는 프로토콜) 검색으로 어떤 satisfying 주제에 수요가 있는지 조사하고, 거기에 감을 더해 후보를 좁혔다. 청소 계열을 넘어 <em>절단(cutting)</em> 계열로 축을 넓혔다 — 유리 과일, 보석, 행성 단면, 디저트, 음료.</p>
+<h3 id="_2">형식의 발견 — 상세함의 함정</h3>
+<p>처음엔 <em>더 상세하게 쓸수록 더 정확한 영상이 나온다</em>고 가정했다. 1,000자가 넘는 정밀한 묘사를 프롬프트에 욱여넣었다.</p>
+<p>결과는 반대였다. Veo 3는 과도하게 상세한 프롬프트를 <em>소화하지 못하고</em> 장면이 점프하거나 비현실적인 렌더를 냈다. 2편의 "시간 순서를 모른다"와 같은 계열의 문제다 — 모델은 텍스트를 인간처럼 축적해 읽지 않는다.</p>
+<p>그래서 MCP로 <em>Veo가 잘 이해하는 프롬프트 형식</em>을 따로 조사했다. 핵심은 장황한 <em>서술</em>이 아니라 <em>구조화된 핵심 요소의 나열</em>에 가까웠다. 핵심 동작 하나, 매크로 렌즈, 9:16, 슬로모션, ASMR, 재질명 — 모델이 학습한 형식에 정렬된 간결한 프롬프트로 다시 쓰자 결과가 안정됐다. 여기서 자산화할 원칙 하나를 얻었다. <strong>영상 생성 모델에선 프롬프트의 '상세함'이 아니라 '모델이 학습한 형식과의 정합성'이 품질을 결정한다.</strong></p>
+<h3 id="13">자동화 문제 — 형식을 13주제로 복제</h3>
+<p>검증된 형식을 13개 주제로 퍼뜨려야 했다. 그런데 사람이 손으로 다시 쓰면 <em>자꾸 디테일을 더해</em> 방금 검증한 형식이 무너진다. 상세함의 함정에 다시 빠지는 것이다. 그래서 변형을 LLM에게 맡기되, <em>형식은 보존하고 주제 어휘만 바꾸도록</em> 가드레일을 치기로 했다. 이것이 <code>PromptDiversifier</code>다.</p>
+<h2 id="3-promptdiversifier">3. 구현 — PromptDiversifier</h2>
+<p>세 가지 장치로 설계했다. (사이드 프로젝트 코드에서 핵심 패턴만 추린 재구성 예제다.)</p>
+<h3 id="1_1">(1) 보존/변형 계약</h3>
+<p>시스템 프롬프트로 LLM에게 <em>무엇을 바꾸지 말고 무엇을 바꿀지</em>를 명시한다. 이 계약이 형식의 척추를 지킨다.</p>
+<pre><code class="language-python">REPHRASE_SYSTEM_PROMPT = &quot;&quot;&quot;\
+You are a video-prompt rephrasing assistant.
+MUST preserve: main subject, core action, macro lens, 9:16 aspect ratio,
+  slow motion, ASMR audio, material names (glass, crystal).
+NEVER change the action type (cutting -&gt; cleaning, or vice versa).
+VARY: sentence structure, adjectives, descriptive order.
+Keep a similar length and the same language as the input.
+{topic_rules}
+&quot;&quot;&quot;
+</code></pre>
+<p><code>{topic_rules}</code>에는 주제별로 <em>반드시 살려야 할 요소</em>를 끼워 넣는다(예: 절단 주제라면 "knife, cross-section reveal").</p>
+<h3 id="2_1">(2) 검증 게이트</h3>
+<p>LLM은 계약을 어길 수 있다. 그래서 변형 결과에 <em>주제별 필수 키워드가 살아남았는지</em> 검사하고, 빠졌으면 채택하지 않고 원본으로 되돌린다.</p>
+<pre><code class="language-python">async def diversify_prompt(self, prompt: Prompt) -&gt; Prompt:
+    &quot;&quot;&quot;형식은 보존하고 주제 어휘만 바꾼다. 형식 이탈 시 원본 유지.&quot;&quot;&quot;
+    rephrased = await self._call_llm(REPHRASE_SYSTEM_PROMPT, prompt.text)
+
+    # 검증 게이트: 주제의 핵심 키워드가 변형 후에도 남아 있는가
+    required = TOPIC_REQUIRED_KEYWORDS.get(prompt.template_id, [])
+    if any(kw not in rephrased.lower() for kw in required):
+        return prompt  # 형식 이탈 → 원본으로 fallback
+
+    return replace(prompt, text=rephrased, original_text=prompt.text)
+</code></pre>
+<p>이 게이트가 실제로 막아준 사례가 있다. LLM이 다양화 과정에서 <em>cutting을 cleaning으로 바꾸거나</em> 매크로·ASMR 같은 형식 요소를 슬쩍 떨어뜨린 결과를 내놓을 때, 키워드 검사가 그것을 걸러 원본으로 되돌렸다.</p>
+<h3 id="3-fallback">(3) 다층 fallback</h3>
+<p>자동화 파이프라인에서 한 단계의 LLM 실패가 전체를 멈추면 안 된다. 그래서 <em>비활성·API 오류·검증 실패</em> 어느 경우든 원본 프롬프트로 안전하게 떨어지게 했다. 다양화는 <em>덤</em>이지 파이프라인의 필수 의존이 아니라는 설계 원칙이다.</p>
+<p>이 세 장치 덕분에 <em>사람이 손대지 않고</em> 프롬프트를 13개 주제로 복제했다. 한 파이프라인이 같은 형식을 공유하며 만든 결과물이다.</p>
+<video src="/images/ai-shorts-pipeline-v3-diversification/diversification-showcase.mp4" autoplay muted loop playsinline width="360" style="display:block;margin:24px auto;border-radius:8px;max-width:100%;"></video>
+
+<blockquote>
+<p>같은 파이프라인·같은 형식으로 만든 서로 다른 네 주제(유리 행성·보석·디저트·음료 단면). 주제 어휘만 바뀌고 매크로·슬로모션·ASMR 형식은 동일하다.</p>
+</blockquote>
+<h2 id="4">4. 결과</h2>
+<p>정량적으로는 성공했다. 주제 1개(PC 부품 청소)에서 13개로, 누적 201편을 <em>사람의 프롬프트 재작성 없이</em> 생성했다. 청소 계열(초음파·레이저·먼지)과 절단 계열(유리·보석·행성·디저트·음료·한식)로 폭이 넓어졌다.</p>
+<p>그러나 <em>노출은 그대로였다.</em> 주제를 13배로 늘렸지만 조회수와 추천 노출에 의미 있는 변화가 없었다. 2편에서 만난 노출의 벽은 <em>주제 다양성으로는 뚫리지 않았다.</em></p>
+<h2 id="5">5. 학습</h2>
+<p>이 시도에서 세 가지를 배웠다.</p>
+<p><strong>첫째, 영상 모델에선 '상세함'이 아니라 '형식 정합성'이 레버다.</strong> 1,000자 정밀 묘사가 8초를 망쳤고, 모델이 학습한 형식에 맞춘 간결하고 구조화된 프롬프트가 살렸다. 2편의 "시간 순서를 모른다"와 합치면 하나의 원칙이 된다 — <em>영상 생성 모델은 인간의 글쓰기 직관과 다른 입력 형식을 요구한다.</em> 더 길게·더 자세히가 아니라 <em>모델의 형식에 맞게</em>.</p>
+<p><strong>둘째, LLM을 생성 루프에 넣을 땐 '보존 계약 + 검증 게이트 + fallback'이 필수다.</strong> LLM에게 변형을 맡기는 순간 형식이 무너질 위험이 생긴다. 무엇을 보존할지 계약으로 못 박고, 결과를 게이트로 검증하고, 실패 시 원본으로 안전하게 되돌리는 3종 가드레일은 영상 프롬프트뿐 아니라 <em>LLM이 기존 산출물을 변형하는 모든 자동화</em>에 그대로 옮길 수 있다. 이 시리즈에서 가장 재사용성 높은 자산이다.</p>
+<p><strong>셋째, '주제 수'는 알고리즘 벽의 레버가 아니었다.</strong> 가장 뼈아픈 학습이다. 무엇을 해야 할지 몰라 <em>움직이기 쉬운 변수</em>(주제 늘리기)부터 당겼지만, 그건 결과를 움직이는 변수가 아니었다. 내 경우 노출에 더 크게 작용한 변수는 2편에서 본 <em>업로드 양과 채널의 신뢰도</em>로 보였다(플랫폼 노출 정책은 비공개이므로 단일 사례의 관찰이다). 자동화로 쉬운 변수를 13배 늘리는 일과, 결과를 실제로 움직이는 일은 달랐다.</p>
+<p>숏폼 파이프라인은 여기서 일단락한다. 1편의 자동화 가설은 검증됐고, 2편·3편에서 <em>품질·길이·주제</em> 세 레버를 모두 당겨봤지만 노출의 벽은 끝내 넘지 못했다. 이 실험과 <em>병렬로</em> 나는 롱폼 영상 파이프라인을 따로 돌리고 있었다. 숏폼을 접고 롱폼으로 옮겨간 것이 아니라, 세 편에 걸쳐 숏폼의 한계를 체감하면서 <em>무게중심이 자연스럽게 롱폼으로 기울었다.</em></p>
+<p>숏폼 3부작을 한 줄로 닫는다. <strong>자동화의 진짜 가치는 '많이 만드는 것'이 아니라 '검증된 형식을 안전하게 반복하는 것'이었다.</strong> 다음 시리즈에서는 그 무게가 옮겨간 곳 — 풀스택 롱폼 파이프라인 — 을 다룬다.</p>
+<div class="page-tags"><button class="tag-chip" data-tag="ai-video">#ai-video</button> <button class="tag-chip" data-tag="veo3">#veo3</button> <button class="tag-chip" data-tag="prompt-engineering">#prompt-engineering</button> <button class="tag-chip" data-tag="llm">#llm</button> <button class="tag-chip" data-tag="automation">#automation</button> <button class="tag-chip" data-tag="mcp">#mcp</button> <button class="tag-chip" data-tag="side-project">#side-project</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+<nav class="series-nav">
+<div class="seriesnav-head">시리즈 <a href="/series/ai-shorts-pipeline/">ai-shorts-pipeline</a> · 3/3편</div>
+<div class="seriesnav-links">
+<a class="seriesnav-item seriesnav-prev" href="/posts/ai-shorts-pipeline-v2-iteration/"><span class="seriesnav-label">← 이전 글</span><span class="seriesnav-title">AI 영상은 시간 순서를 모른다 — Veo 3.1 Extension 실험 회고 (2편)</span></a>
+<span class="seriesnav-item seriesnav-empty"></span>
+</div>
+</nav>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 meh · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>
