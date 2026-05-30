@@ -3,7 +3,7 @@
 <head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="author" content="meh">
-<title>사이드 프로젝트 — donghyos</title>
+<title>About — donghyos</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/style.css">
 <link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
@@ -36,45 +36,51 @@
     <nav class="nav">
       <a href="/">홈</a>
       <a href="/posts/">Posts</a>
-      <a href="/categories/" class="active">Categories</a>
+      <a href="/categories/">Categories</a>
       <a href="/series/">Series</a>
-      <a href="/about/">About</a>
+      <a href="/about/" class="active">About</a>
     </nav>
     <button id="search-toggle" aria-label="검색">⌘K</button>
   </div>
 </header>
 <main class="container">
-<h1>사이드 프로젝트</h1>
-<p class="muted">3편 · 카테고리</p>
-<div class="post-list">
-<article class="post-card">
-<div class="card-meta">
-  <a class="card-cat" href="/categories/proj/">사이드 프로젝트</a>
-  <span class="card-series">ai-shorts-pipeline</span>
-  <time>2026-05-30</time>
-</div>
-<h3><a href="/posts/ai-shorts-pipeline-v3-diversification/">상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편)</a></h3>
-<p><a href="/posts/ai-shorts-pipeline-v3-diversification/">단일 주제(PC 부품 청소) 파이프라인을 13개 주제로 확장하면서, 주제마다 긴 프롬프트를 손으로 다시 쓰지 않고 자동 복제하는 문제…</a></p>
+<article class="about">
+<h1>About</h1>
+<p><strong>donghyos</strong> — AI 도구와 자동화를 직접 만들며 배우는 개발자.</p>
+<p>완성된 도구를 그대로 쓰기보다, 필요한 것을 직접 짜서 워크플로의 자산으로
+만드는 데 관심이 많다. 그 과정에서 얻은 패턴과 시행착오를 이 블로그에 기록한다.</p>
+
+<h2>기술 스택</h2>
+<div class="tech-stack"><div class="tech-group"><span class="tech-label">백엔드</span><div class="tech-tags"><span class="tech-tag">Java</span><span class="tech-tag">Spring Boot</span><span class="tech-tag">Spring Data JPA</span><span class="tech-tag">.NET</span></div></div>
+<div class="tech-group"><span class="tech-label">프런트엔드</span><div class="tech-tags"><span class="tech-tag">React</span><span class="tech-tag">Next.js</span></div></div>
+<div class="tech-group"><span class="tech-label">인프라·DevOps</span><div class="tech-tags"><span class="tech-tag">Kubernetes (AWS EKS)</span><span class="tech-tag">Docker</span><span class="tech-tag">ArgoCD</span><span class="tech-tag">Jenkins</span><span class="tech-tag">Datadog</span></div></div>
+<div class="tech-group"><span class="tech-label">데이터</span><div class="tech-tags"><span class="tech-tag">PostgreSQL</span><span class="tech-tag">MySQL</span><span class="tech-tag">Oracle</span><span class="tech-tag">Redis</span></div></div>
+<div class="tech-group"><span class="tech-label">AI 워크플로</span><div class="tech-tags"><span class="tech-tag tech-tag-accent">Claude Code</span><span class="tech-tag tech-tag-accent">BMAD</span><span class="tech-tag tech-tag-accent">Harness</span></div></div></div>
+
+<h2>관심 영역</h2>
+<ul>
+<li>풀스택 개발 + DevOps</li>
+<li>AI 자동화 파이프라인 — LLM·영상 생성 모델을 코드로 엮기</li>
+<li>콘텐츠 창작 자동화</li>
+</ul>
+
+<h2>최근 작업</h2>
+<ul>
+<li>AI 숏폼 영상 자동화 파이프라인 (Veo·BMAD·FFmpeg·MCP) — <a href="/series/ai-shorts-pipeline/">ai-shorts-pipeline 시리즈</a></li>
+<li>롱폼 풀스택 파이프라인 (진행 중)</li>
+</ul>
+
+<h2>이 블로그는</h2>
+<p>AI·자동화·콘텐츠 파이프라인을 직접 만들며 얻은 기술 노트다. 문제 → 접근 →
+구현 → 결과 → 학습 구조로, 동료 개발자가 재사용할 수 있는 패턴을 남기는 것을
+목표로 한다.</p>
+
+<h2>연락</h2>
+<ul class="about-contact">
+<li>Email — <a href="mailto:ddong8707@gmail.com">ddong8707@gmail.com</a></li>
+<li>GitHub — <a href="https://github.com/DongHyos">@DongHyos</a></li>
+</ul>
 </article>
-<article class="post-card">
-<div class="card-meta">
-  <a class="card-cat" href="/categories/proj/">사이드 프로젝트</a>
-  <span class="card-series">ai-shorts-pipeline</span>
-  <time>2026-05-29</time>
-</div>
-<h3><a href="/posts/ai-shorts-pipeline-v1-architecture/">AI 숏폼 자동화 파이프라인 v1 — 4단계 아키텍처와 프롬프트 변수화 (1편)</a></h3>
-<p><a href="/posts/ai-shorts-pipeline-v1-architecture/">AI 영상 생성 모델만으로 숏폼 콘텐츠를 엔드투엔드 자동 생성하는 파이프라인 구축이 가능한가…</a></p>
-</article>
-<article class="post-card">
-<div class="card-meta">
-  <a class="card-cat" href="/categories/proj/">사이드 프로젝트</a>
-  <span class="card-series">ai-shorts-pipeline</span>
-  <time>2026-05-29</time>
-</div>
-<h3><a href="/posts/ai-shorts-pipeline-v2-iteration/">AI 영상은 시간 순서를 모른다 — Veo 3.1 Extension 실험 회고 (2편)</a></h3>
-<p><a href="/posts/ai-shorts-pipeline-v2-iteration/">1편 파이프라인의 조회수를 올리려 영상 길이·품질·주제를 개선하다 만난 AI 영상 모델의 근본 한계…</a></p>
-</article>
-</div>
 </main>
 <footer class="footer">
   <div class="footer-inner">

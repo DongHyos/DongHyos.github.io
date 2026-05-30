@@ -190,6 +190,30 @@ pre.mermaid {
 }
 .tag-chip:hover { border-color: var(--accent); color: var(--accent); }
 
+.about > p { margin: 16px 0; }
+.tech-stack { margin: 18px 0 8px; display: flex; flex-direction: column; gap: 14px; }
+.tech-group { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; }
+.tech-label {
+  font-size: 13px; color: var(--muted); font-weight: 600;
+  min-width: 96px; flex-shrink: 0;
+}
+.tech-tags { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+.tech-tag {
+  background: var(--code-bg); border: 1px solid var(--border); color: var(--fg);
+  padding: 4px 12px; border-radius: 999px; font-size: 13px; line-height: 1.6;
+}
+.tech-tag-accent {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: var(--accent); color: var(--accent); font-weight: 500;
+}
+.about-contact { list-style: none; padding-left: 0; }
+.about-contact li { margin: 6px 0; }
+
+@media (max-width: 600px) {
+  .tech-group { gap: 4px; }
+  .tech-label { min-width: 100%; }
+}
+
 .series-list-items { list-style: none; padding: 0; }
 .series-item { margin: 0 0 16px; }
 .series-item a {
