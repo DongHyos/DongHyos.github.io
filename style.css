@@ -210,6 +210,36 @@ pre.mermaid {
 .series-card-large h3 { margin-bottom: 6px; font-size: 17px; }
 .series-card-large p { font-size: 13px; color: var(--muted); margin: 0; }
 
+.post-backlink {
+  max-width: 720px; margin: 0 auto; padding: 32px 24px 0;
+}
+.post-backlink a { font-size: 14px; color: var(--muted); }
+.post-backlink a:hover { color: var(--accent); }
+
+.series-nav {
+  max-width: 720px; margin: 0 auto; padding: 32px 24px 0;
+}
+.seriesnav-head {
+  font-size: 13px; color: var(--muted); margin-bottom: 12px;
+  padding-top: 32px; border-top: 1px solid var(--border);
+}
+.seriesnav-links { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.seriesnav-item {
+  display: flex; flex-direction: column; gap: 4px; padding: 16px 18px;
+  border: 1px solid var(--border); border-radius: 8px; color: var(--fg);
+}
+a.seriesnav-item:hover { border-color: var(--accent); text-decoration: none; }
+a.seriesnav-item:hover .seriesnav-title { color: var(--accent); }
+.seriesnav-next { text-align: right; }
+.seriesnav-label { font-size: 12px; color: var(--muted); }
+.seriesnav-title { font-size: 14px; font-weight: 600; line-height: 1.4; }
+.seriesnav-empty { border: none; }
+
+@media (max-width: 600px) {
+  .seriesnav-links { grid-template-columns: 1fr; }
+  .seriesnav-next { text-align: left; }
+}
+
 .comments {
   max-width: 720px; margin: 0 auto; padding: 0 24px 40px;
 }
