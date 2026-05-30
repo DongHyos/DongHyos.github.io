@@ -90,15 +90,23 @@ Keep a similar length and the same language as the input.
 <h3 id="2_1">(2) 검증 게이트</h3>
 <p>LLM은 계약을 어길 수 있다. 그래서 변형 결과에 <em>주제별 필수 키워드가 살아남았는지</em> 검사하고, 빠졌으면 채택하지 않고 원본으로 되돌린다.</p>
 <pre><code class="language-python">async def diversify_prompt(self, prompt: Prompt) -&gt; Prompt:
-    &quot;&quot;&quot;형식은 보존하고 주제 어휘만 바꾼다. 형식 이탈 시 원본 유지.&quot;&quot;&quot;
-    rephrased = await self._call_llm(REPHRASE_SYSTEM_PROMPT, prompt.text)
+    &quot;&quot;&quot;형식은 보존하고 주제 어휘만 바꾼다. 어느 단계에서 실패하든 원본으로 안전 복귀한다.&quot;&quot;&quot;
+    if not self.enabled:
+        return prompt  # ① 비활성 → 변형을 건너뛰고 원본 그대로
 
-    # 검증 게이트: 주제의 핵심 키워드가 변형 후에도 남아 있는가
-    required = TOPIC_REQUIRED_KEYWORDS.get(prompt.template_id, [])
-    if any(kw not in rephrased.lower() for kw in required):
-        return prompt  # 형식 이탈 → 원본으로 fallback
+    try:
+        rephrased = await self._call_llm(REPHRASE_SYSTEM_PROMPT, prompt.text)
 
-    return replace(prompt, text=rephrased, original_text=prompt.text)
+        # ② 검증 게이트: 주제의 핵심 키워드가 변형 후에도 남아 있는가
+        required = TOPIC_REQUIRED_KEYWORDS.get(prompt.template_id, [])
+        if any(kw not in rephrased.lower() for kw in required):
+            logger.warning(&quot;형식 이탈(키워드 누락) → 원본 유지&quot;)
+            return prompt  # ③ 검증 실패 → 원본으로 fallback
+
+        return replace(prompt, text=rephrased, original_text=prompt.text)
+    except Exception as exc:
+        logger.warning(f&quot;변형 호출 실패 → 원본 유지: {exc}&quot;)
+        return prompt  # ④ API 오류·예외 → 원본으로 fallback
 </code></pre>
 <p>이 게이트가 실제로 막아준 사례가 있다. LLM이 다양화 과정에서 <em>cutting을 cleaning으로 바꾸거나</em> 매크로·ASMR 같은 형식 요소를 슬쩍 떨어뜨린 결과를 내놓을 때, 키워드 검사가 그것을 걸러 원본으로 되돌렸다.</p>
 <h3 id="3-fallback">(3) 다층 fallback</h3>
