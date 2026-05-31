@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="meh">
+<title>풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편) — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<meta name="description" content="1인 개발자가 AI 영상 제작을 자동화하는 플랫폼을 만들 때, 어떤 기술을 고르고 *무엇을 만들지 않을지* 판단하는 문제">
+<meta property="og:title" content="풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편) — donghyos">
+<meta property="og:description" content="1인 개발자가 AI 영상 제작을 자동화하는 플랫폼을 만들 때, 어떤 기술을 고르고 *무엇을 만들지 않을지* 판단하는 문제">
+<meta property="og:url" content="https://donghyos.github.io/posts/solo-fullstack-v1-stack/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편) — donghyos">
+<meta name="twitter:description" content="1인 개발자가 AI 영상 제작을 자동화하는 플랫폼을 만들 때, 어떤 기술을 고르고 *무엇을 만들지 않을지* 판단하는 문제">
+<meta property="og:image" content="https://donghyos.github.io/images/solo-fullstack-v1-stack/dashboard.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/solo-fullstack-v1-stack/dashboard.png">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{mermaid.initialize({startOnLoad:true,theme:'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
+  <a href="/series/solo-fullstack/" class="series-link">시리즈: solo-fullstack</a>
+  <time>2026-05-31</time>
+</div>
+</div>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 1인 개발자가 AI 영상 제작을 자동화하는 플랫폼을 만들 때, 어떤 기술을 고르고 <em>무엇을 만들지 않을지</em> 판단하는 문제</li>
+<li><strong>접근</strong>: 익숙한 기술(주력 Java/Spring 백엔드 + AI 통신용 Python 워커)로 롱런 가능한 스택을 짜고, 프론트 대시보드·실시간 이벤트로 '관제탑'까지 시도</li>
+<li><strong>결과·학습</strong>: 대시보드·이벤트 계층은 단일 창작자 규모엔 과도해 덜어냈다. 핵심 학습 = 1인 개발에선 '안 만드는 것'도 설계 결정이며, 익숙한 기술이 롱런의 조건이다</li>
+<li><strong>도움 되는 독자</strong>: 사이드 프로젝트·1인 개발에서 기술 선택과 범위를 판단하는 개발자</li>
+</ul></div></aside>
+<h1 id="1-ai-1">풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편)</h1>
+<p>앞선 숏폼 자동화는 Python 스크립트 하나로 충분했다. 이번엔 AI 영상 제작을 <em>제품 수준의 플랫폼</em>으로 키우려 했다. 영상 한 편을 뽑는 스크립트와, 영상을 <em>지속적으로 찍어내는 시스템</em>은 다른 문제다 — 작업 관리·상태 추적·재시도·자산 저장 같은 것들이 줄줄이 붙기 시작한다. 이 글은 그 플랫폼의 기술 선택과, 그보다 중요한 <em>무엇을 만들지 않기로 했는지</em>에 대한 기록이다.</p>
+<h2 id="1">1. 문제 정의</h2>
+<p>혼자 만들고 혼자 운영한다. 이 제약이 모든 결정의 출발점이었다. 1인 개발에서 기술 선택은 <em>"구현할 수 있는가"</em>가 아니라 <em>"오래 끌고 갈 수 있는가"</em>의 문제다. 화려한 스택을 골라도 유지보수·디버깅·운영을 전부 혼자 감당해야 하면, 그 무게가 곧 프로젝트의 수명을 결정한다.</p>
+<p>동시에 <em>범위</em>의 문제가 있었다. AI 영상 제작을 어디까지 자동화할 것인가. 너무 키우면 관리 부담이 제작보다 커지고, 너무 작으면 '플랫폼'이라 부를 수 없다. 기술 선택과 범위 — 이 두 가지가 1편의 주제다.</p>
+<h2 id="2">2. 접근 — 익숙한 기술이 곧 지속가능성</h2>
+<h3 id="_1">스택 선택 원칙</h3>
+<p>사이드 프로젝트는 시간이 한정돼 있다. 새 기술을 학습하는 비용을 치를 여유가 거의 없다. 그래서 원칙을 하나로 잡았다 — <strong>익숙한 기술을 쓴다.</strong> 익숙함은 곧 <em>롱런 가능성</em>이다. 막히는 지점에서 빠르게 빠져나올 수 있어야 프로젝트가 중간에 죽지 않는다.</p>
+<h3 id="_2">역할로 언어를 가른다</h3>
+<ul>
+<li><strong>백엔드 — Java / Spring Boot.</strong> 내 주력이다. 비즈니스 로직·작업 관리·API를 안정적으로, 그리고 빠르게 짤 수 있는 기반.</li>
+<li><strong>워커 — Python.</strong> AI 영상 모델·FFmpeg·TTS 생태계는 Python-first다. AI·미디어 처리 계층만 Python으로 분리했다.</li>
+</ul>
+<p>한 언어로 전부 처리하는 대신 <em>역할로 언어를 갈랐다.</em> 비즈니스 로직은 익숙한 Java, AI·미디어는 도구가 풍부한 Python. 둘의 경계는 메시지 큐로 뒀다.</p>
+<p>워커를 Java 안의 모듈이 아니라 <em>별도 프로세스</em>로 둔 데에는 이유가 있다. AI 영상 생성은 한 작업이 수 분에서 수십 분까지 걸리고, 외부 API·FFmpeg 같은 무거운 의존성을 끌고 온다. 이걸 API 서버와 한 프로세스에 두면 영상 처리 한 건이 API 응답성을 통째로 잡아먹는다. 프로세스를 가르면 API는 요청에 가볍게 응답하고, 워커는 자기 속도로 무거운 일을 처리한다. 장애도 격리된다 — 워커가 FFmpeg에서 죽어도 API는 살아 있다.</p>
+<p>물론 폴리글랏에는 대가가 있다. 두 언어의 경계에서 데이터를 <em>직렬화</em>해 주고받아야 하고, 타입은 양쪽에서 따로 정의된다(Java DTO ↔ Python dataclass). 디버깅도 두 런타임에 흩어진다. 그럼에도 역할 분리의 이점이 더 컸다. 경계를 <em>메시지 큐 하나로 단순하게</em> 유지하는 한, 그 비용은 감당할 만했다.</p>
+<p>사실 워커가 Python인 김에 <em>전부 Python</em>으로 짤 수도 있었다. 그러면 경계 비용 자체가 사라진다. 그러나 백엔드를 주력이 아닌 언어에 두는 건 <em>롱런</em>에 불리했다. 경계 비용은 한 번 설계하면 고정되지만, 익숙하지 않은 언어의 비용은 <em>매일</em> 치러야 한다. 비즈니스 로직이 복잡해질수록 내가 가장 빠르고 안정적으로 다루는 언어 위에 있어야 오래 간다 — 그 판단으로 폴리글랏의 경계 비용을 택했다.</p>
+<h3 id="_3">여기에 욕심을 더했다</h3>
+<p>스택만으로 끝내지 않았다. 프론트(Next.js) <strong>대시보드</strong>로 작업 현황을 실시간 들여다보는 '관제탑'을 구상했고, 그 실시간성을 위해 <strong>Redis 이벤트(pub/sub)</strong>까지 설계했다.</p>
+<h2 id="3">3. 구현 — 모노레포와 큐 경계</h2>
+<p>전체를 하나의 모노레포로 묶었다.</p>
+<pre><code>video-platform/
+├── core-api/      # Java/Spring — 작업 관리·API
+├── core-worker/   # Python — AI 영상 생성·FFmpeg·TTS
+└── frontend/      # Next.js 대시보드   ← (결국 덜어냄)
+</code></pre>
+<p>핵심 설계는 <em>큐를 경계로 둔 것</em>이다. API(Java)가 영상 제작 작업을 큐에 넣으면, 워커(Python)가 꺼내 처리한다. 두 언어는 서로의 내부를 모른 채 <em>메시지</em>로만 대화한다.</p>
+<p>큐를 Redis로 고른 것도 <em>덜어냄의 연장</em>이었다. Kafka는 높은 처리량과 이벤트 영속성을 주지만, 브로커 운영·파티션 설계 같은 <em>운영 표면</em>을 함께 가져온다. 하루 수십 건의 영상 작업에 그건 과했다. Redis 하나면 작업 큐·캐시·pub/sub을 겸해 운영할 컴포넌트가 하나로 줄었다. 처리량 한계는 분명하지만, 내 규모에선 닿을 일이 없는 한계였다.</p>
+<pre class="mermaid">flowchart LR
+    API["Java/Spring API"] -->|작업 큐| Q[(Redis)]
+    Q --> W["Python Worker<br/>AI·FFmpeg"]
+    W -.실시간 상태.-> DASH["Next.js 대시보드"]
+</pre>
+<p>대시보드는 워커의 작업 상태를 Redis pub/sub로 받아 실시간 표시하도록 설계했다. 그림에서 점선이 그 부분이다.</p>
+<h2 id="4">4. 결과 — 점선을 지웠다</h2>
+<p>대시보드는 <em>레이아웃까지 만들고 영상 생성 연동을 시도하다 멈췄다.</em> 그리고 다시 켜지 않았다. 두 가지를 깨달았기 때문이다.</p>
+<p><img alt="만들다 멈춘 대시보드 — 진행 중·완료·비용 카드가 모두 0" src="/images/solo-fullstack-v1-stack/dashboard.png"></p>
+<blockquote>
+<p>만들다 멈춘 대시보드. 진행 중·완료·이번 달 비용을 한눈에 보려던 '관제탑'이지만, 모든 지표가 0인 채 멈췄다 — 혼자 쓰는 규모에선 이 화면을 유지할 이유가 없었다.</p>
+</blockquote>
+<p><strong>첫째, 혼자 쓰는데 관제탑은 과했다.</strong> 작업 현황은 로그와 터미널로 충분히 보였다. 실시간 대시보드의 가치는 <em>여러 사용자나 팀</em>이 같은 시스템을 볼 때 나온다. 사용자가 나 하나면, 대시보드는 <em>내가 유지보수해야 할 또 하나의 프론트엔드</em>일 뿐이었다. 게다가 그것은 백엔드가 바뀔 때마다 함께 손봐야 하는 <em>결합</em>을 만든다 — 한정된 시간이 관제탑을 떠받치는 데 새어 나갔다.</p>
+<p><strong>둘째, 끝까지 자동화할수록 비용과 관리가 늘었다.</strong> 완전 자동 파이프라인은 AI를 <em>API(종량제)</em>로 호출해야 한다. 그런데 종량제 API를 <em>프로덕션으로</em> 돌린다는 건 호출 코드 한 줄을 짜는 일이 아니다 — API 키 로테이션, 사용량 쿼터 감시, 비용 급증 알림, 실패한 호출의 재시도와 정산 추적이 줄줄이 따라온다. 영상 몇 편 만들자고 이 운영 부담을 떠안는 게 맞는가? 자동화의 편익보다 자동화를 <em>떠받치는 비용</em>이 더 커지는 지점이 보였다.</p>
+<p>그래서 대시보드와 Redis 이벤트 계층을 덜어냈다. 위 그림의 점선이 사라진 셈이다.</p>
+<h2 id="5">5. 학습</h2>
+<p><strong>1인 개발에선 '안 만드는 것'도 설계 결정이다.</strong> <em>만들 수 있다</em>와 <em>만들어야 한다</em>는 다르다. 관제탑은 만들 수 있었지만, 혼자 쓰는 규모에선 자산이 아니라 <em>부채</em>였다. 기술 선택에서 가장 어려운 판단은 무엇을 쓸지가 아니라 <em>무엇을 만들지 않을지</em>였다.</p>
+<p><strong>익숙한 기술이 롱런의 조건이다.</strong> 새 기술의 학습 비용은 시간이 한정된 사이드 프로젝트에 직격탄이다. 주력인 Java로 백엔드를 잡고 꼭 필요한 곳(AI·미디어)에만 Python을 들인 선택은, 막히는 순간마다 빠르게 빠져나오게 해줬다.</p>
+<p>돌아보면 나는 컴포넌트마다 같은 질문 세 개를 던지고 있었다. 동료에게도 그대로 넘길 수 있는 기준이다:</p>
+<ol>
+<li>사용자가 <em>나 하나</em>여도 이 컴포넌트는 가치가 있는가? — 대시보드가 여기서 탈락했다.</li>
+<li>이걸 <em>운영하는 부담</em>이, 이것이 주는 편익을 넘지 않는가? — 종량제 자동화가 여기서 걸렸다.</li>
+<li>막혔을 때 내가 <em>가장 빠르게</em> 빠져나올 도구인가? — 백엔드 언어 선택의 기준이었다.</li>
+</ol>
+<p>그리고 이 '덜어냄'은 더 큰 질문으로 이어졌다. 대시보드 하나를 덜어내며 <em>관리 포인트</em>를 따지다 보니, 물음이 점점 커졌다 — <strong>그 파이프라인 자체는, 정말 필요한가?</strong> 종량제 API와 인프라를 직접 떠안는 부담을 마주하면서, 나는 결국 방향을 틀게 된다. 그 이야기는 2편에서 다룬다.</p>
+<div class="page-tags"><button class="tag-chip" data-tag="fullstack">#fullstack</button> <button class="tag-chip" data-tag="java">#java</button> <button class="tag-chip" data-tag="spring-boot">#spring-boot</button> <button class="tag-chip" data-tag="python">#python</button> <button class="tag-chip" data-tag="architecture">#architecture</button> <button class="tag-chip" data-tag="side-project">#side-project</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 meh · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>

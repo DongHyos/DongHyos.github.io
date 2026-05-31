@@ -6,6 +6,13 @@
   <description>AI 도구·자동화·콘텐츠 파이프라인을 직접 만들면서 배운 기술 노트</description>
   <language>ko</language>
   <item>
+    <title>풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편)</title>
+    <link>https://donghyos.github.io/posts/solo-fullstack-v1-stack/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/solo-fullstack-v1-stack/</guid>
+    <pubDate>Sat, 30 May 2026 15:00:00 GMT</pubDate>
+    <description>1인 개발자가 AI 영상 제작을 자동화하는 플랫폼을 만들 때, 어떤 기술을 고르고 *무엇을 만들지 않을지* 판단하는 문제</description>
+  </item>
+  <item>
     <title>상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편)</title>
     <link>https://donghyos.github.io/posts/ai-shorts-pipeline-v3-diversification/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/ai-shorts-pipeline-v3-diversification/</guid>
