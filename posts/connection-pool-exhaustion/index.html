@@ -94,9 +94,9 @@ spring.datasource.dbcp2.remove-abandoned-on-borrow=false # 기본값: 좀비 커
     U->>G: 결제 요청
     G->>B: 중계
     B->>P: 커넥션 요청
-    Note over P: 풀 고갈 — 좀비 커넥션이 점유
+    Note over B,P: 풀 고갈 — 좀비 커넥션이 점유
     G--xU: 타임아웃 → "결제 실패"
-    Note over B,P: 15분 후 앞 커넥션 반납 (maxWait=-1: 그때까지 대기)
+    Note over B,P: 15분 후 앞 커넥션 반납<br/>(maxWait=-1: 그때까지 대기)
     P->>B: 커넥션 확보
     B->>B: 결제 실제 처리(성공)
     Note over U,B: 사용자는 실패로 알고 있음 = 정합성 붕괴
