@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
   <title>donghyos</title>
+  <atom:link href="https://donghyos.github.io/feed.xml" rel="self" type="application/rss+xml"/>
   <link>https://donghyos.github.io</link>
   <description>AI 도구·자동화·콘텐츠 파이프라인을 직접 만들면서 배운 기술 노트</description>
   <language>ko</language>
+  <lastBuildDate>Tue, 02 Jun 2026 15:00:00 GMT</lastBuildDate>
   <item>
     <title>사용자에겐 실패, 서버에선 성공이던 결제 — 커넥션 풀 고갈 추적</title>
     <link>https://donghyos.github.io/posts/connection-pool-exhaustion/</link>
