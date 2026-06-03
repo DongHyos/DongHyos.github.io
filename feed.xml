@@ -6,6 +6,13 @@
   <description>AI 도구·자동화·콘텐츠 파이프라인을 직접 만들면서 배운 기술 노트</description>
   <language>ko</language>
   <item>
+    <title>사용자에겐 실패, 서버에선 성공이던 결제 — 커넥션 풀 고갈 추적</title>
+    <link>https://donghyos.github.io/posts/connection-pool-exhaustion/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/connection-pool-exhaustion/</guid>
+    <pubDate>Tue, 02 Jun 2026 15:00:00 GMT</pubDate>
+    <description>결제가 간헐적으로 15분씩 지연됐다. 더 까다로운 건 지연 자체가 아니라, *사용자 화면엔 &quot;결제 실패&quot;가 뜨는데 백엔드에선 그 결제가 뒤늦게 성공*하는 상태 불일치였다. 모니터링이 전무한 환경에서 원인을 추적했다.</description>
+  </item>
+  <item>
     <title>자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)</title>
     <link>https://donghyos.github.io/posts/solo-fullstack-v2-buildvsbuy/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/solo-fullstack-v2-buildvsbuy/</guid>
