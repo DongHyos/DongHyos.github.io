@@ -6,7 +6,14 @@
   <link>https://donghyos.github.io</link>
   <description>AI 도구·자동화·콘텐츠 파이프라인을 직접 만들면서 배운 기술 노트</description>
   <language>ko</language>
-  <lastBuildDate>Tue, 02 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Wed, 03 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로</title>
+    <link>https://donghyos.github.io/posts/redis-session-sharing/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/redis-session-sharing/</guid>
+    <pubDate>Wed, 03 Jun 2026 15:00:00 GMT</pubDate>
+    <description>단일 서버를 이중화하자, 사용자가 서버를 오갈 때마다 로그인이 풀렸다.</description>
+  </item>
   <item>
     <title>사용자에겐 실패, 서버에선 성공이던 결제 — 커넥션 풀 고갈 추적</title>
     <link>https://donghyos.github.io/posts/connection-pool-exhaustion/</link>
