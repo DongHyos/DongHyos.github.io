@@ -60,7 +60,6 @@
   <span class="read-time">5분 읽기</span>
 </div>
 </div>
-<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#1">1. 문제 정의 — 파이프라인은 필요한가</a></li><li class="toc-h2"><a href="#2-vs">2. 접근 — 종량제 풀자동 vs 구독제 반자동</a></li><li class="toc-h2"><a href="#3">3. 결정 — 반자동 + 구독제, 그리고 예상 못 한 보상</a></li><li class="toc-h2"><a href="#4-vs">4. 결과 — 빌드 vs 바이는 규모의 함수다</a></li><li class="toc-h2"><a href="#5">5. 학습</a></li></ul></nav>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
 <li><strong>다루는 문제</strong>: 1인 개발자가 직접 만든 완전 자동 파이프라인(종량제 API + 인프라)을 계속 운영할 가치가 있는가</li>
 <li><strong>접근</strong>: 대시보드를 덜어낸 뒤 완전 자동화의 전제를 재검토 — 종량제 풀자동과 구독제 반자동을 비용·품질로 저울질</li>
@@ -69,7 +68,7 @@
 </ul></div></aside>
 <h1 id="1-vs-2">자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)</h1>
 <p><a href="/posts/solo-fullstack-v1-stack/">1편</a>에서 대시보드를 덜어내며 질문 하나가 남았다 — <em>그 파이프라인 자체는 정말 필요한가?</em> 이 글은 그 질문을 끝까지 밀어붙여 직접 만든 자동화를 <em>끄게 된</em> 기록이고, 그 끝에서 만난 예상 못 한 보상에 대한 기록이다. 1편이 <em>무엇을 만들지 않을지</em>였다면, 2편은 한 발 더 나아가 <em>이미 만든 것을 끌 수 있는지</em>를 묻는다.</p>
-<h2 id="1">1. 문제 정의 — 파이프라인은 필요한가</h2>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#1">1. 문제 정의 — 파이프라인은 필요한가</a></li><li class="toc-h2"><a href="#2-vs">2. 접근 — 종량제 풀자동 vs 구독제 반자동</a></li><li class="toc-h2"><a href="#3">3. 결정 — 반자동 + 구독제, 그리고 예상 못 한 보상</a></li><li class="toc-h2"><a href="#4-vs">4. 결과 — 빌드 vs 바이는 규모의 함수다</a></li><li class="toc-h2"><a href="#5">5. 학습</a></li></ul></nav><h2 id="1">1. 문제 정의 — 파이프라인은 필요한가</h2>
 <p>1편에서 완전 자동 파이프라인을 설계했다. API가 작업을 큐에 넣고, 워커가 AI로 영상을 만들고, 그 현황을 대시보드가 관제한다. 그런데 그 대시보드를 덜어냈다. 풀 자동화의 한 축 — <em>무인 운영을 지켜보는 눈</em> — 이 사라진 것이다.</p>
 <p>여기서 더 근본적인 질문이 따라왔다. 완전 자동화란 결국 <em>사람이 손대지 않아도 영상이 찍혀 나오는 것</em>인데, 그러려면 AI를 <strong>종량제 API</strong>로 쉴 새 없이 호출해야 한다. 1인이 하루에 만드는 영상은 고작 몇 편이다. 이 규모에, 종량제 호출과 그것을 떠받치는 인프라(키 관리·쿼터·재시도·비용 추적)를 <em>무인으로</em> 굴릴 가치가 있는가?</p>
 <p>무인 운영은 생각보다 무겁다. 사람이 보지 않는 동안 호출이 실패하면 재시도해야 하고, 비용이 튀면 알아서 멈춰야 하고, 결과가 어긋나면 무언가 잡아내야 한다. 그 '무언가'를 코드로 대신 세우는 게 풀자동의 본질인데, 그 코드 자체가 또 내가 짜고 유지할 몫이다. <em>자동화를 자동화하는 비용</em>인 셈이다.</p>
@@ -151,7 +150,7 @@
 <a class="seriesnav-item seriesnav-next" href="/posts/solo-fullstack-v3-hitl/"><span class="seriesnav-label">다음 글 →</span><span class="seriesnav-title">AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리</span></a>
 </div>
 </nav>
-<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/solo-fullstack-v1-stack/"><span class="pn-label">← 이전 글</span><span class="pn-title">풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편)</span></a><a class="pn-item pn-next" href="/posts/connection-pool-exhaustion/"><span class="pn-label">다음 글 →</span><span class="pn-title">사용자에겐 실패, 서버에선 성공이던 결제 — 커넥션 풀 고갈 추적</span></a></nav>
+
 <section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/solo-fullstack-v3-hitl/">AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리</a><a class="rel-card" href="/posts/solo-fullstack-v1-stack/">풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편)</a><a class="rel-card" href="/posts/ai-shorts-pipeline-v3-diversification/">상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편)</a></section>
 <section class="comments">
 <script src="https://giscus.app/client.js"

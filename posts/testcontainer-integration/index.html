@@ -60,7 +60,6 @@
   <span class="read-time">6분 읽기</span>
 </div>
 </div>
-<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">문제: 테스트가 운영 데이터를 오염시켰다</a></li><li class="toc-h2"><a href="#db">접근: 각 테스트에 일회용 DB를</a></li><li class="toc-h2"><a href="#restarted-vs-shared">구현: 격리를 어디까지 — Restarted vs Shared</a></li><li class="toc-h2"><a href="#_2">결과</a></li><li class="toc-h2"><a href="#_3">학습</a></li></ul></nav>
 <h1 id="db-db-testcontainers">테스트가 운영 DB를 오염시켰다 — 공용 DB를 버리고 Testcontainers 격리로</h1>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
 <li><strong>다루는 문제</strong>: 공용 DB로 통합 테스트를 돌리다, 테스트 데이터가 운영으로 새어 들어갔다.</li>
@@ -68,7 +67,7 @@
 <li><strong>결과·학습</strong>: 테스트를 운영에서 떼어냈다. 완전 격리(Restarted)와 속도(Shared)의 트레이드오프에서 Shared를 택하되, 그 함정을 코드로 확인하고 들어갔다.</li>
 <li><strong>도움 되는 독자</strong>: 통합 테스트의 DB 격리·멱등성을 고민하는 백엔드 개발자.</li>
 </ul></div></aside>
-<h2 id="_1">문제: 테스트가 운영 데이터를 오염시켰다</h2>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">문제: 테스트가 운영 데이터를 오염시켰다</a></li><li class="toc-h2"><a href="#db">접근: 각 테스트에 일회용 DB를</a></li><li class="toc-h2"><a href="#restarted-vs-shared">구현: 격리를 어디까지 — Restarted vs Shared</a></li><li class="toc-h2"><a href="#_2">결과</a></li><li class="toc-h2"><a href="#_3">학습</a></li></ul></nav><h2 id="_1">문제: 테스트가 운영 데이터를 오염시켰다</h2>
 <p>통합 테스트를 공용 개발 DB에 직접 붙여 돌리고 있었다. 공용 DB는 통합 테스트의 흔한 출발점이다. 운영과 같은 DB 엔진을 쓰니 별도 환경을 꾸릴 필요가 없기 때문이다. 테스트는 실제 테이블에 데이터를 넣고 조회했고, 그 데이터는 테스트가 끝나도 DB에 남았다.</p>
 <p>문제는 이 개발 DB의 데이터를 운영으로 옮길 때 드러났다. 마스터(기준정보) 테이블처럼 개발에서 정비한 데이터를 운영에 이관하는 작업이 있었는데, 그때 테스트가 쌓아둔 데이터가 함께 딸려 들어갔다. 운영 데이터 속에 정체불명의 테스트 레코드가 섞이는 것이다. 데이터의 신뢰성이 걸린 문제였다.</p>
 <p>근본 원인은 격리의 부재였다. 테스트는 독립적이고 반복 가능해야 한다. 그러나 공용 DB를 공유하는 한 실행할 때마다 환경에 흔적이 남았다. 격리가 없으면 테스트는 자기 자신뿐 아니라 그 DB를 쓰는 모든 것에 영향을 준다.</p>

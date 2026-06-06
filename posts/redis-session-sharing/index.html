@@ -60,7 +60,6 @@
   <span class="read-time">6분 읽기</span>
 </div>
 </div>
-<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">문제: 이중화했더니 로그인이 풀린다</a></li><li class="toc-h2"><a href="#_2">접근: 세션 복제 대 중앙 세션</a></li><li class="toc-h2"><a href="#_3">구현: 세션 분리와 중복 로그인 로직의 분산화</a></li><li class="toc-h2"><a href="#_4">결과</a></li><li class="toc-h2"><a href="#_5">학습</a></li></ul></nav>
 <h1 id="redis">이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로</h1>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
 <li><strong>다루는 문제</strong>: 단일 서버를 이중화하자, 사용자가 서버를 오갈 때마다 로그인이 풀렸다.</li>
@@ -68,7 +67,7 @@
 <li><strong>결과·학습</strong>: 세션 공유로 진짜 이중화를 완성하고 무중단 배포까지 얻었다. 이중화의 본질이 서버 대수가 아니라 상태 공유임을 확인했다.</li>
 <li><strong>도움 되는 독자</strong>: 스케일아웃·이중화 과정에서 세션과 상태 공유를 설계해야 하는 백엔드 개발자.</li>
 </ul></div></aside>
-<h2 id="_1">문제: 이중화했더니 로그인이 풀린다</h2>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">문제: 이중화했더니 로그인이 풀린다</a></li><li class="toc-h2"><a href="#_2">접근: 세션 복제 대 중앙 세션</a></li><li class="toc-h2"><a href="#_3">구현: 세션 분리와 중복 로그인 로직의 분산화</a></li><li class="toc-h2"><a href="#_4">결과</a></li><li class="toc-h2"><a href="#_5">학습</a></li></ul></nav><h2 id="_1">문제: 이중화했더니 로그인이 풀린다</h2>
 <p>고가용성이 요구되는 공공 시스템을 운영하면서 이중화가 되어 있지 않은 구조를 마주했다. 정확히는 웹 서버와 WAS(웹 애플리케이션 서버)가 1:1로 고정돼 있었다. 1번 웹은 1번 WAS로만, 2번 웹은 2번 WAS로만 요청을 보냈다. 서버가 두 벌이라 이중화처럼 보였지만, 실제로는 독립된 두 수직 라인일 뿐이었다. 한 라인이 죽으면 그쪽 사용자는 그대로 영향을 받았고, 배포할 때도 무중단이 불가능했다. 새 버전을 올리려면 WAS를 내려야 했고, 그 라인에 붙은 사용자는 배포가 끝날 때까지 서비스가 끊겼다.</p>
 <p>진짜 이중화를 위해 웹 서버가 양쪽 WAS로 교차 라우팅하도록 구성을 바꿨다. 1번 웹의 요청도 2번 WAS로 갈 수 있게 했다. 그러자 곧바로 증상이 보고됐다. <strong>사용자가 서버를 오갈 때마다 로그인이 풀린다</strong>는 것이었다.</p>
 <p>원인은 세션이었다. 세션은 각 WAS의 로컬 메모리에 저장돼 있었다. 1번 WAS에서 로그인한 사용자가 다음 요청에서 2번 WAS로 라우팅되면, 그쪽에는 세션이 없으니 로그인하지 않은 사용자로 취급됐다. 로컬 세션을 전제로 짠 구조가 교차 라우팅이라는 새 전제와 충돌한 것이다.</p>

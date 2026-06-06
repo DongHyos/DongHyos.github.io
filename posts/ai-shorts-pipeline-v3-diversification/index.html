@@ -60,7 +60,6 @@
   <span class="read-time">7분 읽기</span>
 </div>
 </div>
-<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#1">1. 문제 정의</a></li><li class="toc-h2"><a href="#2">2. 접근</a></li><li class="toc-h3"><a href="#_1">주제 선정 — 시장조사와 감</a></li><li class="toc-h3"><a href="#_2">형식의 발견 — 상세함의 함정</a></li><li class="toc-h3"><a href="#13">자동화 문제 — 형식을 13주제로 복제</a></li><li class="toc-h2"><a href="#3-promptdiversifier">3. 구현 — PromptDiversifier</a></li><li class="toc-h3"><a href="#1_1">(1) 보존/변형 계약</a></li><li class="toc-h3"><a href="#2_1">(2) 검증 게이트</a></li><li class="toc-h3"><a href="#3-fallback">(3) 다층 fallback</a></li><li class="toc-h2"><a href="#4">4. 결과</a></li><li class="toc-h2"><a href="#5">5. 학습</a></li></ul></nav>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
 <li><strong>다루는 문제</strong>: 단일 주제(PC 부품 청소) 파이프라인을 13개 주제로 확장하면서, 주제마다 긴 프롬프트를 손으로 다시 쓰지 않고 자동 복제하는 문제</li>
 <li><strong>접근</strong>: "모델이 잘 이해하는 프롬프트 형식"을 먼저 찾아 고정하고, 그 형식을 보존하며 주제 어휘만 LLM이 바꾸게 하는 PromptDiversifier 설계 — 보존 계약 + 검증 게이트 + fallback</li>
@@ -69,7 +68,7 @@
 </ul></div></aside>
 <h1 id="ai-3">상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편)</h1>
 <p><a href="/posts/ai-shorts-pipeline-v1-architecture/">1편</a>에서 AI 숏폼 자동화 파이프라인을 구축했고, <a href="/posts/ai-shorts-pipeline-v2-iteration/">2편</a>에서 영상 길이를 늘리려다 <em>AI 영상 모델은 시간 순서를 모른다</em>는 벽을 만났다. 이 글은 마지막으로 남은 가설 — <em>주제를 다양화하면 조회수가 오른다</em> — 를 자동화한 기록이자, 숏폼 시리즈를 닫는 글이다.</p>
-<h2 id="1">1. 문제 정의</h2>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#1">1. 문제 정의</a></li><li class="toc-h2"><a href="#2">2. 접근</a></li><li class="toc-h3"><a href="#_1">주제 선정 — 시장조사와 감</a></li><li class="toc-h3"><a href="#_2">형식의 발견 — 상세함의 함정</a></li><li class="toc-h3"><a href="#13">자동화 문제 — 형식을 13주제로 복제</a></li><li class="toc-h2"><a href="#3-promptdiversifier">3. 구현 — PromptDiversifier</a></li><li class="toc-h3"><a href="#1_1">(1) 보존/변형 계약</a></li><li class="toc-h3"><a href="#2_1">(2) 검증 게이트</a></li><li class="toc-h3"><a href="#3-fallback">(3) 다층 fallback</a></li><li class="toc-h2"><a href="#4">4. 결과</a></li><li class="toc-h2"><a href="#5">5. 학습</a></li></ul></nav><h2 id="1">1. 문제 정의</h2>
 <p>2편 끝에서 두 개의 벽을 만났다. AI 영상 모델의 한계, 그리고 대량 업로드 뒤 노출이 떨어지는 알고리즘 함정. 조회수를 끌어올릴 카드로 <em>주제 다양성</em> 하나가 남아 있었다.</p>
 <p>솔직히 고백하면, 당시 나는 <em>알고리즘 벽을 뚫고 파이프라인을 고도화하고 싶었지만 무엇을 해야 할지 명확하지 않았다.</em> 그래서 일단 손에 잡히는 것 — 주제를 늘리는 것 — 부터 했다. 지금 보면 이건 문제의 본질을 비껴간 선택이었고, 5장에서 다시 짚는다.</p>
 <p>기술적 문제는 분명했다. PC 부품 청소 하나로 검증한 프롬프트 템플릿을, 유리 절단·보석·행성 단면 같은 <em>전혀 다른 주제</em>로 어떻게 옮길 것인가. 주제마다 1,000자가 넘는 프롬프트를 손으로 다시 쓰면 자동화의 의미가 사라진다.</p>
@@ -147,7 +146,7 @@ Keep a similar length and the same language as the input.
 <span class="seriesnav-item seriesnav-empty"></span>
 </div>
 </nav>
-<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/ai-shorts-pipeline-v2-iteration/"><span class="pn-label">← 이전 글</span><span class="pn-title">AI 영상은 시간 순서를 모른다 — Veo 3.1 Extension 실험 회고 (2편)</span></a><a class="pn-item pn-next" href="/posts/solo-fullstack-v1-stack/"><span class="pn-label">다음 글 →</span><span class="pn-title">풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편)</span></a></nav>
+
 <section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/solo-fullstack-v3-hitl/">AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리</a><a class="rel-card" href="/posts/solo-fullstack-v2-buildvsbuy/">자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)</a><a class="rel-card" href="/posts/solo-fullstack-v1-stack/">풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편)</a></section>
 <section class="comments">
 <script src="https://giscus.app/client.js"
