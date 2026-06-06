@@ -264,13 +264,13 @@ pre.mermaid {
 .series-card-large p { font-size: 13px; color: var(--muted); margin: 0; }
 
 .post-backlink {
-  max-width: 720px; margin: 0 auto; padding: 32px 24px 0;
+  padding: 32px 0 0;
 }
 .post-backlink a { font-size: 14px; color: var(--muted); }
 .post-backlink a:hover { color: var(--accent); }
 
 .series-nav {
-  max-width: 720px; margin: 0 auto; padding: 32px 24px 0;
+  padding: 32px 0 0;
 }
 .seriesnav-head {
   font-size: 13px; color: var(--muted); margin-bottom: 12px;
