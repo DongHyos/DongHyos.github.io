@@ -15,6 +15,13 @@
     <description>공용 DB로 통합 테스트를 돌리다, 테스트 데이터가 운영으로 새어 들어갔다.</description>
   </item>
   <item>
+    <title>AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리</title>
+    <link>https://donghyos.github.io/posts/solo-fullstack-v3-hitl/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/solo-fullstack-v3-hitl/</guid>
+    <pubDate>Fri, 05 Jun 2026 15:00:00 GMT</pubDate>
+    <description>AI 이미지 생성으로 내러티브 영상 시리즈를 만들 때, 같은 인물이 편마다·컷마다 다른 얼굴로 나오는 캐릭터 일관성 붕괴</description>
+  </item>
+  <item>
     <title>이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로</title>
     <link>https://donghyos.github.io/posts/redis-session-sharing/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/redis-session-sharing/</guid>
