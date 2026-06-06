@@ -6,7 +6,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Wed, 03 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Fri, 05 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>테스트가 운영 DB를 오염시켰다 — 공용 DB를 버리고 Testcontainers 격리로</title>
+    <link>https://donghyos.github.io/posts/testcontainer-integration/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/testcontainer-integration/</guid>
+    <pubDate>Fri, 05 Jun 2026 15:00:00 GMT</pubDate>
+    <description>공용 DB로 통합 테스트를 돌리다, 테스트 데이터가 운영으로 새어 들어갔다.</description>
+  </item>
   <item>
     <title>이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로</title>
     <link>https://donghyos.github.io/posts/redis-session-sharing/</link>
