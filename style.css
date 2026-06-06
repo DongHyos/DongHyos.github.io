@@ -294,7 +294,7 @@ a.seriesnav-item:hover .seriesnav-title { color: var(--accent); }
 }
 
 .comments {
-  max-width: 720px; margin: 0 auto; padding: 0 24px 40px;
+  padding: 0 0 40px;
 }
 .comments::before {
   content: "댓글"; display: block; font-size: 13px; text-transform: uppercase;
