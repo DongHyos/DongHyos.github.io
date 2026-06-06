@@ -36,6 +36,13 @@
   });
   backdrop.addEventListener('click', closeSearch);
   document.getElementById('search-toggle')?.addEventListener('click', openSearch);
+  document.querySelectorAll('.tag-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      openSearch();
+      input.value = chip.dataset.tag || '';
+      input.dispatchEvent(new Event('input'));
+    });
+  });
 
   function escapeHtml(s) {
     return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

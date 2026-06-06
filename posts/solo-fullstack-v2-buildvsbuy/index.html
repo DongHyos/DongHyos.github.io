@@ -21,6 +21,7 @@
 <meta name="twitter:description" content="1인 개발자가 직접 만든 완전 자동 파이프라인(종량제 API + 인프라)을 계속 운영할 가치가 있는가">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)", "description": "1인 개발자가 직접 만든 완전 자동 파이프라인(종량제 API + 인프라)을 계속 운영할 가치가 있는가", "datePublished": "2026-06-02", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/solo-fullstack-v2-buildvsbuy/", "mainEntityOfPage": "https://donghyos.github.io/posts/solo-fullstack-v2-buildvsbuy/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -56,8 +57,10 @@
   <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
   <a href="/series/solo-fullstack/" class="series-link">시리즈: solo-fullstack</a>
   <time>2026-06-02</time>
+  <span class="read-time">5분 읽기</span>
 </div>
 </div>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#1">1. 문제 정의 — 파이프라인은 필요한가</a></li><li class="toc-h2"><a href="#2-vs">2. 접근 — 종량제 풀자동 vs 구독제 반자동</a></li><li class="toc-h2"><a href="#3">3. 결정 — 반자동 + 구독제, 그리고 예상 못 한 보상</a></li><li class="toc-h2"><a href="#4-vs">4. 결과 — 빌드 vs 바이는 규모의 함수다</a></li><li class="toc-h2"><a href="#5">5. 학습</a></li></ul></nav>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
 <li><strong>다루는 문제</strong>: 1인 개발자가 직접 만든 완전 자동 파이프라인(종량제 API + 인프라)을 계속 운영할 가치가 있는가</li>
 <li><strong>접근</strong>: 대시보드를 덜어낸 뒤 완전 자동화의 전제를 재검토 — 종량제 풀자동과 구독제 반자동을 비용·품질로 저울질</li>
@@ -148,6 +151,8 @@
 <a class="seriesnav-item seriesnav-next" href="/posts/solo-fullstack-v3-hitl/"><span class="seriesnav-label">다음 글 →</span><span class="seriesnav-title">AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리</span></a>
 </div>
 </nav>
+<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/solo-fullstack-v1-stack/"><span class="pn-label">← 이전 글</span><span class="pn-title">풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편)</span></a><a class="pn-item pn-next" href="/posts/connection-pool-exhaustion/"><span class="pn-label">다음 글 →</span><span class="pn-title">사용자에겐 실패, 서버에선 성공이던 결제 — 커넥션 풀 고갈 추적</span></a></nav>
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/solo-fullstack-v3-hitl/">AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리</a><a class="rel-card" href="/posts/solo-fullstack-v1-stack/">풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편)</a><a class="rel-card" href="/posts/ai-shorts-pipeline-v3-diversification/">상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편)</a></section>
 <section class="comments">
 <script src="https://giscus.app/client.js"
   data-repo="DongHyos/DongHyos.github.io"

@@ -21,6 +21,7 @@
 <meta name="twitter:description" content="AI 이미지 생성으로 내러티브 영상 시리즈를 만들 때, 같은 인물이 편마다·컷마다 다른 얼굴로 나오는 캐릭터 일관성 붕괴">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리", "description": "AI 이미지 생성으로 내러티브 영상 시리즈를 만들 때, 같은 인물이 편마다·컷마다 다른 얼굴로 나오는 캐릭터 일관성 붕괴", "datePublished": "2026-06-06", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/solo-fullstack-v3-hitl/", "mainEntityOfPage": "https://donghyos.github.io/posts/solo-fullstack-v3-hitl/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -56,8 +57,10 @@
   <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
   <a href="/series/solo-fullstack/" class="series-link">시리즈: solo-fullstack</a>
   <time>2026-06-06</time>
+  <span class="read-time">7분 읽기</span>
 </div>
 </div>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">문제 — 자동화가 깨뜨린 단 하나, 캐릭터의 얼굴</a></li><li class="toc-h2"><a href="#_2">접근 — 전부 자동이 아니라, 약한 곳에만 사람을 남긴다</a></li><li class="toc-h2"><a href="#_3">구현 — 얼굴은 고정하고, 어떤 얼굴인지는 사람이 정한다</a></li><li class="toc-h2"><a href="#_4">결과</a></li><li class="toc-h2"><a href="#_5">학습</a></li></ul></nav>
 <h1 id="ai">AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리</h1>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
 <li><strong>다루는 문제</strong>: AI 이미지 생성으로 내러티브 영상 시리즈를 만들 때, 같은 인물이 편마다·컷마다 다른 얼굴로 나오는 캐릭터 일관성 붕괴</li>
@@ -145,6 +148,8 @@ image = client.generate_image(prompt, elements=elements)
 <span class="seriesnav-item seriesnav-empty"></span>
 </div>
 </nav>
+<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/redis-session-sharing/"><span class="pn-label">← 이전 글</span><span class="pn-title">이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로</span></a><a class="pn-item pn-next" href="/posts/testcontainer-integration/"><span class="pn-label">다음 글 →</span><span class="pn-title">테스트가 운영 DB를 오염시켰다 — 공용 DB를 버리고 Testcontainers 격리로</span></a></nav>
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/solo-fullstack-v2-buildvsbuy/">자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)</a><a class="rel-card" href="/posts/solo-fullstack-v1-stack/">풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편)</a><a class="rel-card" href="/posts/ai-shorts-pipeline-v3-diversification/">상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편)</a></section>
 <section class="comments">
 <script src="https://giscus.app/client.js"
   data-repo="DongHyos/DongHyos.github.io"

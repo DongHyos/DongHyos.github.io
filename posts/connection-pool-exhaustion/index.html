@@ -21,6 +21,7 @@
 <meta name="twitter:description" content="결제가 간헐적으로 15분씩 지연됐다. 더 까다로운 건 지연 자체가 아니라, *사용자 화면엔 &quot;결제 실패&quot;가 뜨는데 백엔드에선 그 결제가 뒤늦게 성공*하는 상태 불일치였다. 모니터링이 전무한 환경에서 원인을 추적했다.">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "사용자에겐 실패, 서버에선 성공이던 결제 — 커넥션 풀 고갈 추적", "description": "결제가 간헐적으로 15분씩 지연됐다. 더 까다로운 건 지연 자체가 아니라, *사용자 화면엔 \"결제 실패\"가 뜨는데 백엔드에선 그 결제가 뒤늦게 성공*하는 상태 불일치였다. 모니터링이 전무한 환경에서 원인을 추적했다.", "datePublished": "2026-06-03", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/connection-pool-exhaustion/", "mainEntityOfPage": "https://donghyos.github.io/posts/connection-pool-exhaustion/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -56,8 +57,10 @@
   <a href="/categories/work/" class="cat-link">실무 경험</a>
   
   <time>2026-06-03</time>
+  <span class="read-time">6분 읽기</span>
 </div>
 </div>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#1">1. 문제 — 실패인데 성공이던 결제</a></li><li class="toc-h2"><a href="#2">2. 접근 — 코드에 답이 없을 때</a></li><li class="toc-h2"><a href="#3">3. 구현 — 좀비 커넥션과 기본값의 함정</a></li><li class="toc-h2"><a href="#4">4. 결과</a></li><li class="toc-h2"><a href="#5">5. 학습</a></li></ul></nav>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
 <li><strong>다루는 문제</strong>: 결제가 간헐적으로 15분씩 지연됐다. 더 까다로운 건 지연 자체가 아니라, <em>사용자 화면엔 "결제 실패"가 뜨는데 백엔드에선 그 결제가 뒤늦게 성공</em>하는 상태 불일치였다. 모니터링이 전무한 환경에서 원인을 추적했다.</li>
 <li><strong>접근</strong>: 코드에서 답을 찾지 못하자 자원(커넥션) 레이어로 시선을 옮겼고 관측 도구가 없어 요청·응답을 매핑하는 추적 로깅과 대시보드를 직접 만들어 풀 상태를 가시화했다.</li>
@@ -116,6 +119,8 @@ spring.datasource.dbcp2.remove-abandoned-on-borrow=false # 기본값: 좀비 커
 </article>
 <div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
 
+<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/solo-fullstack-v2-buildvsbuy/"><span class="pn-label">← 이전 글</span><span class="pn-title">자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)</span></a><a class="pn-item pn-next" href="/posts/redis-session-sharing/"><span class="pn-label">다음 글 →</span><span class="pn-title">이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로</span></a></nav>
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/testcontainer-integration/">테스트가 운영 DB를 오염시켰다 — 공용 DB를 버리고 Testcontainers 격리로</a><a class="rel-card" href="/posts/redis-session-sharing/">이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로</a></section>
 <section class="comments">
 <script src="https://giscus.app/client.js"
   data-repo="DongHyos/DongHyos.github.io"

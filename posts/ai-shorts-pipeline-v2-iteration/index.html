@@ -21,6 +21,7 @@
 <meta name="twitter:description" content="1편 파이프라인의 조회수를 올리려 영상 길이·품질·주제를 개선하다 만난 AI 영상 모델의 근본 한계">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "AI 영상은 시간 순서를 모른다 — Veo 3.1 Extension 실험 회고 (2편)", "description": "1편 파이프라인의 조회수를 올리려 영상 길이·품질·주제를 개선하다 만난 AI 영상 모델의 근본 한계", "datePublished": "2026-05-29", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/", "mainEntityOfPage": "https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -56,8 +57,10 @@
   <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
   <a href="/series/ai-shorts-pipeline/" class="series-link">시리즈: ai-shorts-pipeline</a>
   <time>2026-05-29</time>
+  <span class="read-time">6분 읽기</span>
 </div>
 </div>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#1">1. 문제 정의</a></li><li class="toc-h2"><a href="#2">2. 접근</a></li><li class="toc-h3"><a href="#15">길이 가설 — 왜 15초인가</a></li><li class="toc-h3"><a href="#_1">가설 — 시간축 서사 프롬프트</a></li><li class="toc-h3"><a href="#bmad">검증 — BMAD 실험 게이트</a></li><li class="toc-h3"><a href="#mcp">주제 다양화 — MCP 시장조사</a></li><li class="toc-h2"><a href="#3">3. 구현·실험</a></li><li class="toc-h3"><a href="#005">실험 결과 — 0.0/5</a></li><li class="toc-h3"><a href="#_2">피벗</a></li><li class="toc-h2"><a href="#4">4. 결과</a></li><li class="toc-h2"><a href="#5">5. 학습</a></li></ul></nav>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
 <li><strong>다루는 문제</strong>: 1편 파이프라인의 조회수를 올리려 영상 길이·품질·주제를 개선하다 만난 AI 영상 모델의 근본 한계</li>
 <li><strong>접근</strong>: Veo 3.1 Extension API로 8→15초 확장 + 5단계 시간축 서사 프롬프트. BMAD 실험 게이트로 정량 검증</li>
@@ -157,6 +160,8 @@
 <a class="seriesnav-item seriesnav-next" href="/posts/ai-shorts-pipeline-v3-diversification/"><span class="seriesnav-label">다음 글 →</span><span class="seriesnav-title">상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편)</span></a>
 </div>
 </nav>
+<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/ai-shorts-pipeline-v1-architecture/"><span class="pn-label">← 이전 글</span><span class="pn-title">AI 숏폼 자동화 파이프라인 v1 — 4단계 아키텍처와 프롬프트 변수화 (1편)</span></a><a class="pn-item pn-next" href="/posts/ai-shorts-pipeline-v3-diversification/"><span class="pn-label">다음 글 →</span><span class="pn-title">상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편)</span></a></nav>
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/solo-fullstack-v3-hitl/">AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리</a><a class="rel-card" href="/posts/solo-fullstack-v2-buildvsbuy/">자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)</a><a class="rel-card" href="/posts/solo-fullstack-v1-stack/">풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편)</a></section>
 <section class="comments">
 <script src="https://giscus.app/client.js"
   data-repo="DongHyos/DongHyos.github.io"

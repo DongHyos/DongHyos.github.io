@@ -21,6 +21,7 @@
 <meta name="twitter:description" content="1인 개발자가 AI 영상 제작을 자동화하는 플랫폼을 만들 때, 어떤 기술을 고르고 *무엇을 만들지 않을지* 판단하는 문제">
 <meta property="og:image" content="https://donghyos.github.io/images/solo-fullstack-v1-stack/dashboard.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/solo-fullstack-v1-stack/dashboard.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "풀스택으로 시작해 대시보드를 덜어냈다 — 1인 AI 영상 플랫폼의 기술 선택 (1편)", "description": "1인 개발자가 AI 영상 제작을 자동화하는 플랫폼을 만들 때, 어떤 기술을 고르고 *무엇을 만들지 않을지* 판단하는 문제", "datePublished": "2026-05-31", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/solo-fullstack-v1-stack/", "mainEntityOfPage": "https://donghyos.github.io/posts/solo-fullstack-v1-stack/", "image": "https://donghyos.github.io/images/solo-fullstack-v1-stack/dashboard.png"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -56,8 +57,10 @@
   <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
   <a href="/series/solo-fullstack/" class="series-link">시리즈: solo-fullstack</a>
   <time>2026-05-31</time>
+  <span class="read-time">6분 읽기</span>
 </div>
 </div>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#1">1. 문제 정의</a></li><li class="toc-h2"><a href="#2">2. 접근 — 익숙한 기술이 곧 지속가능성</a></li><li class="toc-h3"><a href="#_1">스택 선택 원칙</a></li><li class="toc-h3"><a href="#_2">역할로 언어를 가른다</a></li><li class="toc-h3"><a href="#_3">여기에 욕심을 더했다</a></li><li class="toc-h2"><a href="#3">3. 구현 — 모노레포와 큐 경계</a></li><li class="toc-h2"><a href="#4">4. 결과 — 점선을 지웠다</a></li><li class="toc-h2"><a href="#5">5. 학습</a></li></ul></nav>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
 <li><strong>다루는 문제</strong>: 1인 개발자가 AI 영상 제작을 자동화하는 플랫폼을 만들 때, 어떤 기술을 고르고 <em>무엇을 만들지 않을지</em> 판단하는 문제</li>
 <li><strong>접근</strong>: 익숙한 기술(주력 Java/Spring 백엔드 + AI 통신용 Python 워커)로 롱런 가능한 스택을 짜고, 프론트 대시보드·실시간 이벤트로 '관제탑'까지 시도</li>
@@ -127,6 +130,8 @@
 <a class="seriesnav-item seriesnav-next" href="/posts/solo-fullstack-v2-buildvsbuy/"><span class="seriesnav-label">다음 글 →</span><span class="seriesnav-title">자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)</span></a>
 </div>
 </nav>
+<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/ai-shorts-pipeline-v3-diversification/"><span class="pn-label">← 이전 글</span><span class="pn-title">상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편)</span></a><a class="pn-item pn-next" href="/posts/solo-fullstack-v2-buildvsbuy/"><span class="pn-label">다음 글 →</span><span class="pn-title">자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)</span></a></nav>
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/solo-fullstack-v3-hitl/">AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리</a><a class="rel-card" href="/posts/solo-fullstack-v2-buildvsbuy/">자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)</a><a class="rel-card" href="/posts/ai-shorts-pipeline-v3-diversification/">상세한 프롬프트가 답은 아니었다 — AI 영상 주제 다양화 자동화 회고 (3편)</a></section>
 <section class="comments">
 <script src="https://giscus.app/client.js"
   data-repo="DongHyos/DongHyos.github.io"
