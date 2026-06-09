@@ -95,10 +95,10 @@ class KlingDirectClient(BaseVideoClient): ...  # 구현체 2
     end
     ABS -. "통째로 버려짐" .-> X["✕ API 직접 호출로 대체"]
     CONC == "거의 무수정 재사용" ==> O["✓ fork"]
-    style ABS fill:#ffe0e0
-    style CONC fill:#e0ffe0
-    style X fill:#ffe0e0
-    style O fill:#e0ffe0
+    style ABS fill:#ffe0e0,stroke:#d98a8a,color:#1a1a1a
+    style CONC fill:#e0ffe0,stroke:#8ab98a,color:#1a1a1a
+    style X fill:#ffe0e0,stroke:#d98a8a,color:#1a1a1a
+    style O fill:#e0ffe0,stroke:#8ab98a,color:#1a1a1a
 </pre>
 <p>개념이 아니라 실제 디렉토리로 보면, 경계는 이렇게 남았다. 첫 제품의 <code>core/</code> 추상화 계층은 두 번째 제품에 <em>존재하지 않는다</em>.</p>
 <pre><code class="language-text"># 첫 제품 (bible-video) — 추상화 계층 보유
