@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>요청이 조용히 사라질 때 — 침묵하는 외부 장애를 지난주와 비교해 감지하기 — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/request-drop-alarm/">
+<meta name="description" content="외부 의존 API가 에러가 아니라 *요청량 급감*으로 조용히 실패할 때 어떻게 감지하나">
+<meta property="og:title" content="요청이 조용히 사라질 때 — 침묵하는 외부 장애를 지난주와 비교해 감지하기 — donghyos">
+<meta property="og:description" content="외부 의존 API가 에러가 아니라 *요청량 급감*으로 조용히 실패할 때 어떻게 감지하나">
+<meta property="og:url" content="https://donghyos.github.io/posts/request-drop-alarm/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="요청이 조용히 사라질 때 — 침묵하는 외부 장애를 지난주와 비교해 감지하기 — donghyos">
+<meta name="twitter:description" content="외부 의존 API가 에러가 아니라 *요청량 급감*으로 조용히 실패할 때 어떻게 감지하나">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "요청이 조용히 사라질 때 — 침묵하는 외부 장애를 지난주와 비교해 감지하기", "description": "외부 의존 API가 에러가 아니라 *요청량 급감*으로 조용히 실패할 때 어떻게 감지하나", "datePublished": "2026-06-11", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/request-drop-alarm/", "mainEntityOfPage": "https://donghyos.github.io/posts/request-drop-alarm/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/work/" class="cat-link">실무 경험</a>
+  
+  <time>2026-06-11</time>
+  <span class="read-time">6분 읽기</span>
+</div>
+</div>
+<h1 id="_1">요청이 조용히 사라질 때 — 침묵하는 외부 장애를 지난주와 비교해 감지하기</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 외부 의존 API가 에러가 아니라 <em>요청량 급감</em>으로 조용히 실패할 때 어떻게 감지하나</li>
+<li><strong>접근</strong>: 절대 임계 대신 <em>지난주 같은 시간대 대비</em> 요청량 비교로 조기 경보</li>
+<li><strong>결과·학습</strong>: 임계치를 20%→40%로 조율(공휴일 오탐)해 정착시키고, 알람이 실제 요청 급감을 잡았다. 침묵 실패엔 상대 비교가 맞되 달력 효과는 임계치로 타협</li>
+<li><strong>도움 되는 독자</strong>: 외부 의존 서비스의 관측성·알람을 설계하는 백엔드·SRE</li>
+</ul></div></aside>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_2">에러가 아니라 '없음'으로 오는 장애</a></li><li class="toc-h2"><a href="#_3">접근: 절대 임계가 아니라 '지난주의 나'와 비교</a></li><li class="toc-h2"><a href="#_4">구현: 주간 비교 모니터</a></li><li class="toc-h2"><a href="#_5">시행착오: 공휴일이 알람을 울렸다</a></li><li class="toc-h2"><a href="#_6">결과와 학습</a></li></ul></nav><h2 id="_2">에러가 아니라 '없음'으로 오는 장애</h2>
+<p>외부 서비스에 깊게 의존하는 백엔드를 운영하다 보면, 외부 API가 <em>에러 없이</em> 죽는 순간을 만난다. 호출이 실패하거나 응답이 비기 시작하면, 우리 쪽 지표에서는 에러가 치솟기보다 <strong>요청량이 슬그머니 줄어드는</strong> 모습으로 먼저 나타난다. 사용자가 시도하다 빈 결과를 받고 포기하면, 그만큼 다음 호출도 일어나지 않기 때문이다.</p>
+<p>이런 침묵 실패가 위험한 까닭은 <em>눈에 띄지 않는다</em>는 데 있다. 무언가가 늘어나는 것 — 에러 수, 지연 시간, CPU — 은 알람으로 쉽게 잡지만, 무언가가 <em>없어지는</em> 것은 대시보드를 들여다보지 않으면 놓친다. 그래서 이런 장애는 종종 모니터링이 아니라 고객 문의로 먼저 발견된다. "서비스가 안 돼요"라는 한마디가 우리 대시보드보다 빠른 것이다. 그건 관측성의 패배다.</p>
+<p>나는 외부 의존 서비스를 운영하며 이 문제를 직접 겪었고, 사용자가 알아채기 전에 우리가 먼저 알도록 침묵하는 실패를 깨우는 알람을 만들었다. 핵심 질문은 하나였다 — <em>요청량이 평소보다 비정상적으로 줄었는지를 어떻게 자동으로 판단할 것인가?</em></p>
+<h2 id="_3">접근: 절대 임계가 아니라 '지난주의 나'와 비교</h2>
+<p>요청량에 절대 임계를 걸 수는 없었다. "분당 N건 미만이면 알람" 같은 기준은 트래픽이 요일·시간대마다 출렁이는 서비스에서 곧바로 무너진다. 새벽 3시의 정상 요청량과 낮 2시의 정상 요청량은 자릿수가 다르기 때문이다. 고정된 선 하나로는 둘 다 만족시킬 수 없다.</p>
+<p>그래서 기준선을 <em>지난주 같은 요일, 같은 시간대</em>로 잡았다. 질문을 바꾼 것이다. "지금 요청량이 절대적으로 적은가?"가 아니라 <strong>"지난주 이맘때보다 급감했는가?"</strong>. 트래픽의 주기성(요일·시간 패턴)을 기준선이 알아서 흡수하므로, 나는 <em>평소 대비 이탈</em>만 보면 됐다.</p>
+<p>왜 '어제'가 아니라 '지난주 같은 요일'인가? 트래픽은 하루 주기뿐 아니라 요일 주기도 탄다. 주말과 평일의 곡선이 다르다. 어제와 비교하면 월요일이 일요일과 맞붙어 매주 오탐이 났을 것이다. 한 주를 건너뛰면 요일이 정렬되어 그 왜곡이 사라진다.</p>
+<p>사실 Datadog에는 이런 일을 위한 내장 기능이 있다. <strong>이상 탐지(anomaly detection) 모니터</strong>는 지표의 과거 패턴, 요일·시간 같은 주기성까지 알고리즘이 학습해 예상 밴드를 벗어나면 알람을 울린다. 내가 손으로 짠 '지난주 대비' 비교를 도구가 알아서 해주는 셈이다.</p>
+<p>그럼에도 나는 명시적 규칙을 택했다. 이유는 <em>해석 가능성</em>이다. 이상 탐지는 무엇을 정상으로 보는지 내부가 불투명해서, 알람이 울렸을 때(혹은 울리지 <em>않았을</em> 때) 왜인지 설명하기 어렵다. 반면 "지난주 같은 시간의 60% 미만"은 누구나 즉시 이해하고, 오탐이 나면 어디를 손볼지 바로 안다. 학습된 모델이 주는 편의보다, 한 줄로 설명되는 규칙의 디버깅 가능성이 이 경우엔 더 값졌다. 관리형 기능이 늘 답은 아니다. 무엇이 정상인지 <em>내가 정의할 수 있을 때</em>는, 명시적 규칙이 더 오래간다.</p>
+<h2 id="_4">구현: 주간 비교 모니터</h2>
+<p>구현은 현재 2시간 합산을 지난주 동일 2시간 합산과 비교하는 Datadog 모니터였다. 한 주 전 값은 <code>timeshift</code>(또는 <code>week_before</code>)로 끌어와 비율로 본다.</p>
+<pre><code># 대표 재구성 예제 (실제 사내 쿼리 X · Datadog 공개 문법)
+# 이번 2시간 합 ÷ 지난주 같은 2시간 합 &lt; 0.6  →  40% 이상 급감 → 알람
+sum(last_2h):
+      sum:external_api.requests{feature:search}.as_count()
+    / week_before(sum:external_api.requests{feature:search}.as_count())
+  &lt; 0.6
+</code></pre>
+<pre class="mermaid">graph LR
+    A["이번 2시간<br/>요청량 합"] --> C{"지난주 같은<br/>구간 대비 비율"}
+    B["지난주 동일 구간<br/>(timeshift −1주)"] --> C
+    C -->|"< 0.6 (40%↑ 급감)"| D["🚨 알람"]
+    C -->|"≥ 0.6"| E["정상"]
+    style D fill:#ffe0e0,stroke:#d98a8a,color:#1a1a1a
+    style E fill:#e0ffe0,stroke:#8ab98a,color:#1a1a1a
+</pre>
+<p>두 가지 결정이 더 있었다. 비교 창을 <em>2시간</em>으로 잡은 것은 절충이다. 창이 짧으면(가령 5분) 순간 변동에 출렁여 오탐이 늘고, 길면(가령 하루) 장애를 한참 뒤에야 잡는다. 2시간은 노이즈를 눌러 평탄하게 만들면서도 한두 시간 안에는 알아채는 지점이었다. 또한 알람은 기능별로 따로 걸었다. 기능마다 기준선의 모양도, 정상 변동폭도 다르기 때문이다.</p>
+<h2 id="_5">시행착오: 공휴일이 알람을 울렸다</h2>
+<p>처음 임계치는 <em>지난주 대비 20% 감소</em>로 잡았다. 합리적으로 보였다. 그런데 곧 오탐이 잦아졌다.</p>
+<p>범인은 달력이었다. 공휴일과 연휴에는 트래픽이 자연히 준다. 지난주 같은 요일이 평일이고 이번 주가 공휴일이면, 장애가 아닌데도 요청량이 20%쯤은 가뿐히 빠진다. 기준선이 <em>요일·시간</em>의 주기성은 흡수했지만 <em>불규칙한 달력 효과</em>까지는 흡수하지 못한 것이다.</p>
+<p>선택지는 둘이었다. 공휴일 캘린더를 알람에 통합해 정교하게 보정하거나, 임계치를 둔감하게 올리거나. 나는 후자를 택해 임계치를 <strong>40%로 올렸다.</strong> 민감도를 일부 내주는 대신 신뢰도를 샀다. 알람은 <em>울리면 반드시 확인하는 것</em>일 때만 가치가 있고, 양치기 소년이 된 알람은 꺼둔 알람과 다를 바 없기 때문이다.</p>
+<p>공휴일 캘린더를 통합하는 쪽이 더 '정확'해 보였지만, 그 정확함은 비싸다. 휴일 목록을 계속 관리해야 하고 반차·임시공휴일·선거일처럼 예외도 많다. 한 줄로 끝나는 임계치 상향이 그 모든 유지보수를 대신했다.</p>
+<p>물론 40%에는 대가가 있다. 그보다 작은 급감 — 가령 30% 안팎의 완만한 하락 — 은 이 문턱을 넘지 못한다. 이 알람은 <em>모든</em> 침묵 실패가 아니라 <em>심각한</em> 침묵 실패를 겨냥하도록 범위가 좁아진 셈이다. 나는 그 경계를 받아들였다. 작은 저하까지 잡으려다 매주 울리는 알람보다, 큰 사고를 확실히 잡는 알람이 운영 현실에선 낫다고 봤다.</p>
+<h2 id="_6">결과와 학습</h2>
+<p>임계치를 올린 뒤 오탐은 가라앉았고, 이후 실제 요청 급감이 발생했을 때 알람이 울렸다. 사람이 매번 대시보드를 들여다봐야 겨우 잡혔을 침묵 실패가, 이제 스스로 신호를 보내는 상시 장치가 된 것이다. 외부 의존이 만드는 사각지대 하나가 닫혔다.</p>
+<p>세 가지를 배웠다.</p>
+<p><strong>요청량의 급감은 에러율만큼 중요한 장애 신호다.</strong> 대부분의 알람은 에러 수, 지연 시간, CPU처럼 <em>올라가면 나쁜</em> 지표에 걸려 있다. 그러나 외부 의존이 조용히 죽을 때의 신호는 정반대 방향 — <em>내려가는</em> 정상 트래픽 — 에 있다. 이 방향을 비워 두면 장애의 한 부류 전체가 사각지대로 남는다.</p>
+<p><strong>트래픽성 지표에는 절대 임계보다 상대 비교가 맞다.</strong> 지난주 같은 시간대를 기준선으로 쓰면 요일·시간의 주기성을 공짜로 얻는다. 고정된 숫자 하나를 모든 시간대에 맞추려는 시도보다 훨씬 견고하다.</p>
+<p><strong>그러나 상대 비교도 만능은 아니다.</strong> 주기적인 패턴은 흡수해도 불규칙한 달력 효과는 남는다. 게다가 기준선이 되는 지난주 자체가 비정상일 수도 있다 — 지난주에 장애가 있었다면, 이번 주는 그 낮은 값과 비교돼 멀쩡해 보인다. 여러 주의 중앙값을 기준선으로 쓰면 이 약점이 줄지만, 나는 단순함을 택해 거기까지 가지 않았다. 완벽한 기준선은 없으며, 임계치는 결국 <em>오탐과 누락 사이의 타협</em>으로 실측해 정한다. 20%에서 40%로 올린 그 한 번의 조정이, 이 알람을 '꺼두고 싶은 알람'에서 '믿고 보는 알람'으로 바꿨다.</p>
+<p>결국 이 작업은 코드 몇 줄이 아니라 <em>무엇을 정상으로 볼 것인가</em>를 정의하는 일이었다. 좋은 알람은 영리한 탐지가 아니라, 잘 고른 기준선과 정직한 임계치에서 나온다.</p>
+<div class="page-tags"><button class="tag-chip" data-tag="observability">#observability</button> <button class="tag-chip" data-tag="datadog">#datadog</button> <button class="tag-chip" data-tag="monitoring">#monitoring</button> <button class="tag-chip" data-tag="alerting">#alerting</button> <button class="tag-chip" data-tag="incident">#incident</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+
+<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/testcontainer-integration/"><span class="pn-label">← 이전 글</span><span class="pn-title">테스트가 운영 DB를 오염시켰다 — 공용 DB를 버리고 Testcontainers 격리로</span></a><span></span></nav>
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/testcontainer-integration/">테스트가 운영 DB를 오염시켰다 — 공용 DB를 버리고 Testcontainers 격리로</a><a class="rel-card" href="/posts/redis-session-sharing/">이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로</a><a class="rel-card" href="/posts/connection-pool-exhaustion/">사용자에겐 실패, 서버에선 성공이던 결제 — 커넥션 풀 고갈 추적</a></section>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>

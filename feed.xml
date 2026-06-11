@@ -7,7 +7,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Mon, 08 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Wed, 10 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>요청이 조용히 사라질 때 — 침묵하는 외부 장애를 지난주와 비교해 감지하기</title>
+    <link>https://donghyos.github.io/posts/request-drop-alarm/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/request-drop-alarm/</guid>
+    <pubDate>Wed, 10 Jun 2026 15:00:00 GMT</pubDate>
+    <description>외부 의존 API가 에러가 아니라 *요청량 급감*으로 조용히 실패할 때 어떻게 감지하나</description>
+  </item>
   <item>
     <title>재사용된 것은 내가 추상화하지 않은 쪽이었다 — 두 번째 제품이 드러낸 재사용의 경계</title>
     <link>https://donghyos.github.io/posts/solo-fullstack-v4-reuse/</link>
