@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://donghyos.github.io/</loc><lastmod>2026-06-11</lastmod></url>
-  <url><loc>https://donghyos.github.io/posts/</loc><lastmod>2026-06-11</lastmod></url>
+  <url><loc>https://donghyos.github.io/</loc><lastmod>2026-06-13</lastmod></url>
+  <url><loc>https://donghyos.github.io/posts/</loc><lastmod>2026-06-13</lastmod></url>
   <url><loc>https://donghyos.github.io/about/</loc></url>
+  <url><loc>https://donghyos.github.io/posts/index-two-faces/</loc><lastmod>2026-06-13</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/request-drop-alarm/</loc><lastmod>2026-06-11</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/solo-fullstack-v4-reuse/</loc><lastmod>2026-06-09</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/testcontainer-integration/</loc><lastmod>2026-06-06</lastmod></url>
@@ -14,10 +15,10 @@
   <url><loc>https://donghyos.github.io/posts/ai-shorts-pipeline-v3-diversification/</loc><lastmod>2026-05-30</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/</loc><lastmod>2026-05-29</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/ai-shorts-pipeline-v1-architecture/</loc><lastmod>2026-05-29</lastmod></url>
-  <url><loc>https://donghyos.github.io/categories/</loc><lastmod>2026-06-11</lastmod></url>
+  <url><loc>https://donghyos.github.io/categories/</loc><lastmod>2026-06-13</lastmod></url>
   <url><loc>https://donghyos.github.io/categories/proj/</loc></url>
   <url><loc>https://donghyos.github.io/categories/work/</loc></url>
-  <url><loc>https://donghyos.github.io/series/</loc><lastmod>2026-06-11</lastmod></url>
+  <url><loc>https://donghyos.github.io/series/</loc><lastmod>2026-06-13</lastmod></url>
   <url><loc>https://donghyos.github.io/series/ai-shorts-pipeline/</loc></url>
   <url><loc>https://donghyos.github.io/series/solo-fullstack/</loc></url>
 </urlset>

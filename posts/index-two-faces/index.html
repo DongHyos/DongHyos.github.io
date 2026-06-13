@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>느린 쿼리의 두 얼굴 — 인덱스를 살릴 때와, 인덱스가 독이 될 때 — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/index-two-faces/">
+<meta name="description" content="느린 조회 앞에서 &quot;인덱스부터 추가&quot;라는 반사신경이 언제 정답이고 언제 장애를 부르는가">
+<meta property="og:title" content="느린 쿼리의 두 얼굴 — 인덱스를 살릴 때와, 인덱스가 독이 될 때 — donghyos">
+<meta property="og:description" content="느린 조회 앞에서 &quot;인덱스부터 추가&quot;라는 반사신경이 언제 정답이고 언제 장애를 부르는가">
+<meta property="og:url" content="https://donghyos.github.io/posts/index-two-faces/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="느린 쿼리의 두 얼굴 — 인덱스를 살릴 때와, 인덱스가 독이 될 때 — donghyos">
+<meta name="twitter:description" content="느린 조회 앞에서 &quot;인덱스부터 추가&quot;라는 반사신경이 언제 정답이고 언제 장애를 부르는가">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "느린 쿼리의 두 얼굴 — 인덱스를 살릴 때와, 인덱스가 독이 될 때", "description": "느린 조회 앞에서 \"인덱스부터 추가\"라는 반사신경이 언제 정답이고 언제 장애를 부르는가", "datePublished": "2026-06-13", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/index-two-faces/", "mainEntityOfPage": "https://donghyos.github.io/posts/index-two-faces/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/work/" class="cat-link">실무 경험</a>
+  
+  <time>2026-06-13</time>
+  <span class="read-time">6분 읽기</span>
+</div>
+</div>
+<h1 id="_1">느린 쿼리의 두 얼굴 — 인덱스를 살릴 때와, 인덱스가 독이 될 때</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 느린 조회 앞에서 "인덱스부터 추가"라는 반사신경이 언제 정답이고 언제 장애를 부르는가</li>
+<li><strong>접근</strong>: 같은 '느림' 증상을 두 층위로 진단한다 — 술어가 인덱스를 <em>막은</em> 경우 vs 쿼리 <em>구조</em> 자체가 무거운 경우</li>
+<li><strong>결과·학습</strong>: 술어를 sargable하게 고쳐 Full Table Scan을 Index Range Scan으로 바꾼 사례, 그리고 인덱스 추가가 다른 조회를 장애로 몰아 임시테이블 분해로 선회한 사례. 인덱스는 그 쿼리 하나가 아니라 <em>테이블을 공유하는 모두</em>에 대한 전역 변경이다</li>
+<li><strong>도움 되는 독자</strong>: 실행계획을 읽기 시작했지만 "느리면 인덱스"에서 한 걸음 더 나가고 싶은 백엔드 개발자</li>
+</ul></div></aside>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_2">느리면 인덱스, 라는 반사신경</a></li><li class="toc-h2"><a href="#_3">첫 번째 얼굴 — 인덱스를 막고 있던 술어</a></li><li class="toc-h2"><a href="#_4">두 번째 얼굴 — 인덱스가 독이 된 조회</a></li><li class="toc-h2"><a href="#_5">느린 쿼리 앞에서 던지는 두 질문</a></li><li class="toc-h2"><a href="#_6">학습</a></li></ul></nav><h2 id="_2">느리면 인덱스, 라는 반사신경</h2>
+<p>조회가 느릴 때 가장 먼저 떠오르는 처방은 인덱스다. 대개는 맞다. 그러나 나는 두 번의 튜닝에서 이 반사신경의 <em>두 얼굴</em>을 봤다. 한 번은 인덱스가 정답이었고, 한 번은 인덱스가 장애의 원인이었다. 둘을 가른 것은 <em>느림이 어느 층위에서 오는가</em>였다.</p>
+<h2 id="_3">첫 번째 얼굴 — 인덱스를 막고 있던 술어</h2>
+<p>예전에 운영하던 한 시스템에서 날짜로 거르는 조회와 로그인 시 계정을 확인하는 조회가 각각 수 초씩 걸렸다. 두 쿼리 모두 <em>이미 인덱스가 걸린</em> 컬럼을 조건으로 썼는데도 실행계획은 Full Table Scan이었다.</p>
+<p>원인은 술어가 컬럼을 <em>가공</em>하고 있었다는 데 있었다. 날짜 컬럼은 <code>YYYYMMDD</code> 형태의 문자열이었고, 특정 월만 거르려고 <code>SUBSTRING(reg_dt, 1, 6) = '202501'</code> 처럼 컬럼에 함수를 씌웠다. 로그인 조회도 계정 식별자의 일부를 잘라 비교했다. 컬럼에 함수가 씌워지는 순간 그 값은 인덱스의 정렬 순서와 무관해진다(non-sargable). 인덱스는 원본 컬럼 값으로 정렬된 트리인데, <code>SUBSTRING(reg_dt, ...)</code>의 <em>결과</em>로는 그 트리를 좁혀 들어갈 수 없다. 엔진은 모든 행에 함수를 적용해 봐야 값을 비교할 수 있고, 결국 테이블 전체를 훑는다.</p>
+<p>해법은 컬럼을 건드리지 않고 같은 조건을 <em>범위</em>로 표현하는 것이었다.</p>
+<pre><code class="language-sql">-- before: 컬럼을 가공 → 인덱스를 못 탐 → Full Table Scan
+WHERE SUBSTRING(reg_dt, 1, 6) = '202501'
+
+-- after: 컬럼은 그대로, 조건을 범위로 → Index Range Scan
+WHERE reg_dt &gt;= '20250101'
+  AND reg_dt &lt;  '20250201'
+</code></pre>
+<p>실행계획은 Full Table Scan에서 Index Range Scan으로 바뀌었고, 조회는 수 초에서 1초 안쪽으로 떨어졌다. 인덱스를 <em>추가한 게 아니라</em>, 이미 있던 인덱스를 <em>쓰게 풀어준</em> 것이다. 이것이 첫 번째 얼굴이다. 느림의 원인이 술어에 있을 때 인덱스 직관은 옳다.</p>
+<h2 id="_4">두 번째 얼굴 — 인덱스가 독이 된 조회</h2>
+<p>최근 맡은 시스템에서는 승인 흐름이 얽힌 목록 조회 하나가 30초 안팎으로 느렸다. 실행계획을 보니 문제는 단순한 인덱스 부재가 아니었다. 쿼리는 한 건의 요청에 여러 단계의 승인 레코드를 <em>단계별로 self-join</em> 한 뒤, 부풀어 오른 행을 <code>SELECT DISTINCT</code>로 다시 접고 있었다. 조인이 행을 폭발시키고 DISTINCT가 그걸 수습하는 구조다. 거대한 중간 결과를 정렬하느라 tempdb로 흘러넘쳤고(sort spill), 암묵적 형변환 경고까지 떠 있었다.</p>
+<p>나는 먼저 인덱스를 추가했다. 대상 쿼리는 빨라졌다. 그런데 <em>같은 테이블을 쓰는 다른 조회 프로시저들</em>이 갑자기 크게 느려졌다. 인덱스 하나가 추가되면 그것은 <em>그 테이블을 읽는 모든 쿼리</em>의 새로운 접근 경로가 된다. 조건과 데이터 분포가 다른 쿼리에서는 옵티마이저가 그 인덱스를 골랐다가 오히려 손해를 봤다. 원래 스캔이 더 쌌을 자리에 비커버링 인덱스 Seek와 Key Lookup이 붙거나, 조인 순서가 틀어졌다. 지연은 애플리케이션 타임아웃을 넘겼고, 그쪽 화면들은 조회 자체가 실패했다. 한 쿼리를 고치려다 여러 조회를 장애로 만든 셈이다. 나는 인덱스를 되돌렸다.</p>
+<p>이때 배운 것이 두 번째 얼굴의 핵심이다. <strong>인덱스는 그 쿼리 하나에 대한 국소 수정이 아니라, 그 테이블을 공유하는 모든 쿼리의 실행계획을 흔드는 전역 변경이다.</strong> 내 조회만 보고 인덱스를 더하면, 같은 테이블에 의존하는 남의 조회가 대가를 치를 수 있다.</p>
+<p>그래서 스키마(인덱스)가 아니라 <em>쿼리 구조</em>를 바꿨다. 공유 자원을 건드리지 않고 이 프로시저 안에서만 끝나는 방식 — 임시테이블로 분해하는 것이다. 조인이 폭발하기 <em>전에</em> 좁은 후보군을 먼저 추리고, 그 작은 집합에만 나머지를 붙였다.</p>
+<pre><code class="language-sql">-- 1단계: 조인이 폭발하기 전에 후보 키만 추린다
+INSERT INTO #cand (req_id)
+SELECT r.req_id
+FROM   request r
+JOIN   approval a ON a.req_id = r.req_id AND a.step = '100'
+WHERE  r.req_dt BETWEEN @from AND @to
+  AND  r.status = 'OPEN';
+
+-- 2단계: 수백 행짜리 후보군에만 나머지를 조인·집계
+SELECT r.req_id, r.category_id, ...
+FROM   #cand c
+JOIN   request r ON r.req_id = c.req_id
+JOIN   ...;        -- 대상이 작아 self-join 도 폭발하지 않는다
+</code></pre>
+<p>후보군을 먼저 물리적으로 만들어 두면 옵티마이저는 2단계를 <em>실제로 작은</em> 행 수 위에서 계획한다. 거대한 조인 결과를 잘못 추정해 정렬을 tempdb로 흘리던 원본과 달리, 분해된 쿼리는 각 단계를 정확한 카디널리티로 푼다. <code>DISTINCT</code>로 거대한 결과를 정렬할 일이 사라지자 tempdb spill 경고가 사라졌고, 옵티마이저 추정 비용도 약 35에서 9로 떨어졌다. 체감 조회 시간은 30초대에서 수백 밀리초 안쪽으로 줄었다. 무엇보다 이 변경은 <em>프로시저 하나에 갇혀 있어서</em> 다른 조회를 건드리지 않았다. 되돌리기도 쉬웠다.</p>
+<h2 id="_5">느린 쿼리 앞에서 던지는 두 질문</h2>
+<p>두 사례를 겪고 나서 나는 "느리면 인덱스" 대신 두 질문을 먼저 던진다.</p>
+<ol>
+<li><strong>내가 인덱스를 <em>막고</em> 있나?</strong> 술어가 컬럼을 함수로 가공하거나(<code>SUBSTRING</code>, 형변환, 문자열 연결), 암묵적 형변환이 끼어 있으면 인덱스가 있어도 못 탄다. → 술어를 sargable하게 고친다. <em>(첫 번째 얼굴)</em></li>
+<li><strong>이 느림이 인덱스로 풀리는 종류인가?</strong> 비용이 조인 폭발, <code>DISTINCT</code>, 정렬 spill에서 온다면 인덱스를 더해도 그대로다. 게다가 공유 테이블에 인덱스를 더하는 건 남의 쿼리까지 흔든다. → 쿼리 구조를 국소적으로 바꾼다(후보군 분해). <em>(두 번째 얼굴)</em></li>
+</ol>
+<p>판단의 근거는 둘 다 <em>실행계획</em>이었다. Scan인지 Seek인지, 비용이 어느 연산자에 몰렸는지, 정렬이 tempdb로 넘치는지, 그리고 <em>추정 행 수와 실제 행 수가 벌어지는 지점</em>은 어디인지 — 추측이 아니라 계획을 읽고 갈랐다. 추정과 실제가 크게 어긋나는 자리가 대개 형변환이나 통계 누락이 숨은 곳이고, 느림은 거기서부터 번진다.</p>
+<p>두 얼굴은 결국 한 가지를 말한다. 인덱스는 눈앞의 쿼리 하나의 소유물이 아니다. 첫 번째 얼굴에서 인덱스는 <em>이미 거기 있는데 내 술어가 외면</em>했고, 두 번째 얼굴에서 인덱스는 <em>내가 더했더니 남이 대가를 치렀다</em>. 어느 쪽이든 그 인덱스를 둘러싼 맥락을 보지 않으면 처방은 빗나간다.</p>
+<h2 id="_6">학습</h2>
+<ul>
+<li><code>SELECT DISTINCT</code>는 종종 <em>해법이 아니라 증상</em>이다. 조인이 부풀린 행을 덮고 있다면, DISTINCT를 지우는 게 아니라 <em>부풀지 않게</em> 후보군을 먼저 좁혀야 한다.</li>
+<li>인덱스는 국소적이지 않다. 추가는 그 테이블을 쓰는 모두에게 영향을 준다. 때로는 스키마를 바꾸는 것보다 <em>쿼리 하나를 다시 쓰는 편</em>이 더 안전하고 되돌리기 쉽다.</li>
+<li>"느리면 인덱스"는 절반만 맞다. 나머지 절반에서는 인덱스가 답이 아니거나, 심지어 독이 된다. 둘을 가르는 건 실행계획을 읽는 습관이다.</li>
+</ul>
+<div class="page-tags"><button class="tag-chip" data-tag="database">#database</button> <button class="tag-chip" data-tag="performance">#performance</button> <button class="tag-chip" data-tag="query-tuning">#query-tuning</button> <button class="tag-chip" data-tag="indexing">#indexing</button> <button class="tag-chip" data-tag="execution-plan">#execution-plan</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+
+<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/request-drop-alarm/"><span class="pn-label">← 이전 글</span><span class="pn-title">요청이 조용히 사라질 때 — 침묵하는 외부 장애를 지난주와 비교해 감지하기</span></a><span></span></nav>
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/request-drop-alarm/">요청이 조용히 사라질 때 — 침묵하는 외부 장애를 지난주와 비교해 감지하기</a><a class="rel-card" href="/posts/testcontainer-integration/">테스트가 운영 DB를 오염시켰다 — 공용 DB를 버리고 Testcontainers 격리로</a><a class="rel-card" href="/posts/redis-session-sharing/">이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로</a></section>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>
