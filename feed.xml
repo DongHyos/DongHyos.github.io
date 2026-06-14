@@ -7,7 +7,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Fri, 12 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Sat, 13 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>움직임은 비싸다 — 모든 컷을 영상으로 만들지 않는 법</title>
+    <link>https://donghyos.github.io/posts/solo-fullstack-v5-video/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/solo-fullstack-v5-video/</guid>
+    <pubDate>Sat, 13 Jun 2026 15:00:00 GMT</pubDate>
+    <description>영상 생성 모델(Veo)은 1클립에 $1를 넘는다 — 모든 컷을 영상화할 수 없을 때 *어디를* 움직일 것인가</description>
+  </item>
   <item>
     <title>느린 쿼리의 두 얼굴 — 인덱스를 살릴 때와, 인덱스가 독이 될 때</title>
     <link>https://donghyos.github.io/posts/index-two-faces/</link>

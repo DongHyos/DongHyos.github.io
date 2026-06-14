@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>움직임은 비싸다 — 모든 컷을 영상으로 만들지 않는 법 — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/solo-fullstack-v5-video/">
+<meta name="description" content="영상 생성 모델(Veo)은 1클립에 $1를 넘는다 — 모든 컷을 영상화할 수 없을 때 *어디를* 움직일 것인가">
+<meta property="og:title" content="움직임은 비싸다 — 모든 컷을 영상으로 만들지 않는 법 — donghyos">
+<meta property="og:description" content="영상 생성 모델(Veo)은 1클립에 $1를 넘는다 — 모든 컷을 영상화할 수 없을 때 *어디를* 움직일 것인가">
+<meta property="og:url" content="https://donghyos.github.io/posts/solo-fullstack-v5-video/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="움직임은 비싸다 — 모든 컷을 영상으로 만들지 않는 법 — donghyos">
+<meta name="twitter:description" content="영상 생성 모델(Veo)은 1클립에 $1를 넘는다 — 모든 컷을 영상화할 수 없을 때 *어디를* 움직일 것인가">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "움직임은 비싸다 — 모든 컷을 영상으로 만들지 않는 법", "description": "영상 생성 모델(Veo)은 1클립에 $1를 넘는다 — 모든 컷을 영상화할 수 없을 때 *어디를* 움직일 것인가", "datePublished": "2026-06-14", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/solo-fullstack-v5-video/", "mainEntityOfPage": "https://donghyos.github.io/posts/solo-fullstack-v5-video/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
+  <a href="/series/solo-fullstack/" class="series-link">시리즈: solo-fullstack</a>
+  <time>2026-06-14</time>
+  <span class="read-time">6분 읽기</span>
+</div>
+</div>
+<h1 id="_1">움직임은 비싸다 — 모든 컷을 영상으로 만들지 않는 법</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 영상 생성 모델(Veo)은 1클립에 $1를 넘는다 — 모든 컷을 영상화할 수 없을 때 <em>어디를</em> 움직일 것인가</li>
+<li><strong>접근</strong>: 유지율 데이터가 가리킨 병목(Hook, 첫 ~24초)에만 비싼 생성 예산을 집중하고 나머지는 정적 이미지로 유지</li>
+<li><strong>결과·학습</strong>: 비용을 편당 ~$4로 상한, 캐릭터 일관성을 보존하며 통합. 단 여러 레버를 함께 바꿔 <em>영상 단독 효과는 분리하지 못했다</em> — 측정의 정직성도 학습이었다</li>
+<li><strong>도움 되는 독자</strong>: 비싼 생성형 도구를 비용 제약 안에서 제품에 넣어야 하는 개발자</li>
+</ul></div></aside>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_2">모든 컷을 영상으로 만들 수 없다</a></li><li class="toc-h2"><a href="#_3">데이터가 가리킨 병목</a></li><li class="toc-h2"><a href="#_4">구현 — 정적과 영상을 가르는 한 줄</a></li><li class="toc-h2"><a href="#_5">결과 — 그리고 측정의 정직성</a></li><li class="toc-h2"><a href="#_6">학습</a></li></ul></nav><h2 id="_2">모든 컷을 영상으로 만들 수 없다</h2>
+<p>이미지 생성으로 캐릭터를 만들고, 그 정적 이미지에 Ken Burns(확대·이동) 효과를 줘 영상을 만들어 왔다. 다음 단계는 분명했다. 정적 이미지를 <em>실제로 움직이는</em> 영상으로 바꾸는 것이고, Veo의 image-to-video가 그걸 해낸다. 기존 캐릭터 이미지를 입력으로 주면 8초짜리 클립이 나온다.</p>
+<p>문제는 비용이다. Veo 3.0 클립 하나(8초)가 약 $1.04다. 영상 한 편은 수십 개의 서브컷으로 이뤄진다. 한 편의 서브컷이 서른 개 안팎이라면 전부 영상화하는 데만 30 × $1.04 ≈ $31, 매일 한 편을 내보내면 월 900달러를 넘는다. 이미지 생성과 음성 합성, 조립까지 합쳐 만든 편당 원가를 한 줄에서 무너뜨리는 숫자다. 채널을 매일 돌리는 1인 운영에서 이 비용은 감당이 안 된다.</p>
+<p>그래서 질문이 바뀐다. <em>"영상으로 만들 수 있는가"</em>가 아니라 <em>"어디를 영상으로 만들 가치가 있는가"</em>. 비용이 제약이 되는 순간, 기술의 문제는 결정의 문제가 된다.</p>
+<h2 id="_3">데이터가 가리킨 병목</h2>
+<p>어디에 비싼 예산을 쓸지는 취향으로 정하지 않았다. 채널의 유지율 곡선이 정했다.</p>
+<p>시청 유지율 데이터를 보면, 시청자의 50~70%가 영상의 첫 5%(약 24초) 안에 이탈한다. 도입부(Hook)가 검증된 병목이다. 그 24초를 넘기지 못하면 나머지 영상의 품질은 아무도 보지 못한다. 게다가 플랫폼의 추천 알고리즘은 이 초반 유지율을 노출 신호로 쓴다. 첫 24초의 이탈은 그 한 편의 성과를 넘어 다음 영상의 도달까지 끌어내린다. 그리고 그 구간에서 정적 이미지에 Ken Burns를 입히는 것은 <em>움직이는 것처럼</em> 보이게는 해도 진짜 움직임은 아니다. 병목이 가장 선명한 곳이 정적 처리의 한계도 가장 뚜렷한 곳이었다.</p>
+<p>그렇다면 비용 배분의 답은 명확하다. <strong>가장 많은 시청자가 떠나는 구간이 가장 비싼 처리를 받을 자격이 있다.</strong> 영상화는 Hook 구간(첫 4개 서브컷, 약 32초)에만 적용하고, 그 뒤는 기존 정적 이미지로 유지하기로 했다. 이탈 절벽은 24초인데 32초를 잡은 것은 Veo 클립이 8초 단위이기 때문이다 — 24초를 덮으려면 네 클립이 필요했고, 그 경계가 자연스럽게 Hook 윈도가 됐다.</p>
+<p>이것은 "영상이 이미지보다 좋다"는 판단이 아니다. "비싼 자원은 그것이 가장 효과적일 곳에 국소적으로 투입한다"는 판단이다. 더 싼 영상 모델로 <em>전부</em>를 영상화하는 길도 있었다. 그러나 Hook은 첫인상이고, 첫인상의 품질이 낮으면 차라리 안 한 것만 못하다. 적은 구간을 제대로 하는 편이 전부를 어설프게 하는 것보다 낫다고 판단했다.</p>
+<h2 id="_4">구현 — 정적과 영상을 가르는 한 줄</h2>
+<p>설계의 핵심은 <em>정적 이미지 파이프라인을 갈아엎지 않는 것</em>이었다. 영상은 Hook에만 들어가므로, 기존 파이프라인에 <em>조건부 분기</em> 하나만 더하면 된다.</p>
+<p>데이터 흐름은 단방향이다. 이미지 생성 단계가 캐릭터 이미지를 만들면, 새로 추가한 Hook 영상화 단계가 <em>첫 N개 서브컷만</em> 골라 Veo로 image-to-video를 돌리고, 결과 클립 경로를 메타데이터에 덧붙인다. 마지막 조립 단계는 서브컷마다 그 경로의 유무로 갈린다.</p>
+<pre><code class="language-python"># 조립기: 각 서브컷이 영상이냐 정적이냐를 한 줄로 가른다
+for sub in subcuts:
+    if sub.get(&quot;videoPath&quot;):      # Hook 구간: Veo 클립 존재
+        segment = VideoSegment(sub[&quot;videoPath&quot;])
+    else:                         # 본문: 기존 정적 이미지 + Ken Burns
+        segment = ImageSegment(sub[&quot;imagePath&quot;])
+    timeline.append(segment)
+</code></pre>
+<p>이 분기 하나가 설계의 전부라는 점이 의도였다. 영상 경로를 별도 자료구조로 빼지 않고 <em>기존 서브컷 메타데이터에 필드 하나</em>로 덧붙였기 때문에, 조립기는 "이 컷에 영상이 있나"만 물으면 된다. 정적 파이프라인은 영상의 존재를 몰라도 그대로 동작한다. 새 기능이 기존 경로를 건드리지 않았다.</p>
+<p>영상화 단계에서 <em>무엇을</em> 영상화할지와 <em>비용 상한</em>은 파라미터로 노출했다.</p>
+<pre><code class="language-python">hook_subcuts = prompts[:max_clips]    # 기본 4개 ≈ 32초 (Hook 윈도)
+est_cost = len(hook_subcuts) * 1.04   # Veo 3.0, 8초/클립당 $1.04
+# max_clips=0 이면 전부 정적 → 비용 0
+</code></pre>
+<p><code>max_clips</code>가 비용과 품질의 손잡이다. 4면 편당 약 $4, 0이면 영상화를 통째로 끄고 비용은 0이 된다. 비용/품질 트레이드오프가 <em>코드 주석 속 고민</em>이 아니라 <em>호출 파라미터</em>가 됐다. 비용이 파라미터가 되면 운영 결정도 따라온다 — 공들인 주제에는 <code>max_clips</code>를 올리고 가벼운 영상에는 0으로 꺼서, <em>편마다</em> 예산을 다르게 줄 수 있다.</p>
+<p>그리고 image-to-video의 입력으로 기존 캐릭터 이미지를 그대로 쓴다는 점이 중요하다. text-to-video였다면 클립마다 캐릭터의 얼굴이 미묘하게 달라졌을 것이다. 앞선 글에서 LoRA로 고정해 둔 캐릭터 이미지를 <em>입력</em>으로 넣으면, 움직임은 새로 생기되 정체성은 그대로 유지된다. 비용을 줄이려는 결정이 캐릭터 일관성이라는 이미 확보한 가치와 충돌하지 않도록 입력을 고른 것이다.</p>
+<h2 id="_5">결과 — 그리고 측정의 정직성</h2>
+<p>통합 자체는 한 번에 됐다. 운이 아니다 — 다른 프로젝트(숏폼 자동화 파이프라인)에서 Veo로 충분히 깨진 덕이다. 거기서 겪은 실패들이 도구 숙련으로 남아, 이번에는 시행착오 없이 들어갔다. 구체적으로는 image-to-video 프롬프트가 정적 이미지의 무엇을 움직이고 무엇을 고정해야 하는지, 클립당 1분 안팎인 생성 지연을 파이프라인에서 어떻게 비동기로 흘려보내는지 같은 것들이다. 한 번 부딪혀 본 문제는 두 번째 제품에서 설계 단계의 기본값이 됐다. <em>도구를 배우는 비용은 한 번 치르면 프로젝트를 건너 회수된다.</em></p>
+<p>비용은 의도대로 편당 약 $4로 묶였고, 캐릭터 일관성도 보존됐다. 그리고 이 Hook 영상들은 실험으로 끝난 POC가 아니라 매일 나가는 영상의 기본 경로가 됐다.</p>
+<p>그런데 <em>유지율이 실제로 나아졌는가</em>에는 정직해야 한다. 모른다. Hook을 손볼 때 영상만 바꾼 것이 아니기 때문이다. 같은 시기에 나레이션 음성도, 배경음악도, Hook 스크립트 템플릿도 함께 바꿨다. 여러 레버를 동시에 당기면 <em>속도는 얻지만 귀속(attribution)은 잃는다.</em> 유지율이 움직였다 해도 그것이 영상 때문인지 음성 때문인지 분리할 수 없다. 영상화의 단독 효과를 나는 측정하지 못했다.</p>
+<p>제대로 가르려면 영상만 바꾼 버전과 그대로 둔 버전을 같은 조건에서 비교해야 한다. 그러나 매일 한 편을 내보내는 채널에서, 효과를 분리하겠다고 개선을 한 번에 하나씩만 적용하며 몇 주를 기다리는 것은 현실적이지 않았다. 나는 <em>측정 가능성</em>보다 <em>반복 속도</em>를 택했고, 그 대가가 귀속 불가다. 이것은 글을 약하게 만드는 고백이 아니라, 결과를 다루는 방식에 대한 학습이다.</p>
+<h2 id="_6">학습</h2>
+<ul>
+<li><strong>생성형 도구가 비싸면, 질문은 "쓸 수 있나"가 아니라 "어디에 쓸 가치가 있나"가 된다.</strong> 데이터가 가리킨 병목, 즉 가장 많이 이탈하는 구간에 비싼 예산을 국소 투입하는 것이 답이었다.</li>
+<li><strong>비용을 코드 파라미터로 노출하면 비용/품질 트레이드오프가 <em>설정값</em>이 된다.</strong> <code>max_clips</code> 하나로 0원부터 풀 영상화까지가 손잡이 하나에 들어온다.</li>
+<li><strong>여러 레버를 한꺼번에 당기면 빠르지만, 무엇이 효과였는지 모른다.</strong> 다음에는 하나씩 바꾸거나, 적어도 <em>무엇을 분리 측정할지 미리 정하고</em> 당겨야 한다.</li>
+<li><strong>도구 숙련은 프로젝트를 건너 이전된다.</strong> 한 곳에서 비싸게 배운 실패가 다른 곳에서 매끄러운 통합으로 돌아온다.</li>
+<li><strong>이 패턴은 영상에만 국한되지 않는다.</strong> 비싼 LLM 호출이든 비싼 외부 API든, 단가가 높은 자원이라면 "전부에 균일하게"가 아니라 "데이터가 가리킨 지점에 선별적으로"가 기본 전략이 된다.</li>
+</ul>
+<div class="page-tags"><button class="tag-chip" data-tag="ai-video">#ai-video</button> <button class="tag-chip" data-tag="veo">#veo</button> <button class="tag-chip" data-tag="cost-optimization">#cost-optimization</button> <button class="tag-chip" data-tag="retention">#retention</button> <button class="tag-chip" data-tag="design-decision">#design-decision</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+<nav class="series-nav">
+<div class="seriesnav-head">시리즈 <a href="/series/solo-fullstack/">solo-fullstack</a> · 5/5편</div>
+<div class="seriesnav-links">
+<a class="seriesnav-item seriesnav-prev" href="/posts/solo-fullstack-v4-reuse/"><span class="seriesnav-label">← 이전 글</span><span class="seriesnav-title">재사용된 것은 내가 추상화하지 않은 쪽이었다 — 두 번째 제품이 드러낸 재사용의 경계</span></a>
+<span class="seriesnav-item seriesnav-empty"></span>
+</div>
+</nav>
+
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/solo-fullstack-v4-reuse/">재사용된 것은 내가 추상화하지 않은 쪽이었다 — 두 번째 제품이 드러낸 재사용의 경계</a><a class="rel-card" href="/posts/solo-fullstack-v3-hitl/">AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리</a><a class="rel-card" href="/posts/solo-fullstack-v2-buildvsbuy/">자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)</a></section>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>
