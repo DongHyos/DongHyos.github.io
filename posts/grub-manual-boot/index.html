@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기 — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/grub-manual-boot/">
+<meta name="description" content="보안 패치(openssl 업그레이드) 직후 root 접근이 막히고, 복구하려 재부팅하니 부팅까지 깨진 이중 장애">
+<meta property="og:title" content="root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기 — donghyos">
+<meta property="og:description" content="보안 패치(openssl 업그레이드) 직후 root 접근이 막히고, 복구하려 재부팅하니 부팅까지 깨진 이중 장애">
+<meta property="og:url" content="https://donghyos.github.io/posts/grub-manual-boot/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기 — donghyos">
+<meta name="twitter:description" content="보안 패치(openssl 업그레이드) 직후 root 접근이 막히고, 복구하려 재부팅하니 부팅까지 깨진 이중 장애">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기", "description": "보안 패치(openssl 업그레이드) 직후 root 접근이 막히고, 복구하려 재부팅하니 부팅까지 깨진 이중 장애", "datePublished": "2026-06-20", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/grub-manual-boot/", "mainEntityOfPage": "https://donghyos.github.io/posts/grub-manual-boot/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/work/" class="cat-link">실무 경험</a>
+  
+  <time>2026-06-20</time>
+  <span class="read-time">6분 읽기</span>
+</div>
+</div>
+<h1 id="root-grub">root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 보안 패치(openssl 업그레이드) 직후 root 접근이 막히고, 복구하려 재부팅하니 부팅까지 깨진 이중 장애</li>
+<li><strong>접근</strong>: GRUB rescue 셸에서 커널을 손으로 올려 로그인 없는 root 셸로 진입, openssl을 롤백</li>
+<li><strong>결과·학습</strong>: 정상 부팅 복구. GRUB → 커널 → initramfs → 루트로 이어지는 부팅 체인을 명령으로 직접 다뤄본 경험</li>
+<li><strong>도움 되는 독자</strong>: 부팅이 깨진 리눅스 서버를 GRUB 프롬프트에서 복구해야 하는 개발자·운영자</li>
+</ul></div></aside>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">보안 패치가 서버를 못 켜게 만들었다</a></li><li class="toc-h2"><a href="#grub">GRUB 명령줄에서 커널을 직접 올리기</a></li><li class="toc-h2"><a href="#_2">결과</a></li><li class="toc-h2"><a href="#_3">학습</a></li></ul></nav><h2 id="_1">보안 패치가 서버를 못 켜게 만들었다</h2>
+<p>보안 취약점 대응으로 한 RHEL 8 서버의 openssl을 업그레이드해야 했다. openssl은 단순한 라이브러리가 아니라 <code>sudo</code>, <code>sshd</code>, PAM 같은 인증 경로가 의존하는 핵심 구성요소다. 그래서 이 한 번의 업그레이드가 권한 체계 전체를 건드렸다. 라이브러리의 ABI가 어긋나거나 링크가 깨지면, 그 위에 얹힌 인증 모듈들이 한꺼번에 동작을 멈춘다. <code>sudo</code>가 인증 단계에서 실패하면 권한 상승은 그 자리에서 막힌다.</p>
+<p>업그레이드 직후 <strong>root로 승격이 불가능해졌다.</strong> 일반 계정 로그인은 되지만 root 권한을 얻을 수 없으니, 망가진 openssl을 되돌리는 것조차 할 수 없었다. 정공법은 <em>로그인 인증을 거치지 않는</em> 환경, 즉 single user mode로 부팅해 거기서 openssl을 롤백하는 것이었다. 그래서 재부팅했다.</p>
+<p>그런데 부팅 자체가 깨져 있었다. 익숙한 부팅 메뉴 대신 <code>grub&gt;</code> 프롬프트만 떠 있었다. <code>grub.cfg</code>를 불러오지 못한 채 <strong>GRUB rescue 셸</strong>로 떨어진 것이다. 롤백을 하러 들어가려던 길목에서 openssl 사태에서 파생된 두 번째 장애를 만난 셈이다. <em>root도 막히고, 부팅도 막혔다.</em></p>
+<h2 id="grub">GRUB 명령줄에서 커널을 직접 올리기</h2>
+<p>GRUB rescue는 <code>grub.cfg</code> 없이 떨어진 최소 셸이다. 부팅 메뉴가 없으니 커널을 <em>손으로</em> 지정해 올려야 한다. 게다가 일반 모드보다 명령이 제한적이라, <code>ls</code>로 장치를 보고 <code>set</code>으로 변수를 잡고 <code>linux</code>·<code>initrd</code>로 커널을 올리는 최소한의 명령만 남는다. 자동완성도 메뉴도 없으니 경로와 버전을 정확히 알고 있어야 한다. 순서 자체는 단순하다. 부팅 파일이 있는 파티션을 찾고, 그것을 root로 지정하고, 커널과 initramfs를 차례로 로드한 뒤 부팅한다.</p>
+<pre class="mermaid">flowchart TB
+    P["전원"] --> G["GRUB"]
+    G -->|정상| K["커널 vmlinuz"]
+    G -.->|"grub.cfg 읽기 실패 ✗"| R["GRUB rescue 셸"]
+    R ==>|"수동 부팅"| K
+    K --> I["initramfs<br/>LVM 모듈 적재"]
+    I --> RT["루트 파일시스템<br/>/dev/mapper/rootvg-root"]
+    RT --> SH["init=/bin/bash<br/>로그인 없는 root 셸"]
+    SH --> FX["openssl 롤백<br/>→ 정상 부팅"]
+    style R fill:#ffe0e0,stroke:#d98a8a,color:#1a1a1a
+    style K fill:#e0ecff,stroke:#88a0d9,color:#1a1a1a
+    style SH fill:#e0ffe0,stroke:#8ab98a,color:#1a1a1a
+    style FX fill:#e0ffe0,stroke:#8ab98a,color:#1a1a1a
+</pre>
+<p><em>정상이라면 GRUB가 <code>grub.cfg</code>를 읽어 곧장 커널로 넘어간다. 이번엔 그 한 칸이 끊겨 rescue 셸로 떨어졌고, 거기서부터 커널을 손으로 다시 이어 붙였다 — 끊긴 지점에서 체인을 수동으로 재생한 것이다.</em></p>
+<p>이 과정을 명령으로 옮기면 이렇다.</p>
+<pre><code>grub&gt; ls                              # 디스크·파티션 목록 확인
+grub&gt; ls (hd0,gpt2)/                  # 부팅 파일이 있는 파티션 탐색 (xfs)
+grub&gt; set root=(hd0,gpt2)
+grub&gt; linux /vmlinuz-4.18.0-553.8.1.el8_10.x86_64 root=/dev/mapper/rootvg-root ro init=/bin/bash
+grub&gt; initrd /initramfs-4.18.0-553.8.1.el8_10.x86_64.img
+grub&gt; boot
+</code></pre>
+<p><code>ls</code>만으로는 어느 파티션에 부팅 파일이 있는지 바로 알 수 없다. <code>ls (hd0,gpt1)/</code>, <code>ls (hd0,gpt2)/</code>처럼 하나씩 들여다보며 <code>vmlinuz</code>와 <code>initramfs</code>가 들어 있는 파티션을 찾는다. 이 서버는 <code>(hd0,gpt2)</code>가 xfs로 잡힌 <code>/boot</code>였고, 거기서 커널 파일의 <em>정확한</em> 버전 문자열을 확인해 그대로 타이핑했다. 손으로 치는 만큼 버전 한 글자라도 틀리면 안 된다.</p>
+<p>여기서 헷갈리기 쉬운 두 지점이 있다.</p>
+<p><strong>첫째, <code>set root</code>의 root와 <code>linux ... root=</code>의 root는 다른 레이어다.</strong> 앞의 것은 <em>GRUB가 부팅 파일을 읽을</em> 파티션이고(여기선 <code>(hd0,gpt2)</code>, xfs), 뒤의 것은 <em>리눅스 커널이 마운트할</em> 루트 파일시스템이다. 이 서버는 LVM이라 뒤쪽 root는 <code>/dev/mapper/rootvg-root</code>다. 둘을 같은 것으로 착각하면 부팅이 안 된다.</p>
+<p><strong>둘째, 커널(<code>vmlinuz</code>)과 initramfs는 같은 버전이어야 한다.</strong> 버전이 어긋나면 커널이 필요한 모듈을 initramfs에서 못 찾아 부팅 도중 멈춘다. 특히 이 서버는 루트가 LVM 위에 있어서, LVM을 인식하는 모듈이 initramfs 안에 들어 있어야 <code>/dev/mapper/rootvg-root</code>를 마운트할 수 있다. 커널과 initramfs가 짝이 맞아야 이 모듈 로딩이 성립한다. 패닉의 순간에 가장 먼저 의심할 것이 이 짝이다.</p>
+<p>마지막으로 <code>init=/bin/bash</code>. 인증이 깨진 상태였으므로 일반적인 <code>single</code>/<code>rescue.target</code>은 답이 아니었다 — 그쪽은 root 비밀번호를 묻는데, 그 인증 경로가 바로 망가진 부분이기 때문이다. <code>init=/bin/bash</code>는 systemd를 거치지 않고 곧장 root 셸을 띄운다. <em>로그인이 필요 없는</em> 환경이 정확히 이것이었다. 다만 <code>linux</code> 줄 끝의 <code>ro</code>는 루트를 읽기 전용으로 올린다는 뜻이라, 들어간 뒤 무언가를 되돌리려면 쓰기 가능으로 다시 마운트하는 단계가 한 번 더 필요하다.</p>
+<h2 id="_2">결과</h2>
+<p>root 셸로 들어간 뒤 루트 파일시스템을 쓰기 가능으로 다시 마운트하고(<code>mount -o remount,rw /</code>), openssl을 이전 버전으로 롤백했다. 인증 경로가 되살아나면서 root 접근이 돌아왔다.</p>
+<p>수동 부팅은 <em>그 한 번</em>을 띄우기 위한 다리였다. 그리고 openssl을 되돌린 뒤 재부팅하자, <code>grub.cfg</code>를 따로 재생성하지 않았는데도 정상으로 부팅됐다. 부팅 실패는 영구 손상이 아니라 깨진 시스템 상태에서 파생된 <em>증상</em>이었고, 근본 원인인 openssl을 걷어내자 부팅 체인도 따라 제자리로 돌아온 것이다. 수동 부팅은 그 원인에 닿기 위한 일회성 통로였을 뿐, 부팅 자체를 영구 수리한 작업이 아니었다.</p>
+<h2 id="_3">학습</h2>
+<ul>
+<li><strong>부팅은 한 덩어리가 아니라 체인이다.</strong> GRUB가 커널을 올리고, 커널이 initramfs로 임시 루트를 띄우고, 거기서 진짜 루트(LVM)를 마운트한다. 어디서 끊겼는지 알면 그 지점만 손으로 이어주면 된다. GRUB 프롬프트는 막다른 길이 아니라 그 체인을 수동으로 재생하는 자리다.</li>
+<li><strong><code>set root</code>(GRUB의 읽기 대상)와 <code>root=</code>(커널의 마운트 대상)는 다른 레이어다.</strong> 이 구분을 모르면 같은 복구 명령을 쳐도 안 된다.</li>
+<li><strong>시스템 핵심 라이브러리 변경은 권한과 부팅을 동시에 끊을 수 있다.</strong> openssl 하나가 인증 경로 전체에 걸쳐 있어, 업그레이드 한 번이 root 접근과 부팅을 함께 막았다. 보안 패치라도 <em>롤백 경로</em>(로그인 없이 들어가는 법, 스냅샷)를 먼저 확보해 두는 편이 안전하다.</li>
+<li><strong>증상과 원인을 구분하면 과잉 수리를 피한다.</strong> GRUB 장애는 독립적인 문제가 아니라 openssl 사태의 증상이었다. <code>grub.cfg</code>를 붙잡고 따로 복구하는 대신 근본 원인을 되돌리자, 증상은 따라 사라졌다. 수동 부팅은 원인에 닿기 위한 다리였을 뿐, 그 자체가 목적지가 아니었다.</li>
+<li><strong>부팅 단계의 복구는 SSH 밖에서만 가능하다.</strong> GRUB 프롬프트는 네트워크가 올라오기 전 단계라 SSH로는 닿지 않는다. 이런 작업은 물리 콘솔이나 IPMI·iLO 같은 out-of-band 콘솔이 유일한 통로다 — 서버를 맡는다면 그 접근 경로를 미리 확인해 둬야 한다.</li>
+</ul>
+<div class="page-tags"><button class="tag-chip" data-tag="linux">#linux</button> <button class="tag-chip" data-tag="grub">#grub</button> <button class="tag-chip" data-tag="boot-recovery">#boot-recovery</button> <button class="tag-chip" data-tag="troubleshooting">#troubleshooting</button> <button class="tag-chip" data-tag="incident">#incident</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+
+<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/index-two-faces/"><span class="pn-label">← 이전 글</span><span class="pn-title">느린 쿼리의 두 얼굴 — 인덱스를 살릴 때와, 인덱스가 독이 될 때</span></a><span></span></nav>
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/index-two-faces/">느린 쿼리의 두 얼굴 — 인덱스를 살릴 때와, 인덱스가 독이 될 때</a><a class="rel-card" href="/posts/request-drop-alarm/">요청이 조용히 사라질 때 — 침묵하는 외부 장애를 지난주와 비교해 감지하기</a><a class="rel-card" href="/posts/testcontainer-integration/">테스트가 운영 DB를 오염시켰다 — 공용 DB를 버리고 Testcontainers 격리로</a></section>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>

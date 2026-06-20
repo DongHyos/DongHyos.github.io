@@ -7,7 +7,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Sat, 13 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Fri, 19 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기</title>
+    <link>https://donghyos.github.io/posts/grub-manual-boot/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/grub-manual-boot/</guid>
+    <pubDate>Fri, 19 Jun 2026 15:00:00 GMT</pubDate>
+    <description>보안 패치(openssl 업그레이드) 직후 root 접근이 막히고, 복구하려 재부팅하니 부팅까지 깨진 이중 장애</description>
+  </item>
   <item>
     <title>움직임은 비싸다 — 모든 컷을 영상으로 만들지 않는 법</title>
     <link>https://donghyos.github.io/posts/solo-fullstack-v5-video/</link>
