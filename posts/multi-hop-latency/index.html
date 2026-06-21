@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기 — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/multi-hop-latency/">
+<meta name="description" content="여러 계층을 거치는 중계 요청이 느릴 때, &quot;총 시간&quot;만으로는 어느 홉이 범인인지(우리 서버인지 외부 의존인지) 알 수 없다">
+<meta property="og:title" content="느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기 — donghyos">
+<meta property="og:description" content="여러 계층을 거치는 중계 요청이 느릴 때, &quot;총 시간&quot;만으로는 어느 홉이 범인인지(우리 서버인지 외부 의존인지) 알 수 없다">
+<meta property="og:url" content="https://donghyos.github.io/posts/multi-hop-latency/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기 — donghyos">
+<meta name="twitter:description" content="여러 계층을 거치는 중계 요청이 느릴 때, &quot;총 시간&quot;만으로는 어느 홉이 범인인지(우리 서버인지 외부 의존인지) 알 수 없다">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기", "description": "여러 계층을 거치는 중계 요청이 느릴 때, \"총 시간\"만으로는 어느 홉이 범인인지(우리 서버인지 외부 의존인지) 알 수 없다", "datePublished": "2026-06-21", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/multi-hop-latency/", "mainEntityOfPage": "https://donghyos.github.io/posts/multi-hop-latency/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/work/" class="cat-link">실무 경험</a>
+  
+  <time>2026-06-21</time>
+  <span class="read-time">5분 읽기</span>
+</div>
+</div>
+<h1 id="_1">느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 여러 계층을 거치는 중계 요청이 느릴 때, "총 시간"만으로는 어느 홉이 범인인지(우리 서버인지 외부 의존인지) 알 수 없다</li>
+<li><strong>접근</strong>: 각 계층이 이미 남기고 있던 요청/응답 타임스탬프를 <em>상관 ID로 join</em>해 end-to-end 지연을 홉별·gap별로 분해</li>
+<li><strong>결과·학습</strong>: 병목이 외부 제공자 구간임을 데이터로 특정. "느리다"가 "이 외부 의존이 느리다, 증거는 여기"로 바뀌었다. 상용 APM 없이 로그 + 상관 ID면 분산 추적이 된다</li>
+<li><strong>도움 되는 독자</strong>: 다중 홉·외부 의존 구조에서 지연의 책임 소재를 데이터로 가르고 싶은 백엔드 개발자</li>
+</ul></div></aside>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_2">&quot;느리다&quot;는 보고는 절반만 말한다</a></li><li class="toc-h2"><a href="#_3">각 계층은 이미 시각을 남기고 있었다</a></li><li class="toc-h2"><a href="#_4">병목은 우리가 아니었다</a></li><li class="toc-h2"><a href="#_5">학습</a></li></ul></nav><h2 id="_2">"느리다"는 보고는 절반만 말한다</h2>
+<p>내가 맡은 건 외부 사업자들과 API로 연동하는 중계 구간이었다. 한 요청은 여러 계층을 차례로 거친다. <strong>게이트웨이 → 우리 내부 서버 → 외부 제공자 API</strong>, 그리고 그 응답이 다시 거꾸로 돌아온다.</p>
+<p>요청이 느리다는 신호 자체는 잡혔다. 게이트웨이가 요청마다 <em>총 처리시간</em>을 기록하니까. 문제는 그 총 시간 안에서 <strong>어디가 느린지는 안 보인다</strong>는 것이다. 우리 게이트웨이가 느린가? 우리 내부 서버가 느린가? 아니면 외부 제공자가 응답을 늦게 주는가?</p>
+<p>예를 들어 한 요청이 3초 걸렸다고 하자. 게이트웨이 로그가 보여주는 건 그 '3초'라는 <em>총합</em> 하나다. 그 안에서 게이트웨이가 50ms, 우리 내부 서버가 100ms를 쓰고 나머지 2.8초가 어딘가에서 샜다 해도, 총 시간만으로는 그 2.8초가 <em>어느 홉의 것인지</em> 영영 알 수 없다. 평균 응답시간 그래프를 아무리 들여다봐도 층위가 한 숫자로 합쳐져 있어 범인이 드러나지 않는다. 더 답답한 건, 느린 게 외부 탓이어도 화면에는 <em>우리 시스템이 느린 것처럼</em> 보인다는 점이다.</p>
+<p>책임 소재를 모르면 행동을 못 한다. 우리 코드를 파고들어야 할지, 외부에 항의해야 할지 알 수가 없다. 게다가 너무 느리면 게이트웨이가 Read Time Out으로 연결을 끊어버려 더 답답했다. <strong>"느리다"는 어느 홉인지 모르면 절반만 아는 것이다.</strong></p>
+<h2 id="_3">각 계층은 이미 시각을 남기고 있었다</h2>
+<p>다행히 새 인프라가 필요하진 않았다. 각 계층이 <em>자기</em> "요청 받은 시각"과 "응답 보낸 시각"을 이미 로그에 남기고 있었기 때문이다. 게이트웨이도, 내부 서버도, 외부와 주고받는 계층도 각자.</p>
+<p>그리고 결정적으로, 한 요청은 모든 계층에서 <strong>같은 요청번호(상관 ID)</strong>로 추적되고 있었다. 이게 열쇠였다. 어려운 부분은 로그를 <em>만드는</em> 게 아니라 <em>잇는</em> 것이었으니까. 각 계층의 기록은 서로 다른 테이블에, 다른 시각 포맷으로 따로 쌓이고 있었다. 그 흩어진 기록을 <em>같은 요청번호를 공유한다</em>는 사실 하나가 하나의 타임라인으로 묶어줬다. 상관 ID로 꿰면 <em>한 요청에 대한 모든 홉의 in/out 시각</em>이 한 줄에 모인다. 상용 분산 추적 도구 없이, 이미 쌓이고 있는 로그만으로 추적이 가능했다.</p>
+<p>이게 되려면 전제가 하나 있다. 상관 ID가 <em>모든 계층을 관통해 전파</em>되어야 한다는 것이다. 한 계층이라도 자기만의 ID를 새로 발급해 앞단과 끊으면, 타임라인은 거기서 단절되고 그 뒤 홉은 끝내 엮이지 않는다. 분산 추적을 "나중에 붙이기 어렵다"고 하는 이유가 이것이다. 상관 ID의 전파는 <em>설계 단계의 결정</em>이지 사후에 쿼리로 메울 수 있는 게 아니다. 마침 이 시스템은 플랫폼 요청번호를 처음부터 끝까지 들고 다녔고, 덕분에 사후에 쿼리만으로 추적을 복원할 수 있었다.</p>
+<h2 id>상관 ID로 홉을 꿰어 분해하기</h2>
+<p>핵심 산수는 단순하다. <em>한 홉의 처리시간 = 그 홉의 응답시각 − 요청시각</em>이고, <em>홉 간 gap = 다음 홉 요청시각 − 이전 홉 응답시각</em>이다. 게이트웨이 로그를 기준으로 나머지 계층 로그를 요청번호로 <code>left join</code>하면 한 번에 분해된다.</p>
+<pre><code class="language-sql">-- 한 요청이 거친 각 계층의 시간을, 요청번호(상관 ID)로 엮어 분해한다
+SELECT
+    g.req_no,
+    g.gw_ms                     AS 게이트웨이,   -- 게이트웨이 자체 처리
+    a.res_at - a.req_at         AS 내부서버,     -- 우리 내부 처리
+    e.res_at - e.req_at         AS 외부대기,     -- 외부 제공자 응답 대기
+    a.req_at - g.done_at        AS gw_to_내부     -- 계층 간 gap
+FROM      gw_log  g
+LEFT JOIN app_log a ON a.req_no = g.req_no
+LEFT JOIN ext_log e ON e.req_no = g.req_no
+WHERE g.kind = 'response'
+ORDER BY (e.res_at - e.req_at) DESC;   -- 외부 대기가 긴 순
+</code></pre>
+<p>게이트웨이가 이중화(HA)되어 있어 노드별로도 쪼갰다. 두 노드의 평균을 따로 내면, 전체 평균에 가려 보이지 않던 <em>한 노드만의 문제</em>가 드러나기 때문이다. 평균은 종종 범인을 숨긴다.</p>
+<p><code>left join</code>을 쓴 데에는 이유가 있다. 어떤 요청은 모든 홉에 도달하지 못한다. 중간에서 에러가 나거나 타임아웃으로 끊긴 요청은 뒷 계층 로그가 <em>없다</em>. <code>inner join</code>이면 그런 요청이 통째로 사라지는데, 정작 보고 싶은 게 그것들이다. <code>left join</code>은 빈자리(NULL)로 <em>어느 홉에서 멈췄는지</em>까지 말해준다. 또 홉 간 gap에 주목할 만하다. 어느 서버의 처리시간도 아닌 네트워크 전송이나 큐 대기 같은 시간이 거기 숨고, 이 gap이 의외로 큰 경우가 종종 범인이었다. (타임스탬프 빼기는 ms 단위까지 봐야 한다. 초 단위로 반올림하면 수백 ms짜리 gap이 0으로 뭉개져 사라진다.)</p>
+<h2 id="_4">병목은 우리가 아니었다</h2>
+<p>분해해보니 답은 분명했다. 지연의 대부분은 <strong>외부 제공자 구간</strong>에 있었다. 게이트웨이도, 우리 내부 서버도 빠른데, <em>외부 제공자의 응답을 기다리는 시간</em>이 길었다.</p>
+<p>이 결과가 중요한 이유는 그것이 <em>행동을 바꾸기</em> 때문이다. "느리다"가 <strong>"이 외부 의존이 느리다, 데이터는 여기 있다"</strong>로 바뀌었다. 우리 코드를 헤집는 대신 <em>맞는</em> 행동을 할 수 있게 됐다. 근거를 들고 외부 제공자에 개선을 요청하거나, 그 API에 한해 타임아웃을 늘려 Read Time Out을 줄이는 식으로. "그쪽이 느린 것 같아요"라는 추측이 아니라, 홉별 숫자로 책임 소재를 가른 것이다.</p>
+<p>분해 전과 후의 진짜 차이는 <em>대화의 질</em>이었다. 전에는 "느린 것 같다", "그쪽이 문제인 것 같다"는 인상으로 회의가 돌았다. 분해 후에는 "이 API는 외부 구간이 대부분이고 우리 구간은 수십 ms"라는 한 줄로 끝났다. 추측을 두고 다투는 대신, 같은 숫자를 보고 다음 행동을 정하게 됐다.</p>
+<h2 id="_5">학습</h2>
+<ul>
+<li><strong>다중 홉에서 "느리다"는 어느 홉인지 모르면 행동 불가다.</strong> 총 시간이 아니라 <em>홉별 분해</em>가 있어야 책임 소재가 갈린다. 그 전까지의 모든 논의는 추측이다.</li>
+<li><strong>상관 ID 하나면 분산 추적의 절반은 공짜다.</strong> 각 계층이 이미 타임스탬프를 남기고 있다면, 그걸 같은 ID로 엮는 것만으로 end-to-end가 보인다. 상용 APM이 없어도 로그와 상관 ID면 시작할 수 있다.</li>
+<li><strong>외부 의존이 병목일 때, 그걸 <em>입증</em>하는 것이 곧 협상력이다.</strong> "우리 탓 아니에요"는 데이터가 있을 때만 통한다. 분해는 그 데이터를 만든다.</li>
+<li><strong>평균은 범인을 숨긴다.</strong> HA라면 노드별로, 가능하면 구간별로 쪼개라. 합쳐 놓은 숫자가 가장 거짓말을 잘한다.</li>
+<li><strong>관측의 출발점은 새 도구가 아니라 <em>이미 있는 신호를 잇는 것</em>일 때가 많다.</strong> 우리에겐 APM이 없었지만 상관 ID와 계층별 타임스탬프는 이미 있었다. 부족했던 건 인프라가 아니라 그걸 엮는 한 번의 쿼리였다.</li>
+</ul>
+<div class="page-tags"><button class="tag-chip" data-tag="observability">#observability</button> <button class="tag-chip" data-tag="distributed-tracing">#distributed-tracing</button> <button class="tag-chip" data-tag="latency">#latency</button> <button class="tag-chip" data-tag="sql">#sql</button> <button class="tag-chip" data-tag="troubleshooting">#troubleshooting</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+
+<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/grub-manual-boot/"><span class="pn-label">← 이전 글</span><span class="pn-title">root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기</span></a><span></span></nav>
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/grub-manual-boot/">root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기</a><a class="rel-card" href="/posts/index-two-faces/">느린 쿼리의 두 얼굴 — 인덱스를 살릴 때와, 인덱스가 독이 될 때</a><a class="rel-card" href="/posts/request-drop-alarm/">요청이 조용히 사라질 때 — 침묵하는 외부 장애를 지난주와 비교해 감지하기</a></section>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>

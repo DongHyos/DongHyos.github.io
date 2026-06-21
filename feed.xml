@@ -7,7 +7,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Fri, 19 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Sat, 20 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기</title>
+    <link>https://donghyos.github.io/posts/multi-hop-latency/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/multi-hop-latency/</guid>
+    <pubDate>Sat, 20 Jun 2026 15:00:00 GMT</pubDate>
+    <description>여러 계층을 거치는 중계 요청이 느릴 때, &quot;총 시간&quot;만으로는 어느 홉이 범인인지(우리 서버인지 외부 의존인지) 알 수 없다</description>
+  </item>
   <item>
     <title>root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기</title>
     <link>https://donghyos.github.io/posts/grub-manual-boot/</link>
