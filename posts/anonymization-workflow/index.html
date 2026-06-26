@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>전 직장 이야기를 NDA 깨지 않고 쓰는 법 — 식별자 전수 대조 익명화 워크플로 — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/anonymization-workflow/">
+<meta name="description" content="전 직장의 실제 경험은 최고의 글감이지만, 회사, 고객, 크리덴셜, 동료를 노출하지 않고 쓰려면">
+<meta property="og:title" content="전 직장 이야기를 NDA 깨지 않고 쓰는 법 — 식별자 전수 대조 익명화 워크플로 — donghyos">
+<meta property="og:description" content="전 직장의 실제 경험은 최고의 글감이지만, 회사, 고객, 크리덴셜, 동료를 노출하지 않고 쓰려면">
+<meta property="og:url" content="https://donghyos.github.io/posts/anonymization-workflow/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="전 직장 이야기를 NDA 깨지 않고 쓰는 법 — 식별자 전수 대조 익명화 워크플로 — donghyos">
+<meta name="twitter:description" content="전 직장의 실제 경험은 최고의 글감이지만, 회사, 고객, 크리덴셜, 동료를 노출하지 않고 쓰려면">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "전 직장 이야기를 NDA 깨지 않고 쓰는 법 — 식별자 전수 대조 익명화 워크플로", "description": "전 직장의 실제 경험은 최고의 글감이지만, 회사, 고객, 크리덴셜, 동료를 노출하지 않고 쓰려면", "datePublished": "2026-06-26", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/anonymization-workflow/", "mainEntityOfPage": "https://donghyos.github.io/posts/anonymization-workflow/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/meta/" class="cat-link">블로그 운영</a>
+  
+  <time>2026-06-26</time>
+  <span class="read-time">5분 읽기</span>
+</div>
+</div>
+<h1 id="nda">전 직장 이야기를 NDA 깨지 않고 쓰는 법 — 식별자 전수 대조 익명화 워크플로</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 전 직장의 실제 경험은 최고의 글감이지만, 회사, 고객, 크리덴셜, 동료를 노출하지 않고 쓰려면</li>
+<li><strong>접근</strong>: "이름 지우기"를 넘어 <em>서사 지문</em>까지 걷어 보편 기법으로 일반화하고, 소스에서 실제 식별자를 <em>전수 추출</em>해 글 전체를 대조</li>
+<li><strong>결과·학습</strong>: grep 직감이 아니라 <em>전수 대조 + 파이프라인 단계별 재스캔</em>으로 0 누출을 검증한다. 방법을 공개해도 안전한 이유(비가역성)까지</li>
+<li><strong>도움 되는 독자</strong>: 전 직장·현직 경험을 공개적으로 쓰고 싶지만 NDA가 걸리는 개발자</li>
+</ul></div></aside>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">익명화는 &quot;이름 지우기&quot;가 아니다</a></li><li class="toc-h2"><a href="#_2">명시 식별자는 일반화, 서사는 기법으로</a></li><li class="toc-h2"><a href="#_3">소스에서 식별자를 전수 추출해 대조한다</a></li><li class="toc-h2"><a href="#_4">방법을 공개해도 안전한 이유</a></li><li class="toc-h2"><a href="#_5">학습</a></li></ul></nav><h2 id="_1">익명화는 "이름 지우기"가 아니다</h2>
+<p>이 블로그의 실무 글들은 전부 전 직장 경험을 익명화한 것이다. 전 직장 이야기는 가장 좋은 글감이면서 동시에 가장 위험하다. 회사명, 내부 도메인, 크리덴셜, 동료 실명만 지우면 될 것 같지만, 바로 거기에 함정이 있다.</p>
+<p>진짜 위험은 <em>명시 식별자</em>가 아니라 <strong>서사 지문</strong>이다. 특정 사건의 형태, "내가 어느 시점에 어떤 역할로 무엇을 했다"는 시점·역할 서사, 정확한 수치(예: 47.3% 감소), 한 회사에만 있는 고유한 도메인 표면. 전 직장 동료가 "아, 그거"라고 알아보는 건 회사 이름이 아니라 <em>이야기의 모양</em>이다.</p>
+<p>예를 들어 이런 문장은 회사 이름이 하나도 없는데도 위험하다. "입사 첫 주에, 3년 된 모놀리식을 둘이서 두 달 만에 잘라냈다." 규모(3년, 둘, 두 달)와 시점(입사 첫 주)이 합쳐지면, 그 일을 겪은 사람에겐 회사명보다 또렷한 지문이 된다. 이름을 다 지워도 <em>이야기가 너무 구체적</em>이면 익명이 아니다.</p>
+<p>그래서 기준은 하나다 — <strong>전 직장 동료도 못 알아볼 정도.</strong> 여기 강력한 도구가 하나 있다. 글의 인상적인 부분이 <em>사실 내 일이 아니면</em>(가령 그 아키텍처는 선임이 설계했고 내 몫은 한 모듈 구현뿐이면) 그 부분을 통째로 뺀다. 식별 위험과 <em>진정성</em> 문제가 동시에 사라진다.</p>
+<h2 id="_2">명시 식별자는 일반화, 서사는 기법으로</h2>
+<p>두 층위로 익명화한다.</p>
+<p>첫째, 명시 식별자. 회사명, 도메인, 테이블명, 내부 코드명은 generic placeholder로 바꾼다. 크리덴셜은 <em>절대</em> 싣지 않고, 소스에서 발견하면 로테이션부터 권한다. 코드도 회사 저장소를 그대로 인용하지 않고 <em>핵심 패턴만 뽑은 최소 재구성 예제</em>로 바꾼다. 변수·테이블·함수명을 전부 새로 짓는다.</p>
+<pre><code class="language-sql">-- 회사 저장소 코드 (그대로 인용 금지)
+SELECT u.user_id, p.pay_amt
+FROM   TB_CUST_MASTER u JOIN TB_PAYMENT_DTL p ON u.user_id = p.user_id;
+
+-- 재구성 예제 (핵심 패턴만, 이름 전부 새로)
+SELECT c.id, o.amount
+FROM   customer c JOIN order_line o ON c.id = o.customer_id;
+</code></pre>
+<p>여기서 중요한 건 <em>가리기</em>가 아니라 <em>다시 짓기</em>다. <code>TB_XXX</code>처럼 까맣게 칠하면 구조와 길이가 그대로 남아 단서가 되지만, 패턴만 뽑아 새 이름으로 재구성하면 원본의 흔적이 사라진다. 회사 코드를 <em>인용</em>하는 게 아니라, 같은 교훈을 주는 <em>최소 예제를 새로 쓰는</em> 것이다.</p>
+<p>둘째, 서사. 특정 사건 회고를 "이런 종류 문제를 이렇게 푼다"는 <em>보편 기법</em> 글로 바꾼다. 동료가 읽어도 "흔한 패턴 글"로 읽혀야 하고, <em>특정 사건으로 단정할 수 없어야</em> 한다.</p>
+<h2 id="_3">소스에서 식별자를 전수 추출해 대조한다</h2>
+<p>여기가 핵심이고, 자동화가 가장 빛나는 곳이다. grep으로 <em>내가 예상한</em> 식별자만 찾는 건 약하다 — 빠뜨린 게 그대로 샌다.</p>
+<p>그래서 반대로 한다. 소스(코드, 실행계획, 인수인계 문서, 옛 쿼리)에서 <em>실제 식별자를 전부 추출</em>해 블록리스트를 만들고, 글을 그 <strong>전체</strong>에 대조한다. 한 번은 소스 파일들에서 식별자 수백 개를 뽑아, 글에 그중 단 하나라도 남았는지 전수 대조했다. 내가 떠올린 것만 훑는 grep과 정반대 방향이다.</p>
+<p>추출은 기계적으로 한다. 소스의 모든 식별자(테이블, 컬럼, 함수, 상수, 로그인 ID까지)를 긁어 한 집합으로 만든다. 그리고 <em>양방향</em>으로 본다. 글에 실제 식별자가 남았나(누출), 그리고 내가 새로 지은 generic 이름이 <em>실제 이름과 우연히 겹치지는 않나</em>. 후자를 놓치면, 일반화한 줄 알았던 이름이 사실은 진짜였다는 사고가 난다.</p>
+<p>대조는 세 겹으로 본다. ① 명시 식별자, ② 정황·도메인 표면, ③ 서사 지문(인수인계, 전임자, 정확 수치 같은). 그리고 <em>한 번에 끝내지 않는다.</em> 초안 → 빌드 산출물(HTML) → 공개 저장소 변경셋 → 라이브 페이지(DOM)까지, 파이프라인의 각 관문에서 다시 스캔한다. 한 곳에서만 새도 그게 그대로 발행되기 때문이다.</p>
+<p>이 전수 대조와 재스캔의 노동은 이 블로그를 함께 운영하는 AI 에이전트에게 스크립트로 맡겼다. <em>무엇이 민감한가</em>라는 판단은 내가 하고, <em>전부 빠짐없이 대조하는</em> 반복 노동은 도구가 한다. 판단과 노동을 나눈 셈이다. 사람은 <em>무엇이 위험한지</em>는 알지만 빠뜨리고, 도구는 <em>빠짐없이</em> 보지만 무엇이 위험한지는 모른다. 둘을 합쳐야 누출이 0에 수렴한다.</p>
+<h2 id="_4">방법을 공개해도 안전한 이유</h2>
+<p>이 글을 쓰며 스스로 물었다. <em>익명화 방법을 공개하면, 내 다른 글이 역추론되지 않을까?</em></p>
+<p>답은 "아니다"다. 제대로 된 익명화는 <em>비가역적</em>이기 때문이다. 보안의 원천은 방법의 비밀이 아니라 결과의 비가역성에 있다 — 암호학의 케르크호프스 원칙과 같다(시스템은 방법이 공개돼도 안전해야 한다). "식별자를 지우고 일반화한다"를 알아도 <em>원본이 무엇이었는지</em>는 알 수 없다. 원본이 글에 없으니까.</p>
+<p>방법을 알면 풀리는 익명화는 애초에 익명화가 아니다. 그래서 이 글의 모든 예시는 <em>지어낸 것</em>이고, 실제 글의 before/after 매핑은 단 하나도 싣지 않았다. 그것이 유일한 누출 경로라서다.</p>
+<p>한 가지 더. 방법을 밝히면 글의 <em>신뢰도</em>가 떨어지지 않을까? 오히려 반대다. 익명화를 공개한다는 건 <em>이 글들이 실재했던 일을 다듬은 것</em>임을 정직하게 말하는 셈이다. 일반화된 표면 아래에 구체적 원본이 있고, 그 디테일은 면접 자리에서 (NDA가 허용하는 선까지) 말로 채운다. 블로그는 안전한 요약이고, 면접은 그 요약의 출처다. 둘의 역할이 다르다.</p>
+<h2 id="_5">학습</h2>
+<ul>
+<li><strong>익명화의 진짜 위험은 이름이 아니라 <em>이야기의 모양</em>이다.</strong> 명시 식별자 제거는 시작일 뿐, 서사 지문까지 걷어야 동료도 못 알아본다.</li>
+<li><strong>grep 직감보다 전수 대조.</strong> 예상한 것만 보면 빠뜨린 게 샌다. 소스에서 식별자를 다 뽑아 글 전체에 대조하는 편이 훨씬 안전하다.</li>
+<li><strong>익명화는 한 번이 아니라 파이프라인의 관문마다.</strong> 초안, 빌드, 저장소, 라이브 단계에서 거듭 스캔한다. 한 곳만 새도 발행된다.</li>
+<li><strong>좋은 익명화는 방법을 공개해도 안전하다.</strong> 비가역성이 그 정의다. 그리고 NDA를 의식한다는 신호 자체가, 채용자에게는 오히려 자산이다.</li>
+<li><strong>익명화는 제약이 아니라 <em>가능 조건</em>이다.</strong> 실재한 일을 안전하게 일반화할 수 있어야, 가장 좋은 글감(내가 진짜 겪은 것)을 공개적으로 쓸 수 있다. 이 워크플로가 없었다면 이 블로그의 실무 글은 애초에 존재하지 못했다.</li>
+</ul>
+<div class="page-tags"><button class="tag-chip" data-tag="blog">#blog</button> <button class="tag-chip" data-tag="de-identification">#de-identification</button> <button class="tag-chip" data-tag="nda">#nda</button> <button class="tag-chip" data-tag="privacy">#privacy</button> <button class="tag-chip" data-tag="writing">#writing</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+
+
+
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://donghyos.github.io/</loc><lastmod>2026-06-21</lastmod></url>
-  <url><loc>https://donghyos.github.io/posts/</loc><lastmod>2026-06-21</lastmod></url>
+  <url><loc>https://donghyos.github.io/</loc><lastmod>2026-06-26</lastmod></url>
+  <url><loc>https://donghyos.github.io/posts/</loc><lastmod>2026-06-26</lastmod></url>
   <url><loc>https://donghyos.github.io/about/</loc></url>
+  <url><loc>https://donghyos.github.io/posts/anonymization-workflow/</loc><lastmod>2026-06-26</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/multi-hop-latency/</loc><lastmod>2026-06-21</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/grub-manual-boot/</loc><lastmod>2026-06-20</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/solo-fullstack-v5-video/</loc><lastmod>2026-06-14</lastmod></url>
@@ -18,10 +19,11 @@
   <url><loc>https://donghyos.github.io/posts/ai-shorts-pipeline-v3-diversification/</loc><lastmod>2026-05-30</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/</loc><lastmod>2026-05-29</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/ai-shorts-pipeline-v1-architecture/</loc><lastmod>2026-05-29</lastmod></url>
-  <url><loc>https://donghyos.github.io/categories/</loc><lastmod>2026-06-21</lastmod></url>
+  <url><loc>https://donghyos.github.io/categories/</loc><lastmod>2026-06-26</lastmod></url>
   <url><loc>https://donghyos.github.io/categories/proj/</loc></url>
   <url><loc>https://donghyos.github.io/categories/work/</loc></url>
-  <url><loc>https://donghyos.github.io/series/</loc><lastmod>2026-06-21</lastmod></url>
+  <url><loc>https://donghyos.github.io/categories/meta/</loc></url>
+  <url><loc>https://donghyos.github.io/series/</loc><lastmod>2026-06-26</lastmod></url>
   <url><loc>https://donghyos.github.io/series/ai-shorts-pipeline/</loc></url>
   <url><loc>https://donghyos.github.io/series/solo-fullstack/</loc></url>
 </urlset>
