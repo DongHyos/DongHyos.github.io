@@ -7,7 +7,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Thu, 25 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Sat, 27 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>LLM에게 주문을 맡기지 않았다 — 안전 경계를 프롬프트가 아니라 코드에 두기</title>
+    <link>https://donghyos.github.io/posts/safe-autotrade-v1-llm-boundary/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/safe-autotrade-v1-llm-boundary/</guid>
+    <pubDate>Sat, 27 Jun 2026 15:00:00 GMT</pubDate>
+    <description>LLM에게 매매 판단을 맡기면서, 어떻게 폭주(오발주)를 구조적으로 막는가</description>
+  </item>
   <item>
     <title>전 직장 이야기를 NDA 깨지 않고 쓰는 법 — 식별자 전수 대조 익명화 워크플로</title>
     <link>https://donghyos.github.io/posts/anonymization-workflow/</link>

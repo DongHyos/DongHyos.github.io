@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>LLM에게 주문을 맡기지 않았다 — 안전 경계를 프롬프트가 아니라 코드에 두기 — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/safe-autotrade-v1-llm-boundary/">
+<meta name="description" content="LLM에게 매매 판단을 맡기면서, 어떻게 폭주(오발주)를 구조적으로 막는가">
+<meta property="og:title" content="LLM에게 주문을 맡기지 않았다 — 안전 경계를 프롬프트가 아니라 코드에 두기 — donghyos">
+<meta property="og:description" content="LLM에게 매매 판단을 맡기면서, 어떻게 폭주(오발주)를 구조적으로 막는가">
+<meta property="og:url" content="https://donghyos.github.io/posts/safe-autotrade-v1-llm-boundary/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="LLM에게 주문을 맡기지 않았다 — 안전 경계를 프롬프트가 아니라 코드에 두기 — donghyos">
+<meta name="twitter:description" content="LLM에게 매매 판단을 맡기면서, 어떻게 폭주(오발주)를 구조적으로 막는가">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "LLM에게 주문을 맡기지 않았다 — 안전 경계를 프롬프트가 아니라 코드에 두기", "description": "LLM에게 매매 판단을 맡기면서, 어떻게 폭주(오발주)를 구조적으로 막는가", "datePublished": "2026-06-28", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/safe-autotrade-v1-llm-boundary/", "mainEntityOfPage": "https://donghyos.github.io/posts/safe-autotrade-v1-llm-boundary/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
+  <a href="/series/safe-autotrade/" class="series-link">시리즈: safe-autotrade</a>
+  <time>2026-06-28</time>
+  <span class="read-time">8분 읽기</span>
+</div>
+</div>
+<h1 id="llm">LLM에게 주문을 맡기지 않았다 — 안전 경계를 프롬프트가 아니라 코드에 두기</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: LLM에게 매매 판단을 맡기면서, 어떻게 폭주(오발주)를 구조적으로 막는가</li>
+<li><strong>접근</strong>: 결정론 안전 코어와 확률 조언 레이어를 분리하고, 안전 경계를 프롬프트가 아니라 <em>코드</em>에 둔다</li>
+<li><strong>결과·학습</strong>: LLM은 규칙을 <em>제안</em>만 하고 주문은 결정론 코드만 낸다. 조언자는 매매 코어를 import조차 못 하고, 자기 제안을 스스로 승인하는 통로는 코드에 존재하지 않는다. LLM이 무엇을 출력하든 닿을 수 없는 경계다</li>
+<li><strong>도움 되는 독자</strong>: LLM 에이전트에 권한을 위임해야 하는데 폭주가 두려운 개발자</li>
+</ul></div></aside>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#ai-llm">&quot;AI 자동매매&quot;가 무서운 건 LLM이 멍청해서가 아니다</a></li><li class="toc-h2"><a href="#_1">접근: 똑똑한 층과 안전한 층을 분리한다</a></li><li class="toc-h2"><a href="#llm_1">구현: LLM이 닿을 수 없는 경계</a></li><li class="toc-h2"><a href="#_2">결과: 경계를 코드로 증명한다</a></li><li class="toc-h2"><a href="#_3">학습</a></li></ul></nav><h2 id="ai-llm">"AI 자동매매"가 무서운 건 LLM이 멍청해서가 아니다</h2>
+<p>토스증권이 OPEN API로 주문 실행까지 열어주면서, 나는 개인 계좌로 도는 자동매매 시스템을 만들기 시작했다. 뉴스를 읽고 매매 후보를 추리는 판단에는 LLM을 쓰고 싶었다. 문제는 그다음이다. LLM에게 "이 종목 사"라고 주문까지 맡기는 순간, 시스템의 안전은 <em>LLM이 실수하지 않는다</em>는 가정 위에 선다.</p>
+<p>그 가정은 위험하다. LLM은 비결정적이다. 같은 입력에 다른 출력을 낼 수 있고, 프롬프트 인젝션이나 가짜 뉴스에 휘둘릴 수 있다. 반면 주문은 비가역적이다. 일단 체결되면 되돌릴 수 없고, 그 대상이 실제 돈이다. 비결정적인 판단기에 비가역적인 권한을 직접 쥐여주는 것, 이것이 "AI 자동매매"라는 말이 주는 공포의 정체다.</p>
+<p>흔한 접근은 프롬프트로 안전을 거는 것이다. "절대 하루 50만 원 넘게 주문하지 마", "확실하지 않으면 사지 마" 같은 지침을 시스템 프롬프트에 박는다. 하지만 이건 안전 경계를 <em>LLM의 순응</em>에 의존하게 만든다. 경계가 코드가 아니라 자연어 부탁에 있다. 나는 이 구조를 택하지 않기로 했다. 설계 문서에 남긴 첫 거부 결정이 이것이다. "LLM 중심 오케스트레이션은 안전 경계가 프롬프트에 의존하므로 폭주 위험이 있다."</p>
+<h2 id="_1">접근: 똑똑한 층과 안전한 층을 분리한다</h2>
+<p>내가 세운 제1원칙은 수익이 아니라 <em>오발주 회피</em>다. "틀린 행동보다 무행동이 낫다. 의심스러우면 멈춘다." 이 원칙을 코드로 강제하려면, 돈을 만지는 결정과 LLM의 판단을 같은 곳에 두면 안 된다.</p>
+<p>그래서 시스템을 두 레이어로 쪼갰다.</p>
+<ul>
+<li><strong>확률 레이어(조언자)</strong>: LLM이 뉴스를 읽고 위키를 갱신하고 매매 규칙을 <em>제안</em>한다. 비결정적이고, 틀릴 수 있는 층.</li>
+<li><strong>결정론 코어(엔진, 케이지, 게이트웨이)</strong>: 규칙을 평가하고 한도를 검사하고 실제 주문을 낸다. 재현 가능하고, LLM이 없어도 도는 층.</li>
+</ul>
+<p>핵심은 두 층 사이의 경계다. 확률 레이어는 결정론 코어에 <em>제안</em>을 흘려보낼 수 있을 뿐, 코어를 직접 움직일 수 없다. 그리고 그 경계는 프롬프트가 아니라 코드와 타입으로 강제된다.</p>
+<pre class="mermaid">graph LR
+    subgraph PROB["확률 레이어 (LLM)"]
+        ADV["조언자<br/>뉴스 → 위키 → 추론"]
+    end
+    RULES[("규칙 저장소")]
+    HUMAN(["사람 승인"])
+    subgraph CORE["결정론 코어"]
+        ENG["엔진<br/>active 규칙 평가"]
+        CAGE["케이지<br/>단일 관문"]
+    end
+    TOSS["토스 API<br/>실주문"]
+
+    ADV -->|"제안 (proposed)"| RULES
+    RULES --> HUMAN
+    HUMAN -->|"승인 (active)"| ENG
+    ENG -->|"OrderIntent"| CAGE
+    CAGE -->|"LIVE에서만"| TOSS
+
+    style PROB fill:#fff5f5,stroke:#d98a8a,color:#1a1a1a
+    style ADV fill:#ffe0e0,stroke:#d98a8a,color:#1a1a1a
+    style RULES fill:#f0e6ff,stroke:#a98ad9,color:#1a1a1a
+    style HUMAN fill:#fffacc,stroke:#c9b84a,color:#1a1a1a
+    style CORE fill:#f5fff5,stroke:#8ab98a,color:#1a1a1a
+    style ENG fill:#e0f0ff,stroke:#8aa9d9,color:#1a1a1a
+    style CAGE fill:#e0ffe0,stroke:#8ab98a,color:#1a1a1a
+    style TOSS fill:#ffe9d6,stroke:#d9a86a,color:#1a1a1a
+</pre>
+<p>이 그림에서 LLM(조언자)부터 토스 API까지 <em>직선이 없다</em>는 점이 전부다. 모든 경로는 사람의 승인을 거치고, 모든 주문은 케이지라는 단일 관문을 통과한다.</p>
+<h2 id="llm_1">구현: LLM이 닿을 수 없는 경계</h2>
+<p>경계를 네 겹으로 세웠다.</p>
+<p><strong>1. 조언자는 매매 코어를 import조차 못 한다.</strong> 조언자 모듈은 토스 게이트웨이, 케이지, 엔진, 주문 상태 저장소를 import하지 않는다. 코드에서 그 심볼에 접근할 방법이 아예 없다. 이건 주석에 적은 약속이 아니다. 테스트가 조언자의 import 그래프를 AST로 훑어, 토스나 코어가 끼어들면 실패하도록 강제한다. 조언자가 할 수 있는 건 저장소에 규칙을 <em>제안</em>하는 것뿐이다.</p>
+<p><strong>2. 제안과 승인을 호출자로 격리한다.</strong> 규칙 저장소는 모든 호출에 "누가 부르는지"를 함께 받는다.</p>
+<pre><code class="language-python">class Caller(Enum):
+    ADVISOR  = &quot;advisor&quot;   # 조언자(LLM) — 제안(propose)만
+    USER_CLI = &quot;user_cli&quot;  # 사람 — 승인(transition)만
+    ENGINE   = &quot;engine&quot;    # 엔진 — active 규칙 읽기만
+
+def propose_rule(self, draft: RuleDraft, *, caller: Caller) -&gt; str:
+    if caller is not Caller.ADVISOR:
+        raise CallerNotAuthorizedError(&quot;proposeRule은 조언자만 호출할 수 있다&quot;)
+    # 생성 상태는 항상 proposed로 고정. active로 만들 인자가 이 함수에 없다.
+    return self._insert(draft, state=RuleState.PROPOSED)
+
+def transition(self, rule_id, action, *, caller: Caller) -&gt; RuleState:
+    if caller is not Caller.USER_CLI:          # 조언자의 자가 승인을 차단
+        raise CallerNotAuthorizedError(&quot;transition은 사람/CLI만 호출할 수 있다&quot;)
+    ...
+</code></pre>
+<p>조언자(LLM)는 <code>propose_rule</code>만 부를 수 있고, 이 함수에는 규칙을 <code>active</code>로 만들 인자가 <em>존재하지 않는다</em>. 생성 상태는 언제나 <code>proposed</code>로 고정된다. 그리고 <code>proposed</code>를 <code>active</code>로 올리는 <code>transition</code>은 사람만 부를 수 있다. LLM이 제안한 규칙은 사람이 승인하기 전까지 거래에 쓰이지 않으며, LLM이 자기 제안을 스스로 승인하는 통로는 코드에 없다. <em>자동 실행과 자동 규칙 변경은 다른 문제다.</em> 규칙이 바뀌는 자리에는 반드시 사람이 든다.</p>
+<p><strong>3. 추론은 규칙으로 박제돼 들어온다.</strong> 사람이 승인한 규칙의 발화 조건(trigger)은 LLM이 매 순간 판단하는 게 아니라, 이런 JSON 조건으로 <em>굳어</em> 있다.</p>
+<pre><code class="language-python"># 사람이 승인한 규칙의 trigger. 엔진은 이것을 결정론으로 평가할 뿐,
+# 평가 시점에 LLM을 호출하지 않는다.
+{&quot;all&quot;: [
+    {&quot;type&quot;: &quot;schedule&quot;, &quot;date&quot;: &quot;2026-09-15&quot;, &quot;within_days&quot;: 3},  # 예정 이벤트 임박
+    {&quot;type&quot;: &quot;price&quot;,    &quot;op&quot;: &quot;&lt;=&quot;, &quot;value&quot;: &quot;70000&quot;}             # 가격 눌림목
+]}
+
+def _evaluate_trigger(self, rule, now) -&gt; bool:
+    try:
+        return self._eval_spec(json.loads(rule.trigger), rule, now)
+    except Exception:
+        # 파싱 실패·미지원 신호·시세 누락 등 평가 불가는 전부 미충족(무발주).
+        # 제1원칙: 모르면 멈춘다. &quot;모르니 일단 발주&quot;는 없다.
+        return False
+</code></pre>
+<p>엔진은 active 규칙만 읽어 이 조건을 평가한다. 매매 루프 어디에도 LLM 호출이 없다. LLM의 판단은 사람의 승인을 거쳐 정적인 규칙으로 굳은 뒤에야 코어에 들어오고, 굳은 뒤에는 더 이상 비결정적이지 않다. 평가가 조금이라도 불확실하면 엔진은 무발주를 택한다(fail-closed).</p>
+<p><strong>4. 모든 주문은 케이지라는 단일 관문을 통과한다.</strong> 엔진조차 게이트웨이를 직접 참조하지 않는다. 주문은 오직 케이지의 <code>submit</code>으로만 나간다. 케이지는 kill 스위치, 종목 화이트리스트, 금액·횟수 한도, 멱등(중복 방지)을 차례로 검사하고, 어느 조회든 실패하면 보수적으로 거부한다. 그리고 실제 주문 전송은 모드가 LIVE일 때만 일어난다. 기본값은 판단만 하고 주문은 내지 않는 SHADOW다.</p>
+<h2 id="_2">결과: 경계를 코드로 증명한다</h2>
+<p>이 구조의 값어치는 "안전하게 짰다"는 주장이 아니라, <em>경계가 코드로 증명된다</em>는 데 있다.</p>
+<ul>
+<li>조언자의 import 그래프에 토스와 코어가 0임을 AST 테스트가 강제한다. 이런 경계 가드는 금지된 import를 일부러 주입했을 때 실제로 실패하는 것까지 확인했다.</li>
+<li>같은 규칙이 같은 날 반복 충족돼도 멱등키로 중복 주문이 0이다.</li>
+<li>안전 이음매에 결함을 일부러 심었을 때 해당 테스트가 깨지는지 역으로 확인했다. 모드 게이트를 무력화하면 SHADOW에서도 주문이 나가고, 멱등 가드를 무력화하면 중복 주문이 생기는 식이다. 통과가 헛통과가 아님을 보장하기 위해서다.</li>
+<li>전체 447개 테스트가 통과하고, 외부 의존성이 0이다(표준 라이브러리만). LLM SDK조차 import하지 않는다.</li>
+</ul>
+<p>정직하게 적자면, 이 시스템은 아직 SHADOW 단계다. 실주문은 0건이고, 따라서 수익률 같은 건 이 글에서 주장하지 않는다. 애초에 이 글의 주제도 아니다. 내가 증명하려 한 건 "돈을 벌었다"가 아니라 "LLM이 폭주해도 돈에 닿지 못한다"는 <em>구조</em>이며, 그 구조는 실거래 이전에 코드와 테스트로 증명되는 종류의 것이다.</p>
+<h2 id="_3">학습</h2>
+<p><strong>첫째, 안전 경계는 프롬프트가 아니라 코드에 있어야 한다.</strong> "~하지 마"라고 부탁하면 LLM이 따라줄 때만 안전하다. import 불가, 함수 인자 부재, 호출자 격리처럼 <em>타입과 구조로</em> 막으면 LLM이 무엇을 출력하든 경계가 유지된다. 전자는 가정이고 후자는 보장이다.</p>
+<p><strong>둘째, LLM을 똑똑하게 만드는 일과 LLM을 가두는 일은 다르다.</strong> 나는 조언자의 추론 품질을 높이는 데 시간을 거의 쓰지 않았다. 실제 LLM 호출은 의도적으로 보류하고 안전 골격을 먼저 세웠다. 위험한 건 멍청한 LLM이 아니라, 똑똑하든 멍청하든 <em>주문 버튼에 직접 닿는</em> LLM이다. 가두는 일이 똑똑하게 만드는 일보다 먼저다.</p>
+<p><strong>셋째, 이 패턴은 자동매매만의 것이 아니다.</strong> 비가역적이고 권한이 큰 작업, 이를테면 결제, 배포, 데이터 삭제에 LLM 에이전트를 붙일 때 같은 구조가 쓰인다. LLM은 <em>제안</em>하게 하고, 실행 권한은 결정론 코드 게이트에 두고, 그 사이에 사람의 승인을 끼운다. 에이전트에 권한을 위임하는 시대에, 위임의 안전은 결국 "에이전트가 닿을 수 없는 경계를 코드로 어디에 그었는가"로 결정된다.</p>
+<div class="page-tags"><button class="tag-chip" data-tag="llm-safety">#llm-safety</button> <button class="tag-chip" data-tag="ai-agent">#ai-agent</button> <button class="tag-chip" data-tag="architecture">#architecture</button> <button class="tag-chip" data-tag="fintech">#fintech</button> <button class="tag-chip" data-tag="design-decision">#design-decision</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+
+
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/solo-fullstack-v5-video/">움직임은 비싸다 — 모든 컷을 영상으로 만들지 않는 법</a><a class="rel-card" href="/posts/solo-fullstack-v4-reuse/">재사용된 것은 내가 추상화하지 않은 쪽이었다 — 두 번째 제품이 드러낸 재사용의 경계</a><a class="rel-card" href="/posts/solo-fullstack-v3-hitl/">AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리</a></section>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>
