@@ -7,7 +7,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Sat, 27 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Tue, 30 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>의심스러우면 멈춘다 — 되돌릴 수 없는 작업을 자동화하는 케이지</title>
+    <link>https://donghyos.github.io/posts/safe-autotrade-v2-cage/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/safe-autotrade-v2-cage/</guid>
+    <pubDate>Tue, 30 Jun 2026 15:00:00 GMT</pubDate>
+    <description>주문이나 결제처럼 되돌릴 수 없는 작업을 자동화할 때, &quot;실패&quot;보다 &quot;나갔는지 모르는 모호한 상태&quot;가 더 위험하다</description>
+  </item>
   <item>
     <title>LLM에게 주문을 맡기지 않았다 — 안전 경계를 프롬프트가 아니라 코드에 두기</title>
     <link>https://donghyos.github.io/posts/safe-autotrade-v1-llm-boundary/</link>
