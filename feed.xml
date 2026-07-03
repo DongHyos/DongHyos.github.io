@@ -7,7 +7,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Tue, 30 Jun 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Thu, 02 Jul 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>API가 안 주는 것이 설계를 정한다 — 외부 API 제약과 숨기지 않은 SPOF</title>
+    <link>https://donghyos.github.io/posts/safe-autotrade-v3-constraints/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/safe-autotrade-v3-constraints/</guid>
+    <pubDate>Thu, 02 Jul 2026 15:00:00 GMT</pubDate>
+    <description>외부 API로 시스템을 만들면 설계의 절반은 내가 아니라 그 API가 정한다. 토스 오픈 API가 주는 것과 *안 주는* 것이 자동매매 설계를 어떻게 강제했나</description>
+  </item>
   <item>
     <title>의심스러우면 멈춘다 — 되돌릴 수 없는 작업을 자동화하는 케이지</title>
     <link>https://donghyos.github.io/posts/safe-autotrade-v2-cage/</link>
