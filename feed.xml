@@ -7,7 +7,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Thu, 02 Jul 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Fri, 03 Jul 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>초록불을 믿지 않는다 — 샌드박스 없는 금융 API를 결정론으로 검증하기</title>
+    <link>https://donghyos.github.io/posts/safe-autotrade-v4-testing/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/safe-autotrade-v4-testing/</guid>
+    <pubDate>Fri, 03 Jul 2026 15:00:00 GMT</pubDate>
+    <description>실제 돈이 오가는 주문 API에 샌드박스가 없다. 실거래 테스트는 위험하고, 전부 mock으로 가리면 진짜 동작을 검증하지 못한다</description>
+  </item>
   <item>
     <title>API가 안 주는 것이 설계를 정한다 — 외부 API 제약과 숨기지 않은 SPOF</title>
     <link>https://donghyos.github.io/posts/safe-autotrade-v3-constraints/</link>
