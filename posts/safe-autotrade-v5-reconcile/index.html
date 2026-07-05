@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>죽었다 살아나면 거래소에 되묻는다 — 재시작 후 주문 상태 조정(reconcile) — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/safe-autotrade-v5-reconcile/">
+<meta name="description" content="자동매매 프로세스가 죽었다 살아나면, 나갔는지 모르는 주문과 보내기 전에 죽은 주문이 어중간하게 남는다. 이 어긋남을 안고 매매를 재개하면 위험하다">
+<meta property="og:title" content="죽었다 살아나면 거래소에 되묻는다 — 재시작 후 주문 상태 조정(reconcile) — donghyos">
+<meta property="og:description" content="자동매매 프로세스가 죽었다 살아나면, 나갔는지 모르는 주문과 보내기 전에 죽은 주문이 어중간하게 남는다. 이 어긋남을 안고 매매를 재개하면 위험하다">
+<meta property="og:url" content="https://donghyos.github.io/posts/safe-autotrade-v5-reconcile/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="죽었다 살아나면 거래소에 되묻는다 — 재시작 후 주문 상태 조정(reconcile) — donghyos">
+<meta name="twitter:description" content="자동매매 프로세스가 죽었다 살아나면, 나갔는지 모르는 주문과 보내기 전에 죽은 주문이 어중간하게 남는다. 이 어긋남을 안고 매매를 재개하면 위험하다">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "죽었다 살아나면 거래소에 되묻는다 — 재시작 후 주문 상태 조정(reconcile)", "description": "자동매매 프로세스가 죽었다 살아나면, 나갔는지 모르는 주문과 보내기 전에 죽은 주문이 어중간하게 남는다. 이 어긋남을 안고 매매를 재개하면 위험하다", "datePublished": "2026-07-05", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/safe-autotrade-v5-reconcile/", "mainEntityOfPage": "https://donghyos.github.io/posts/safe-autotrade-v5-reconcile/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
+  <a href="/series/safe-autotrade/" class="series-link">시리즈: safe-autotrade</a>
+  <time>2026-07-05</time>
+  <span class="read-time">7분 읽기</span>
+</div>
+</div>
+<h1 id="reconcile">죽었다 살아나면 거래소에 되묻는다 — 재시작 후 주문 상태 조정(reconcile)</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 자동매매 프로세스가 죽었다 살아나면, 나갔는지 모르는 주문과 보내기 전에 죽은 주문이 어중간하게 남는다. 이 어긋남을 안고 매매를 재개하면 위험하다</li>
+<li><strong>접근</strong>: 거래소(토스)를 진실의 원천으로 삼아, 재시작 시 내 기록(State)의 비종결 주문을 실제 상태와 대조해 맞춘다 — 상태 조정(reconciliation)</li>
+<li><strong>결과·학습</strong>: 고아를 죽은 단계에 따라 다르게 다룬다. 보내기 전 죽은 건 미실행으로 확정하고, 거래소로 나갔을 수 있는 건 되물어 실제 상태로 맞춘다. 재시작은 예외가 아니라 정규 경로다</li>
+<li><strong>도움 되는 독자</strong>: 비동기·비가역 작업을 다루면서 프로세스가 언제든 죽을 수 있는 시스템을 만드는 개발자</li>
+</ul></div></aside>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">프로세스는 죽지만 주문은 남는다</a></li><li class="toc-h2"><a href="#_2">접근: 거래소를 진실의 원천으로 삼는다</a></li><li class="toc-h2"><a href="#_3">구현: 죽은 단계에 따라 다르게 다룬다</a></li><li class="toc-h2"><a href="#_4">결과: 재시작해도 진실과 어긋나지 않는다</a></li><li class="toc-h2"><a href="#_5">학습</a></li></ul></nav><h2 id="_1">프로세스는 죽지만 주문은 남는다</h2>
+<p><a href="../safe-autotrade-v2-cage/">2편</a>에서 주문을 보냈는데 응답이 오지 않는 순간을 다뤘다. 그때의 결론은 "재전송하지 말고 UNKNOWN으로 두었다가 <em>나중에</em> reconcile로 해소한다"였다. 이 글이 그 "나중에"다.</p>
+<p>왜 그 "나중에"가 필요한가. <a href="../safe-autotrade-v3-constraints/">3편</a>에서 이 시스템의 손절이 내 로컬 프로세스 하나에 매달려 있다고 했다. 그런데 프로세스는 죽는다. 크래시로, 재부팅으로, 노트북이 잠들어서. 죽었다 살아나면 어중간한 상태의 주문들이 남는다. <strong>나갔는지 모르는 주문</strong>(응답을 못 받아 UNKNOWN인 것), 그리고 <strong>보내기 직전에 죽은 주문</strong>(케이지는 통과했지만 아직 거래소로 나가지 못한 것).</p>
+<p>이걸 방치한 채 매매를 재개하면 위험하다. 내 기록(State)은 "이 주문 상태를 모른다"고 하는데 실제로는 거래소에서 체결됐을 수도, 안 됐을 수도 있다. 그 어긋남 위에서 새 주문을 얹으면, 중복이든 누락이든 사고가 난다. 재시작 직후의 시스템은 <em>자기가 무슨 주문을 걸어뒀는지 정확히 모르는</em> 상태다. 그 상태로는 아무것도 하면 안 된다.</p>
+<p>어긋남이 어떻게 사고로 번지는지는 구체적이다. State가 어떤 주문을 UNKNOWN으로 아는데 실제로는 체결돼 있었다면, 그 포지션은 손절 감시 대상에 들어가지 못한다. 산 줄 모르는 주식에는 손절을 걸 수 없다. 반대로 State가 "안 나갔다"고 아는데 실제로는 나갔다면, 같은 자리에 새 주문을 얹어 중복이 된다. 어느 쪽이든 재시작 직후의 무지가 그대로 돈의 사고가 된다.</p>
+<h2 id="_2">접근: 거래소를 진실의 원천으로 삼는다</h2>
+<p>내 기록이 어중간할 때, 누가 진실을 아는가. 거래소다. 실제 체결은 내 노트북이 아니라 토스 서버에 있다. 그러니 재시작할 때, 세션을 기동하기 <em>전에</em>, 내 기록의 어중간한 주문들을 거래소에 되물어 맞춘다. 이것이 상태 조정(reconciliation)이다.</p>
+<p>구조는 세 축의 대조다. <strong>토스(실제 진실) ↔ State(내 기록) ↔ Audit(꼬리표).</strong> State에서 아직 종결되지 않은 주문을 골라, 각각을 멱등키로 토스에 조회하고, 실제 상태에 맞춰 내 기록을 정합시킨다. 그리고 그 정합의 흔적을 감사 로그에 남긴다. 이건 특별한 발상이 아니라 쿠버네티스 컨트롤러가 "원하는 상태 vs 실제 상태"를 맞추거나, 결제 시스템이 장부와 PG사 내역을 대사(對査)하는 것과 같은 패턴이다.</p>
+<pre><code class="language-python">def reconcile_open_orders(*, state, audit, gateway) -&gt; ReconcileResult:
+    resolved = errors = 0
+    for order in state.get_unsettled_orders():   # 비종결(INTENT·SENT·UNKNOWN…) 주문
+        try:
+            if _reconcile_one(order, state=state, audit=audit, gateway=gateway):
+                resolved += 1
+        except Exception:
+            # 한 주문의 실패가 기동 전체를 막지 않게 — 다음 주문은 계속,
+            # 미해소분은 errors로 집계해 드러낸다(조용히 삼키지 않는다).
+            errors += 1
+    return ReconcileResult(resolved=resolved, errors=errors)
+</code></pre>
+<h2 id="_3">구현: 죽은 단계에 따라 다르게 다룬다</h2>
+<p>핵심은 어중간한 주문이 한 종류가 아니라는 데 있다. 어느 단계에서 죽었는지에 따라 진실을 확인하는 방법이 다르다.</p>
+<pre><code class="language-python">def _resolve_target_state(order, current, gateway):
+    # 1) INTENT·CAGED = 거래소로 나간 적이 없는 단계.
+    #    되물을 것도 없이 미실행으로 확정한다(존재할 수 없으므로).
+    if current in (OrderState.INTENT, OrderState.CAGED):
+        return OrderState.REJECTED
+
+    # 2) SENT 이후 = 거래소로 나갔을 수 있는 단계. 되묻는다.
+    toss = gateway.get_order_by_client_id(order.client_order_id)
+    if toss is None:
+        return OrderState.REJECTED            # 거래소에 없음 = 접수 안 됨(미실행 확정)
+    return _TOSS_STATUS_TO_STATE.get(toss.get(&quot;status&quot;))  # 미지의 상태면 None → 보류
+</code></pre>
+<p><strong>보내기 전에 죽은 주문</strong>(INTENT·CAGED)은 되물을 필요조차 없다. 케이지를 통과했어도 아직 거래소로 나가지 않은 단계라, 토스에 존재할 수가 없다. 그러니 조회 없이 미실행으로 확정한다.</p>
+<p><strong>거래소로 나갔을 수 있는 주문</strong>(SENT 이후, 응답을 못 받은 UNKNOWN 포함)만 되묻는다. 여기서 세 갈래다. 거래소에 있으면 그 실제 상태로 맞추고, 없으면 "접수되지 않았다 = 미실행"으로 확정하고, 거래소가 내가 모르는 상태 코드를 주면 함부로 건드리지 않고 보류한다. 없을 때 미실행으로 확정하는 게 안전한 이유는, "나갔을지도 모른다"가 아니라 "거래소에 물어보니 없다 = 안 나갔다"이기 때문이다. 추측이 아니라 확인이다.</p>
+<pre class="mermaid">graph TD
+    U["비종결 주문"] --> Q{"어느 단계에서 죽었나?"}
+    Q -->|"INTENT · CAGED<br/>(나간 적 없음)"| REJ1["미실행 확정<br/>(되묻지 않음)"]
+    Q -->|"SENT 이후<br/>(나갔을 수 있음)"| ASK["거래소에 되묻기<br/>get_order_by_client_id"]
+    ASK --> E{"거래소에 있나?"}
+    E -->|"있음"| ST["그 실제 상태로 맞춤"]
+    E -->|"없음"| REJ2["미실행 확정"]
+    E -->|"미지의 상태"| HOLD["보류<br/>(다음 조정·수동 조사)"]
+    style U fill:#eef5ff,stroke:#8aa9d9,color:#1a1a1a
+    style Q fill:#fffacc,stroke:#c9b84a,color:#1a1a1a
+    style E fill:#fffacc,stroke:#c9b84a,color:#1a1a1a
+    style ASK fill:#e0f0ff,stroke:#8aa9d9,color:#1a1a1a
+    style ST fill:#e0ffe0,stroke:#8ab98a,color:#1a1a1a
+    style REJ1 fill:#ffe9d6,stroke:#d9a86a,color:#1a1a1a
+    style REJ2 fill:#ffe9d6,stroke:#d9a86a,color:#1a1a1a
+    style HOLD fill:#fff5f5,stroke:#d98a8a,color:#1a1a1a
+</pre>
+<p>한 가지 더 중요한 경계가 있다. reconcile은 상태 전이 규칙을 스스로 재구성하지 않는다. "무엇이 진실인지"만 정하고, 그 전이가 합법인지는 State의 <code>record_transition</code>이 강제한다(<a href="../safe-autotrade-v2-cage/">2편</a>의 FSM 그래프). reconcile이 진실을 잘못 판단해 불법 전이를 시도하면 State가 거부한다. 진실을 정하는 쪽과 전이를 지키는 쪽을 나눠, 한쪽의 실수가 다른 쪽을 뚫지 못하게 했다.</p>
+<h2 id="_4">결과: 재시작해도 진실과 어긋나지 않는다</h2>
+<p>세션 기동 전에 이 조정을 한 번 돌리면, 매매를 재개하는 시점의 State는 거래소와 정합된 상태다. 자기가 무슨 주문을 걸어뒀는지 모르는 채로 새 주문을 얹는 일이 없어진다. 구체적으로는, 재시작 전 UNKNOWN이던 진입 주문이 거래소에 살아 있었다면 reconcile이 그걸 실제 상태로 맞춰 손절 감시 대상으로 되돌리고, 접수조차 안 된 주문이었다면 미실행으로 확정해 없는 포지션을 감시하거나 없는 주문을 취소하려는 헛수고를 막는다.</p>
+<p>가용성도 지켰다. 어떤 주문 하나의 조정이 실패해도(조회 예외 등) 그 실패를 삼키지 않고 <code>errors</code>로 집계한 뒤 다음 주문으로 넘어간다. 한 고아 주문 때문에 시스템 전체가 기동을 못 하는 것이야말로 위험하기 때문이다. 미해소된 주문은 숫자로 드러나서, 지속되면 수동 조사의 신호가 된다(<a href="../safe-autotrade-v3-constraints/">3편</a>에서 미감시 포지션을 로그로 드러낸 것과 같은 원칙이다).</p>
+<h2 id="_5">학습</h2>
+<p><strong>첫째, 비가역 시스템에서 재시작은 예외가 아니라 정규 경로다.</strong> 프로세스는 반드시 죽는다. "정상 흐름"만 설계하고 재시작 복구를 나중 일로 미루면, 정작 죽었다 살아났을 때 시스템이 자기 상태를 모른다. 재시작 후 상태를 맞추는 절차는 부가 기능이 아니라 기동 시퀀스의 일부여야 한다.</p>
+<p><strong>둘째, 내 기록이 어중간하면 진실의 원천에 되물어라.</strong> 내가 아는 것(State)과 실제(거래소)가 갈릴 때, 판단의 기준은 언제나 외부의 실제다. "원하는 상태 vs 실제 상태"를 대조해 맞추는 이 패턴은 자동매매만의 것이 아니다. 오케스트레이터의 컨트롤러 루프, 결제 대사, 재고 동기화가 전부 같은 문제를 푼다.</p>
+<p><strong>셋째, 모를 때는 안전한 쪽으로 확정하되, 진짜 모르는 것은 보류하라.</strong> 거래소에 없으면 "미실행"으로 확정하는 건 확인에 근거한 안전한 단정이다. 하지만 거래소가 내가 모르는 상태를 주면, 억지로 해석하지 않고 보류한다. 확정할 수 있는 것은 확정하고 그럴 수 없는 것은 남겨두는 이 구분이, 재시작 복구를 무모하지 않게 만든다.</p>
+<div class="page-tags"><button class="tag-chip" data-tag="reconciliation">#reconciliation</button> <button class="tag-chip" data-tag="state-management">#state-management</button> <button class="tag-chip" data-tag="fault-tolerance">#fault-tolerance</button> <button class="tag-chip" data-tag="fintech">#fintech</button> <button class="tag-chip" data-tag="design-decision">#design-decision</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+<nav class="series-nav">
+<div class="seriesnav-head">시리즈 <a href="/series/safe-autotrade/">safe-autotrade</a> · 5/5편</div>
+<div class="seriesnav-links">
+<a class="seriesnav-item seriesnav-prev" href="/posts/safe-autotrade-v4-testing/"><span class="seriesnav-label">← 이전 글</span><span class="seriesnav-title">초록불을 믿지 않는다 — 샌드박스 없는 금융 API를 결정론으로 검증하기</span></a>
+<span class="seriesnav-item seriesnav-empty"></span>
+</div>
+</nav>
+
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/safe-autotrade-v4-testing/">초록불을 믿지 않는다 — 샌드박스 없는 금융 API를 결정론으로 검증하기</a><a class="rel-card" href="/posts/safe-autotrade-v3-constraints/">API가 안 주는 것이 설계를 정한다 — 외부 API 제약과 숨기지 않은 SPOF</a><a class="rel-card" href="/posts/safe-autotrade-v2-cage/">의심스러우면 멈춘다 — 되돌릴 수 없는 작업을 자동화하는 케이지</a></section>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>
