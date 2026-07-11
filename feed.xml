@@ -7,7 +7,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Sat, 04 Jul 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Fri, 10 Jul 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>무인 에이전트에게 셸을 주지 않았다 — 스케줄 위 LLM을 돈에서 떼어놓고 살려두기</title>
+    <link>https://donghyos.github.io/posts/dongstock-ops-v1-headless-agent/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/dongstock-ops-v1-headless-agent/</guid>
+    <pubDate>Fri, 10 Jul 2026 15:00:00 GMT</pubDate>
+    <description>매일 뉴스·촉매 델타를 LLM에게 무인으로 수집시키고 싶다. 그런데 스케줄 위에서 도는 LLM 에이전트는 두 가지가 무섭다. 돈줄(주문, 키, 셸)에 닿는 것, 그리고 잠자기, 인증, 네트워크에 조용히 죽는 것</description>
+  </item>
   <item>
     <title>죽었다 살아나면 거래소에 되묻는다 — 재시작 후 주문 상태 조정(reconcile)</title>
     <link>https://donghyos.github.io/posts/safe-autotrade-v5-reconcile/</link>
