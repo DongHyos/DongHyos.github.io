@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>줄자를 든 반나절에서 시작했다 — 이사 가구배치 앱을 만든 이유 — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/nestly-v1-tape-measure/">
+<meta name="description" content="이사 전 &quot;내 가구가 저 방에 들어갈까&quot;를 줄자와 검색으로 손계산하던 노동을, 소프트웨어로 대체할 수 있을까.">
+<meta property="og:title" content="줄자를 든 반나절에서 시작했다 — 이사 가구배치 앱을 만든 이유 — donghyos">
+<meta property="og:description" content="이사 전 &quot;내 가구가 저 방에 들어갈까&quot;를 줄자와 검색으로 손계산하던 노동을, 소프트웨어로 대체할 수 있을까.">
+<meta property="og:url" content="https://donghyos.github.io/posts/nestly-v1-tape-measure/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="줄자를 든 반나절에서 시작했다 — 이사 가구배치 앱을 만든 이유 — donghyos">
+<meta name="twitter:description" content="이사 전 &quot;내 가구가 저 방에 들어갈까&quot;를 줄자와 검색으로 손계산하던 노동을, 소프트웨어로 대체할 수 있을까.">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "줄자를 든 반나절에서 시작했다 — 이사 가구배치 앱을 만든 이유", "description": "이사 전 \"내 가구가 저 방에 들어갈까\"를 줄자와 검색으로 손계산하던 노동을, 소프트웨어로 대체할 수 있을까.", "datePublished": "2026-07-15", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/nestly-v1-tape-measure/", "mainEntityOfPage": "https://donghyos.github.io/posts/nestly-v1-tape-measure/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
+  <a href="/series/nestly/" class="series-link">시리즈: nestly</a>
+  <time>2026-07-15</time>
+  <span class="read-time">6분 읽기</span>
+</div>
+</div>
+<h1 id="_1">줄자를 든 반나절에서 시작했다 — 이사 가구배치 앱을 만든 이유</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 이사 전 "내 가구가 저 방에 들어갈까"를 줄자와 검색으로 손계산하던 노동을, 소프트웨어로 대체할 수 있을까.</li>
+<li><strong>접근</strong>: 평면도와 가구를 재사용 가능한 IT 자산으로 만든다. 인식은 학습 없는 VLM(neural)에 맡기되, "들어가나"의 판정은 언어 모델이 아니라 치수와 좌표로 계산하는 결정론 코어(symbolic)에 맡긴다. 참인 답이 필요하기 때문이다.</li>
+<li><strong>결과·학습</strong>: 문제를 "줄자질의 자산화"로 정의한 것이 이후 모든 기술 결정(좌표계, 배치 판정, 평면도 인식)의 뿌리가 됐다. 가장 중요한 결정은 첫 줄 코드 전에 내려졌다.</li>
+<li><strong>도움 되는 독자</strong>: 개인의 막막한 문제에서 출발해 제품 콘셉트와 기술 스택을 좁혀본 1인 개발자.</li>
+</ul></div></aside>
+<p>이 글은 nestly라는 사이드 프로젝트 연재의 첫 편이다. nestly는 이사 전에 가구 배치를 미리 시각화하는 앱이고, 앞으로 이 프로젝트를 만들어가는 과정을 인식 파이프라인, 좌표계, 배치 판정, 렌더링, 배포까지 편마다 나눠 쓸 예정이다. 다만 첫 편은 코드가 아니라 <em>왜 이걸 만들기 시작했는가</em>에서 출발한다. 코드를 한 줄도 쓰기 전에 이미 판이 갈렸기 때문이다.</p>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_2">줄자를 든 손</a></li><li class="toc-h2"><a href="#_3">왜 이미 있는 도구로는 안 됐나</a></li><li class="toc-h2"><a href="#_4">네 개의 닻으로 좁혔다</a></li><li class="toc-h2"><a href="#_5">줄자질을 자산화한다는 것</a></li><li class="toc-h2"><a href="#_6">이 연재가 다룰 것, 그리고 첫 학습</a></li></ul></nav><h2 id="_2">줄자를 든 손</h2>
+<p>시작은 부모님의 이사였다. 이사 한 달 전, 나는 줄자를 들고 이사 갈 빈 집에 들어갔다. 벽을 재고 방 하나를 잰 다음, 문이 열리는 반경을 눈으로 가늠했다. 그러고는 휴대폰을 꺼내 "우리 집 냉장고가 몇이었지?"를 검색하고, 종이에 대충 숫자를 적고, 머릿속으로 "여기까지는 들어오겠네"를 손으로 계산했다. 줄자와 검색창과 종이 사이를 몇 번씩 오갔다.</p>
+<p>그 반나절 동안 든 생각은 하나였다. 이 과정에 <em>재사용 가능한 게 하나도 없다</em>. 다음 이사에도, 다른 방에도, 매번 줄자부터 다시 시작해야 한다. 방의 치수도, 우리 가구의 치수도, "이 가구가 저 벽에 들어가는가"라는 판단도 전부 그 순간에만 존재했다가 사라졌다.</p>
+<p>여기서 프로젝트의 첫 문장이 나왔다. <strong>평면도와 가구를 IT 자산으로 만들면 이 1차 계산은 소프트웨어가 대신할 수 있지 않을까.</strong> 방을 한 번 디지털화해두면 다음에도 쓰고, 내 가구를 치수 가진 데이터로 등록해두면 어느 집에든 대볼 수 있다. 줄자질은 사람의 노동이지만 그 결과물은 자산이 될 수 있다.</p>
+<h2 id="_3">왜 이미 있는 도구로는 안 됐나</h2>
+<p>이 생각이 새롭진 않다. 인테리어 시각화 도구는 이미 많다. 그래서 먼저 확인한 것은 "왜 그것들로 내 문제가 안 풀렸나"였다. 이 질문이 곧 기술 콘셉트의 근거가 된다.</p>
+<p><strong>3D 인테리어 편집기 계열</strong>(국내 아키스케치 등)은 도면 데이터베이스와 3D 편집이 강력하다. 하지만 두 가지가 걸렸다. 첫째, 배치하는 가구가 내 가구가 아니라 카탈로그 가구다. 줄자를 든 사람이 확인하고 싶은 건 "우리 집 그 냉장고"가 이 벽에 들어가느냐지, 이상적인 모델하우스가 아니다. 둘째, 3D 공간을 직접 조작하는 러닝커브가 있다. 이사 앞둔 사람에게 필요한 건 3D 모델링 학습이 아니었다.</p>
+<p><strong>사진 리스타일링 계열</strong>(RoomGPT 등)은 진입 장벽이 거의 없고 수십 초 만에 그럴듯한 결과를 준다. 그런데 생성된 가구가 실재하지 않는다. 예뻐 보여도 그 소파가 우리 집 소파가 아니고 치수도 허구라서 이사와 구매, "들어가나 안 들어가나" 판단에는 쓸 수 없다.</p>
+<p>두 계열을 겹쳐 보면 공백은 분명했다. <strong>"내 실제 가구 그대로 × 이사 시나리오 × 전월세 세입자 제약"</strong>에 답하는 도구가 없었다. 있는 도구들은 저마다 강하지만 줄자를 든 그 손의 질문과는 결이 달랐다.</p>
+<h2 id="_4">네 개의 닻으로 좁혔다</h2>
+<p>여기서 첫 설계 결정을 했다. 부모님 이사에서 출발했지만 제품이 겨냥하는 사용자는 <strong>전월세 1인 가구 세입자</strong>로 좁혔다. 즉 "이사를 앞두고, 내 가구를 그대로 가지고, 원상복구 제약 아래 옮기는 사람"이다. 스파크는 부모님 이사였지만 거기서 겪은 문제는 더 좁고 빈번한 집단에서 더 뾰족했다. 세입자는 몇 년 주기로 이사하니 한 번 등록한 방과 가구를 다시 쓰는 자산화의 이득이 가장 크고, 원상복구나 무타공 같은 제약은 앞서 짚은 기존 도구들의 공백과 정확히 겹친다. 시장을 넓히는 대신 좁힌 것이 시작 지점의 판단이었다.</p>
+<p>그 판단을 네 개의 닻으로 고정했다.</p>
+<ol>
+<li><strong>내 가구 그대로</strong>: 카탈로그가 아니라 실재하는 내 가구를 치수 가진 자산으로 입력한다.</li>
+<li><strong>이사 시나리오 메인</strong>: "예쁜 방 꾸미기"가 아니라 "이 짐이 저 집에 들어가는가"가 1급 질문이다.</li>
+<li><strong>전월세 세입자 제약</strong>: 무타공, 붙박이, 원상복구 같은 세입자만의 조건을 제품의 중심에 둔다.</li>
+<li><strong>3D 에디터 없는 AI 중심 UX</strong>: 3D 공간 편집을 걷어내고 AI가 1차 배치안을 제시하는 흐름으로 간다.</li>
+</ol>
+<p>네 번째 닻이 가장 큰 트레이드오프였다. 3D 편집기를 버리면 정밀한 수동 조작을 포기하게 된다. 대신 러닝커브 0과 "AI가 초안을 준다"는 단순한 UX를 얻었다. 무엇보다 아키스케치 계열의 해자인 3D 엔진과 방대한 도면 데이터베이스를 정면으로 상대하지 않아도 된다. 이길 수 없는 자리에서는 싸우지 않았다. 1인 개발에서 이건 기능이 아니라 생존 전략이었다.</p>
+<h2 id="_5">줄자질을 자산화한다는 것</h2>
+<p>콘셉트를 기술로 옮기면 세 조각이 된다. 줄자를 든 손이 하던 일을 그대로 분해한 결과다.</p>
+<pre class="mermaid">flowchart LR
+    A["줄자를 든 손<br/>(사람의 노동)"] --> B["평면도 인식<br/>기계가 방·문·창을 읽는다"]
+    A --> C["가구 자산<br/>내 가구를 치수 데이터로"]
+    B --> D["배치 판정<br/>들어가는지 기계가 검증"]
+    C --> D
+    D --> E["1차 배치안<br/>(재사용 가능한 자산)"]
+    classDef box color:#1a1a1a,fill:#e8e8e8,stroke:#888;
+    class A,B,C,D,E box;
+</pre>
+<p>첫째, <strong>평면도를 기계가 읽는다.</strong> 부동산에서 받은 평면도 사진 한 장을 방, 문, 창으로 인식한다. 여기서는 학습이나 라벨링 없이 곧바로 평면도를 해석하는 VLM(Vision-Language Model) zero-shot 인식을 택했다. 이 선택도 문제 정의가 강제한 것이다. 입력이 CAD 도면 파일이 아니라 부동산에서 사진으로 받은 이미지 한 장이고, 한국 아파트 평면도에 라벨을 붙인 학습 데이터셋을 혼자 만들 여력도 없었다. 학습 없이 바로 읽어내는 모델이 아니면 파이프라인은 첫 단계에서 막힌다. 어떤 모델을 어떤 근거로 골랐고 무엇을 접었는지는 다음 편에서 따로 다룬다.</p>
+<p>둘째, <strong>가구를 치수 가진 자산으로 등록한다.</strong> "우리 집 냉장고"가 검색 한 번으로 사라지지 않고 데이터로 남는다. 자산화의 핵심은 재사용이다. 한 번 등록한 가구는 다음 집, 다음 이사에도 그대로 쓰인다.</p>
+<p>셋째, <strong>배치가 되는지 기계가 판정한다.</strong> 여기서 방향이 갈렸다. 배치안을 그럴듯하게 만들어내는 일은 언어 모델이 잘한다. 그런데 "들어가나?"라는 질문에는 그럴듯한 답이 아니라 참인 답이 필요하다. 모델이 "아마 들어갈 겁니다"라고 말하면 이사 결정에는 쓸 수 없다. 그래서 초안 생성은 모델에 맡기더라도, 들어가는지 아닌지의 판정만큼은 치수와 좌표로 계산하는 결정론 코어에 맡기기로 했다. 이 조각이 나중에 이 프로젝트에서 가장 깊게 파고든 부분이 된다.</p>
+<p>지금 기준으로 평면도 인식과 배치안 생성, 그리고 기하 판정까지는 실제로 배선돼 동작한다. 원래 그림에는 여기서 한 걸음 더 나아가 generator-verifier 루프로 1인칭 시점 이미지까지 생성하는 목표가 있었지만, 정직하게 밝히면 이미지 생성은 지금도 stub 상태다. 이 연재에서는 편마다 <em>무엇이 실제로 배선됐고 무엇이 아직 목표 상태인지</em>를 구분해서 쓸 생각이다. 그게 진행형 프로젝트를 기록하는 정직한 방식이라고 본다.</p>
+<p>복선을 하나 남겨둔다. "방을 실측해서 소프트웨어에 넣자"는 초기 모델은 따지고 보면 물리 줄자를 소프트웨어 줄자로 옮긴 것이었다. 그런데 그 소프트웨어 줄자를 "방의 두 변을 사용자가 직접 재서 넣는" 형태로 설계했다가 착수 단계에서 되돌린 일이 있다. 측정을 없앤 것은 아니고, 무엇을 재게 할지가 바뀌었다. 왜 되돌렸고 그 자리를 무엇이 대신했는지는 뒤에서 풀 이야기다.</p>
+<h2 id="_6">이 연재가 다룰 것, 그리고 첫 학습</h2>
+<p>앞으로 이 연재는 nestly를 지어가는 과정을 스택 선정, 평면도 인식 파이프라인, 좌표계와 배치 판정, 렌더링, 배포로 나눠 다룬다. 순서와 편수를 미리 못 박지는 않겠다. 오늘도 고치고 있는 프로젝트라 완결형 목차는 성격에 맞지 않는다.</p>
+<p><strong>이 프로젝트에서 가장 중요한 결정은 첫 줄 코드 전에 내려졌다.</strong> 문제를 "줄자질의 자산화"로 정의하고 사용자를 전월세 세입자로 좁혔다. 이길 수 없는 3D 해자는 우회하기로 했다. 이후의 모든 기술 선택은 이 정의에서 파생됐다. 입력이 부동산에서 받은 사진 한 장이라 zero-shot VLM이었고, 답이 그럴듯한 대신 참이어야 해서 결정론 코어였다. 뿌리를 따라가면 전부 그 빈 집에서 줄자를 든 반나절로 돌아간다.</p>
+<p>막막한 개인의 노동을 재사용 가능한 자산으로 바꾸려는 충동, 그게 이 프로젝트의 씨앗이었다. 다음 편에서는 그 씨앗을 실제 코드로 옮기며 어떤 스택을 골랐고 무엇을 덜어냈는지를 다룬다.</p>
+<div class="page-tags"><button class="tag-chip" data-tag="nestly">#nestly</button> <button class="tag-chip" data-tag="제품콘셉트">#제품콘셉트</button> <button class="tag-chip" data-tag="문제정의">#문제정의</button> <button class="tag-chip" data-tag="vlm">#vlm</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+
+
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/dongstock-ops-v1-headless-agent/">무인 에이전트에게 셸을 주지 않았다 — 스케줄 위 LLM을 돈에서 떼어놓고 살려두기</a><a class="rel-card" href="/posts/safe-autotrade-v5-reconcile/">죽었다 살아나면 거래소에 되묻는다 — 재시작 후 주문 상태 조정(reconcile)</a><a class="rel-card" href="/posts/safe-autotrade-v4-testing/">초록불을 믿지 않는다 — 샌드박스 없는 금융 API를 결정론으로 검증하기</a></section>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>

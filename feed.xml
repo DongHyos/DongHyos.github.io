@@ -7,7 +7,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Fri, 10 Jul 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Tue, 14 Jul 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>줄자를 든 반나절에서 시작했다 — 이사 가구배치 앱을 만든 이유</title>
+    <link>https://donghyos.github.io/posts/nestly-v1-tape-measure/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/nestly-v1-tape-measure/</guid>
+    <pubDate>Tue, 14 Jul 2026 15:00:00 GMT</pubDate>
+    <description>이사 전 &quot;내 가구가 저 방에 들어갈까&quot;를 줄자와 검색으로 손계산하던 노동을, 소프트웨어로 대체할 수 있을까.</description>
+  </item>
   <item>
     <title>무인 에이전트에게 셸을 주지 않았다 — 스케줄 위 LLM을 돈에서 떼어놓고 살려두기</title>
     <link>https://donghyos.github.io/posts/dongstock-ops-v1-headless-agent/</link>
