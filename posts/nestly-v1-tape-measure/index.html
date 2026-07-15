@@ -19,9 +19,9 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="줄자를 든 반나절에서 시작했다 — 이사 가구배치 앱을 만든 이유 — donghyos">
 <meta name="twitter:description" content="이사 전 &quot;내 가구가 저 방에 들어갈까&quot;를 줄자와 검색으로 손계산하던 노동을, 소프트웨어로 대체할 수 있을까.">
-<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
-<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "줄자를 든 반나절에서 시작했다 — 이사 가구배치 앱을 만든 이유", "description": "이사 전 \"내 가구가 저 방에 들어갈까\"를 줄자와 검색으로 손계산하던 노동을, 소프트웨어로 대체할 수 있을까.", "datePublished": "2026-07-15", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/nestly-v1-tape-measure/", "mainEntityOfPage": "https://donghyos.github.io/posts/nestly-v1-tape-measure/"}</script>
+<meta property="og:image" content="https://donghyos.github.io/images/nestly-v1-tape-measure/floorplan-sample.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/nestly-v1-tape-measure/floorplan-sample.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "줄자를 든 반나절에서 시작했다 — 이사 가구배치 앱을 만든 이유", "description": "이사 전 \"내 가구가 저 방에 들어갈까\"를 줄자와 검색으로 손계산하던 노동을, 소프트웨어로 대체할 수 있을까.", "datePublished": "2026-07-15", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/nestly-v1-tape-measure/", "mainEntityOfPage": "https://donghyos.github.io/posts/nestly-v1-tape-measure/", "image": "https://donghyos.github.io/images/nestly-v1-tape-measure/floorplan-sample.png"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -72,6 +72,8 @@
 <p>시작은 부모님의 이사였다. 이사 한 달 전, 나는 줄자를 들고 이사 갈 빈 집에 들어갔다. 벽을 재고 방 하나를 잰 다음, 문이 열리는 반경을 눈으로 가늠했다. 그러고는 휴대폰을 꺼내 "우리 집 냉장고가 몇이었지?"를 검색하고, 종이에 대충 숫자를 적고, 머릿속으로 "여기까지는 들어오겠네"를 손으로 계산했다. 줄자와 검색창과 종이 사이를 몇 번씩 오갔다.</p>
 <p>그 반나절 동안 든 생각은 하나였다. 이 과정에 <em>재사용 가능한 게 하나도 없다</em>. 다음 이사에도, 다른 방에도, 매번 줄자부터 다시 시작해야 한다. 방의 치수도, 우리 가구의 치수도, "이 가구가 저 벽에 들어가는가"라는 판단도 전부 그 순간에만 존재했다가 사라졌다.</p>
 <p>여기서 프로젝트의 첫 문장이 나왔다. <strong>평면도와 가구를 IT 자산으로 만들면 이 1차 계산은 소프트웨어가 대신할 수 있지 않을까.</strong> 방을 한 번 디지털화해두면 다음에도 쓰고, 내 가구를 치수 가진 데이터로 등록해두면 어느 집에든 대볼 수 있다. 줄자질은 사람의 노동이지만 그 결과물은 자산이 될 수 있다.</p>
+<p><img alt="2룸 평면도 합성 샘플 — 방·문·창·치수·방위를 가진 좌표 데이터" src="/images/nestly-v1-tape-measure/floorplan-sample.png"></p>
+<p><em>합성 샘플. 줄자로 재던 공간이 방·문·창·치수·방위를 가진 좌표 데이터가 된 모습이다. 실제 사용자 평면도를 인식한 결과가 아니라 대표 예시다.</em></p>
 <h2 id="_3">왜 이미 있는 도구로는 안 됐나</h2>
 <p>이 생각이 새롭진 않다. 인테리어 시각화 도구는 이미 많다. 그래서 먼저 확인한 것은 "왜 그것들로 내 문제가 안 풀렸나"였다. 이 질문이 곧 기술 콘셉트의 근거가 된다.</p>
 <p><strong>3D 인테리어 편집기 계열</strong>(국내 아키스케치 등)은 도면 데이터베이스와 3D 편집이 강력하다. 하지만 두 가지가 걸렸다. 첫째, 배치하는 가구가 내 가구가 아니라 카탈로그 가구다. 줄자를 든 사람이 확인하고 싶은 건 "우리 집 그 냉장고"가 이 벽에 들어가느냐지, 이상적인 모델하우스가 아니다. 둘째, 3D 공간을 직접 조작하는 러닝커브가 있다. 이사 앞둔 사람에게 필요한 건 3D 모델링 학습이 아니었다.</p>
