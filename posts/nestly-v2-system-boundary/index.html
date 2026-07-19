@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>확률은 갈아끼우고 판정은 코드에 — nestly를 지은 얼개 — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/nestly-v2-system-boundary/">
+<meta name="description" content="1편에서 이 앱을 왜 만드는지 정했다. 그럼 무엇을, 어떤 얼개로 짓기 시작했나. 특히 AI를 어디까지 믿고 어디부터 코드로 못박을지.">
+<meta property="og:title" content="확률은 갈아끼우고 판정은 코드에 — nestly를 지은 얼개 — donghyos">
+<meta property="og:description" content="1편에서 이 앱을 왜 만드는지 정했다. 그럼 무엇을, 어떤 얼개로 짓기 시작했나. 특히 AI를 어디까지 믿고 어디부터 코드로 못박을지.">
+<meta property="og:url" content="https://donghyos.github.io/posts/nestly-v2-system-boundary/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="확률은 갈아끼우고 판정은 코드에 — nestly를 지은 얼개 — donghyos">
+<meta name="twitter:description" content="1편에서 이 앱을 왜 만드는지 정했다. 그럼 무엇을, 어떤 얼개로 짓기 시작했나. 특히 AI를 어디까지 믿고 어디부터 코드로 못박을지.">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "확률은 갈아끼우고 판정은 코드에 — nestly를 지은 얼개", "description": "1편에서 이 앱을 왜 만드는지 정했다. 그럼 무엇을, 어떤 얼개로 짓기 시작했나. 특히 AI를 어디까지 믿고 어디부터 코드로 못박을지.", "datePublished": "2026-07-19", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/nestly-v2-system-boundary/", "mainEntityOfPage": "https://donghyos.github.io/posts/nestly-v2-system-boundary/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
+  <a href="/series/nestly/" class="series-link">시리즈: nestly</a>
+  <time>2026-07-19</time>
+  <span class="read-time">7분 읽기</span>
+</div>
+</div>
+<h1 id="nestly">확률은 갈아끼우고 판정은 코드에 — nestly를 지은 얼개</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 1편에서 이 앱을 왜 만드는지 정했다. 그럼 무엇을, 어떤 얼개로 짓기 시작했나. 특히 AI를 어디까지 믿고 어디부터 코드로 못박을지.</li>
+<li><strong>접근</strong>: 3-tier 폴리글랏으로 역할을 갈랐다. 확률적인 부분(평면도 인식·배치 생성)은 인터페이스 뒤에 두어 갈아끼울 수 있게 하고, 신뢰가 필요한 판정은 결정론 코드로 회수했다. 안 만들 것은 의도적으로 덜어냈다.</li>
+<li><strong>결과·학습</strong>: 계획은 4개 엔티티·익명 사용·완전 자동이었지만 실제로는 11개 엔티티·세션 인증·반자동으로 진화했다. 배포와 CI는 아직 유보다. 얼개의 중심은 "무엇을 믿을지"의 경계였다.</li>
+<li><strong>도움 되는 독자</strong>: AI를 제품에 넣으며 "어디까지 맡기고 어디부터 코드로 막을지" 고민하는 개발자, 1인 풀스택의 스택 선정을 저울질하는 사람.</li>
+</ul></div></aside>
+<p>1편에서 이 프로젝트를 왜 시작했는지 썼다. 이사 앞에서 줄자를 든 반나절의 노동을 재사용 가능한 자산으로 바꾸고 싶었고 그러려면 인식과 배치 판정을 한 파이프라인으로 묶어야 했다. 이번 글은 그다음 질문이다. 그래서 뭘, 어떤 얼개로 짓기 시작했나.</p>
+<p>이 얼개에는 관통하는 결정이 하나 있다. <strong>어디까지 AI를 믿고 어디부터 코드로 못박을지.</strong> 이사 결정에는 "아마 들어갈 겁니다"가 쓸모없다. 그래서 확률적인 부분과 결정론적인 부분을 처음부터 갈라 배치했고 스택 선택도 대체로 그 경계를 따라갔다.</p>
+<pre class="mermaid">flowchart LR
+    U["평면도·가구 입력"] --> N
+    subgraph N["확률 (인터페이스 뒤, 교체 가능)"]
+        V["VLM 평면도 인식"]
+        G["배치안 생성 모델"]
+    end
+    N --> S
+    subgraph S["결정론 (코드가 확정)"]
+        R["판정 규칙 강제"]
+        J["순수 기하 판정<br/>(편집기 경로)"]
+    end
+    S --> O["초록·노랑·빨강"]
+    classDef box color:#1a1a1a,fill:#e8e8e8,stroke:#888;
+    classDef grp color:#1a1a1a,fill:#f4f4f4,stroke:#aaa;
+    class U,V,G,R,J,O box;
+    class N,S grp;
+</pre>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">세 겹, 그리고 정정 하나</a></li><li class="toc-h2"><a href="#_2">언어 경계가 신뢰 경계를 따라간다</a></li><li class="toc-h2"><a href="#_3">확률적인 부분은 인터페이스 뒤에</a></li><li class="toc-h2"><a href="#_4">판정은 코드가 회수한다</a></li><li class="toc-h2"><a href="#_5">안 만든 것도, 아직 안 된 것도</a></li><li class="toc-h2"><a href="#_6">학습</a></li></ul></nav><h2 id="_1">세 겹, 그리고 정정 하나</h2>
+<p>앱은 세 겹이다. 평면도 편집과 렌더를 맡는 웹(Vite + React + TypeScript), 도메인과 판정을 맡는 API 서버(Spring Boot + Java), 그리고 아직 자리만 잡아둔 모바일(React Native)이다. 모바일은 폴더와 이름만 있고 코드는 0줄이다. 나중에 웹과 컴포넌트를 공유할 자리로 비워뒀다.</p>
+<p>짚어 둘 게 하나 있다. 나는 이걸 "모노레포"라 불러 왔는데 실은 한 폴더 아래 놓인 네 개의 독립 저장소다. 문서 저장소가 루트에 있고 웹·API·모바일이 각자 별도 저장소로 산다. 루트의 <code>.gitignore</code>가 코드 폴더를 통째로 제외하고 있어 겉보기와 달리 한 저장소가 아니다. 이 구분은 사소해 보이지만 뒤에서 CI를 조용히 망가뜨린다. 그 이야기는 마지막에 하겠다.</p>
+<h2 id="_2">언어 경계가 신뢰 경계를 따라간다</h2>
+<p>백엔드는 Java, 프런트는 TypeScript로 언어가 갈린다. 이 분리를 나는 신뢰 경계로 이해했다. 어느 쪽이 데이터의 참을 지키고 어느 쪽이 좌표의 참을 지키느냐다.</p>
+<p>Java 쪽은 도메인·트랜잭션·배치 판정 규칙을 맡는다. 여기서 중요한 건 결정론이다. "이 배치가 합격인가" 같은 판정과 데이터 정합성은 확률적이면 안 되는 자리라 트랜잭션과 타입이 단단한 쪽에 뒀다. TypeScript 쪽은 좌표와 기하, 렌더를 맡는다. 이 앱의 프런트는 화면을 그리는 게 아니라 방과 가구를 cm 좌표로 다루는 계산기에 가깝다. 좌표라는 도메인을 타입으로 못박아 두면 방과 가구의 치수가 뒤섞이는 실수가 런타임이 아니라 컴파일 단계에서 걸린다. 프런트 상태 관리에 별도 라이브러리를 얹지 않은 것도 같은 맥락이다. 서버 상태는 쿼리 캐시로, 화면 상태는 기본 도구로만 두어 좌표 계산이 사는 표면을 좁게 유지했다.</p>
+<h2 id="_3">확률적인 부분은 인터페이스 뒤에</h2>
+<p>평면도를 읽는 VLM(Vision-Language Model, 이미지를 이해하는 모델)과 배치안을 만드는 생성 모델은 본질적으로 확률적이다. 같은 입력에도 다른 답을 낸다. 그래서 이들은 전부 <strong>인터페이스 뒤에</strong> 두고 구현체를 갈아끼울 수 있게 했다. 호출은 하나의 계약을 통과하고 어떤 모델이 그 뒤에 서는지는 설정으로 바뀐다.</p>
+<p>이 구조가 실제로 값을 한 건 비용 때문이었다. 처음 설계에는 상용 이미지·비전 API를 쓰려 했지만 개인 프로젝트에서 그 호출 비용은 감당하기 어려웠다. 인터페이스가 있으니 뒤를 갈아끼우는 데 큰 수술이 필요 없었다. 기본값은 안전하게 로컬 모델로 두되, 설정으로 provider를 올리면 호스팅형 무료 VLM을 1차로 쓰고 실패하면 로컬 모델로 폴백하며 그마저 안 되면 빈 결과를 돌려 파이프라인이 멈추지 않게 한다. 키는 코드에 박지 않고 환경변수로 주입하되 없으면 공란으로 두어 자동으로 폴백이 걸리게 했다.</p>
+<pre><code class="language-yaml"># 키는 환경변수로만. 없으면 공란 → 폴백이 걸린다
+vlm:
+  provider: nvidia          # 기본은 로컬. 올리면 호스팅 경로로 갈린다
+  nvidia:
+    api-key: ${NVIDIA_API_KEY:}
+</code></pre>
+<h2 id="_4">판정은 코드가 회수한다</h2>
+<p>생성 모델은 배치안을 제안하고 심지어 제약 위반 개수까지 세어 준다. 그런데 "이 배치가 합격이냐"는 판단만큼은 모델에게 맡기지 않았다. 서버는 모델이 돌려준 합격/불합격 문구를 무시하고 위반 개수의 합만으로 상태를 확정한다.</p>
+<pre><code class="language-java">// 모델의 판정 문구가 아니라, 위반 개수 합으로 상태를 정한다
+VerificationStatus deriveStatus(int collisions, int noDrilling, int sizeMismatch) {
+    int violations = collisions + noDrilling + sizeMismatch;
+    return violations == 0 ? PASSED : FALLBACK;
+}
+</code></pre>
+<p>구분하자면 여기서 위반 개수를 세는 것은 여전히 모델이다. 코드가 하는 일은 그 개수에 판정 규칙을 강제하는 것이다. 반면 사용자가 직접 가구를 옮기는 편집기 경로에서는 판정이 네트워크도 모델도 거치지 않는 순수한 기하 함수다. 방과 가구를 cm 좌표로 놓고 겹침과 여유를 계산해 초록·노랑·빨강을 정한다. 이 순수 기하 코어가 이 프로젝트에서 가장 깊게 파고든 부분인데 그 이야기는 별도의 편에서 따로 풀 만큼 크다. 여기서는 "확률은 인터페이스 뒤, 판정은 코드"라는 경계만 확인해 둔다.</p>
+<h2 id="_5">안 만든 것도, 아직 안 된 것도</h2>
+<p>1인 개발에서 무엇을 만들지만큼 무엇을 <strong>안</strong> 만들지가 중요했다. 3D 편집은 일찌감치 접었다. 정적인 2D 배치로 충분했고 3D 엔진과 정면으로 경쟁하지 않는 게 1편에서 정한 방향이었다. 로그인도 처음엔 비목표로 두고 익명 사용으로 시작했다가 나중에 선택적 계정으로 되살렸다.</p>
+<p>이 번복은 데이터베이스에도 자국을 남겼다. 초기 계획은 엔티티 네 개였지만 실제로는 열한 개로 늘었고 그중 절반이 인증과 사용자 관련이다. 스키마 마이그레이션은 앞으로만 쌓이는 방식으로 스물다섯 번을 거쳤다. 그중 하나는 앞선 마이그레이션이 추가한 컬럼을 도로 지운다. 무엇을 넣었다 되돌렸는지가 스키마에 화석으로 남아 있는 셈이다. 그 되돌림의 사연이 다음 편의 주제다.</p>
+<p>그리고 아직 안 된 것을 있는 그대로 적는다. <strong>이 앱은 아직 배포된 적이 없다.</strong> 배포는 처음부터 나중 단계로 미뤄 뒀고 배포용 설정 파일조차 없다. 지금 도는 곳은 내 로컬뿐이다. CI는 더 겸연쩍다. 워크플로 파일 자체는 데이터베이스와 E2E 테스트, 서버 기동 확인까지 꽤 정교하게 짜 뒀다. 그런데 <strong>한 번도 돌지 않았다.</strong> 앞서 짚은 저장소 분리 탓이다. 워크플로는 문서 저장소에 있는데 정작 코드는 그 저장소에서 제외돼 있어 검사할 코드가 그 자리에 없다. 겉으로는 CI가 있는 프로젝트처럼 보이지만 실제 회귀 안전망은 내 노트북의 수동 실행이다. 테스트 자체는 적지 않다. 백엔드 통합 테스트가 수백 개, 프런트 단위 테스트가 천 단위, "거짓 초록이면 실패하도록" 짠 반례 E2E까지 있다. 다만 커버리지는 측정하지 않으니 개수가 곧 안전을 뜻하지는 않는다.</p>
+<h2 id="_6">학습</h2>
+<p>이 편에서 얻은 것은 세 가지다. 첫째, <strong>AI 제품의 뼈대는 "무엇을 믿을지"의 경계다.</strong> 확률적인 부분은 갈아끼울 수 있게 인터페이스 뒤에 두고 신뢰가 필요한 판정은 코드로 회수한다. 이 경계를 처음부터 그어 두니 비용 때문에 모델을 통째로 바꿀 때도 수술이 얕았다.</p>
+<p>둘째, <strong>얼개의 진짜 모습은 스키마에 화석으로 남는다.</strong> 네 개로 잡은 엔티티가 열한 개가 되고, 비목표였던 로그인이 계정으로 되살아나고, 넣었던 컬럼을 도로 지운 마이그레이션이 앞으로만 쌓이는 기록에 그대로 박혔다. 설계 문서는 고쳐 쓰면 과거가 지워지지만, 마이그레이션은 무엇을 잘못 짚었다 되돌렸는지까지 지층으로 보존한다. 그 지층에 가장 굵게 남은 한 켜가 좌표계를 잘못 잡았다 되돌린 자국이다.</p>
+<p>셋째, <strong>미완은 미완이라 적어야 한다.</strong> 배포와 CI를 "있는 것처럼" 쓰는 편이 이력서에는 좋아 보이겠지만 면접에서 한 번 물으면 무너진다. 무엇이 로컬 수동이고 무엇이 자동인지 정확히 아는 것이 그것을 다 갖춘 척하는 것보다 엔지니어링에 가깝다. 다음 편은 이 얼개에서 가장 깊은 구석, 순수 기하 판정과 그것을 떠받치는 좌표계로 들어간다.</p>
+<div class="page-tags"><button class="tag-chip" data-tag="nestly">#nestly</button> <button class="tag-chip" data-tag="아키텍처">#아키텍처</button> <button class="tag-chip" data-tag="스택선정">#스택선정</button> <button class="tag-chip" data-tag="폴리글랏">#폴리글랏</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+<nav class="series-nav">
+<div class="seriesnav-head">시리즈 <a href="/series/nestly/">nestly</a> · 2/2편</div>
+<div class="seriesnav-links">
+<a class="seriesnav-item seriesnav-prev" href="/posts/nestly-v1-tape-measure/"><span class="seriesnav-label">← 이전 글</span><span class="seriesnav-title">줄자를 든 반나절에서 시작했다 — 이사 가구배치 앱을 만든 이유</span></a>
+<span class="seriesnav-item seriesnav-empty"></span>
+</div>
+</nav>
+
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/nestly-v1-tape-measure/">줄자를 든 반나절에서 시작했다 — 이사 가구배치 앱을 만든 이유</a><a class="rel-card" href="/posts/dongstock-ops-v1-headless-agent/">무인 에이전트에게 셸을 주지 않았다 — 스케줄 위 LLM을 돈에서 떼어놓고 살려두기</a><a class="rel-card" href="/posts/safe-autotrade-v5-reconcile/">죽었다 살아나면 거래소에 되묻는다 — 재시작 후 주문 상태 조정(reconcile)</a></section>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>
