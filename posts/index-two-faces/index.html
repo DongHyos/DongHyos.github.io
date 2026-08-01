@@ -115,12 +115,14 @@ JOIN   ...;        -- 대상이 작아 self-join 도 폭발하지 않는다
 <li>인덱스는 국소적이지 않다. 추가는 그 테이블을 쓰는 모두에게 영향을 준다. 때로는 스키마를 바꾸는 것보다 <em>쿼리 하나를 다시 쓰는 편</em>이 더 안전하고 되돌리기 쉽다.</li>
 <li>"느리면 인덱스"는 절반만 맞다. 나머지 절반에서는 인덱스가 답이 아니거나, 심지어 독이 된다. 둘을 가르는 건 실행계획을 읽는 습관이다.</li>
 </ul>
+<hr>
+<p><em>이 글의 판정에는 두 번째 어긋남이 있었다. <a href="/posts/verified-not-finished/">계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록</a>에 정정을 실었다.</em></p>
 <div class="page-tags"><button class="tag-chip" data-tag="database">#database</button> <button class="tag-chip" data-tag="performance">#performance</button> <button class="tag-chip" data-tag="query-tuning">#query-tuning</button> <button class="tag-chip" data-tag="indexing">#indexing</button> <button class="tag-chip" data-tag="execution-plan">#execution-plan</button></div>
 </article>
 <div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
 
 <nav class="prev-next"><a class="pn-item pn-prev" href="/posts/request-drop-alarm/"><span class="pn-label">← 이전 글</span><span class="pn-title">요청이 조용히 사라질 때 — 침묵하는 외부 장애를 지난주와 비교해 감지하기</span></a><a class="pn-item pn-next" href="/posts/grub-manual-boot/"><span class="pn-label">다음 글 →</span><span class="pn-title">root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기</span></a></nav>
-<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/multi-hop-latency/">느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기</a><a class="rel-card" href="/posts/grub-manual-boot/">root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기</a><a class="rel-card" href="/posts/request-drop-alarm/">요청이 조용히 사라질 때 — 침묵하는 외부 장애를 지난주와 비교해 감지하기</a></section>
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/verified-not-finished/">계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록</a><a class="rel-card" href="/posts/multi-hop-latency/">느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기</a><a class="rel-card" href="/posts/grub-manual-boot/">root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기</a></section>
 <section class="comments">
 <script src="https://giscus.app/client.js"
   data-repo="DongHyos/DongHyos.github.io"

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록 — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/verified-not-finished/">
+<meta name="description" content="튜닝이 &quot;끝났다&quot;는 판정을 무엇으로 내리는가. 도구에서 빨라진 것을 확인하면 충분한가">
+<meta property="og:title" content="계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록 — donghyos">
+<meta property="og:description" content="튜닝이 &quot;끝났다&quot;는 판정을 무엇으로 내리는가. 도구에서 빨라진 것을 확인하면 충분한가">
+<meta property="og:url" content="https://donghyos.github.io/posts/verified-not-finished/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록 — donghyos">
+<meta name="twitter:description" content="튜닝이 &quot;끝났다&quot;는 판정을 무엇으로 내리는가. 도구에서 빨라진 것을 확인하면 충분한가">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록", "description": "튜닝이 \"끝났다\"는 판정을 무엇으로 내리는가. 도구에서 빨라진 것을 확인하면 충분한가", "datePublished": "2026-08-02", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/verified-not-finished/", "mainEntityOfPage": "https://donghyos.github.io/posts/verified-not-finished/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/work/" class="cat-link">실무 경험</a>
+  
+  <time>2026-08-02</time>
+  <span class="read-time">5분 읽기</span>
+</div>
+</div>
+<h1 id="_1">계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 튜닝이 "끝났다"는 판정을 무엇으로 내리는가. 도구에서 빨라진 것을 확인하면 충분한가</li>
+<li><strong>접근</strong>: 이미 발행한 튜닝 사례를 다시 열어, 판정이 어긋난 두 지점을 남아 있던 계획 캡처로 재검사했다</li>
+<li><strong>결과·학습</strong>: 두 어긋남은 같은 모양이었다. 첫 번째는 쿼리 표본이, 두 번째는 값 표본이 하나였다. 세 번째 처방에 와서야 표본을 늘려 판정했다</li>
+<li><strong>도움 되는 독자</strong>: 실행계획을 읽고 튜닝하지만 "이제 됐다"의 기준이 흐릿한 백엔드 개발자</li>
+</ul></div></aside>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_2">끝났다고 쓴 글</a></li><li class="toc-h2"><a href="#_3">첫 번째 어긋남 — 검증 환경에서 돌려본 것은 조회 하나였다</a></li><li class="toc-h2"><a href="#_4">두 번째 어긋남 — 도구에서 잰 것은 실행 하나였다</a></li><li class="toc-h2"><a href="#_5">세 번째 처방과 그 대가</a></li><li class="toc-h2"><a href="#_6">세 번째 질문</a></li><li class="toc-h2"><a href="#_7">학습</a></li></ul></nav><h2 id="_2">끝났다고 쓴 글</h2>
+<p><a href="/posts/index-two-faces/">「느린 쿼리의 두 얼굴」</a>에서 나는 인계받아 맡은 사내 업무 시스템의 느린 목록 조회를 다뤘다. 인덱스를 추가했다가 되돌리고, 대신 쿼리를 임시 테이블로 분해해 옵티마이저 추정 비용을 약 35에서 9로 떨어뜨린 이야기다. 그 글을 나는 이렇게 닫았다.</p>
+<blockquote>
+<p>판단의 근거는 둘 다 <em>실행계획</em>이었다. (…) 추측이 아니라 계획을 읽고 갈랐다.</p>
+</blockquote>
+<p>계획은 실제로 읽었다. 다만 <strong>한 장씩</strong> 읽었다.</p>
+<p>그 글을 발행한 뒤 같은 시스템에서 두 번째 어긋남이 있었고, 그 사실은 발행본에 반영되지 않았다. 두 번째 어긋남을 증명하는 계획 캡처는 발행 시점에 이미 내 손에 있었다. 열어보지 않았을 뿐이다.</p>
+<p>이 글은 그 정정이다. 두 어긋남을 나란히 놓으면 둘이 같은 모양이라는 게 드러난다.</p>
+<h2 id="_3">첫 번째 어긋남 — 검증 환경에서 돌려본 것은 조회 하나였다</h2>
+<p>인덱스를 넣기 전에 절차는 밟았다. 운영과 별개인 개발·테스트 DB에서 대상 조회를 돌려 빨라지는 것을 확인했고, 운영 반영은 업무가 끝나 사용자가 없는 시간에 했다. 검증 환경을 거쳤고 반영 시점도 골랐다.</p>
+<p>그런데 운영에 넣자 <em>같은 테이블을 쓰는 다른 조회들</em>이 무너졌다. 지연은 애플리케이션 타임아웃을 넘겼고, 한 쿼리를 고치려다 여러 조회를 장애로 만들었다. 경위는 선행글에 썼다. 인덱스는 되돌렸다.</p>
+<p>인덱스가 그 테이블을 공유하는 모든 쿼리에 대한 전역 변경이라는 결론도 그 글에 썼다. 여기서 새로 여는 것은 결론이 아니라 <strong>그 앞단</strong>이다. 검증 환경에서 나는 무엇을 확인했나.</p>
+<p>대상 조회 하나였다. 그 테이블을 쓰는 다른 프로시저는 한 번도 돌려보지 않았다. 인덱스가 전역 변경이라는 걸 사후에 배웠다고 썼지만, 정확히 적자면 나는 그것을 <em>반영 전에</em> 확인할 자리를 갖고 있으면서 쓰지 않았다. 검증 환경은 있었다. 거기서 돌려본 쿼리가 하나였을 뿐이다.</p>
+<p>조심의 형식은 지켰는데 표본이 하나였다. 이것이 첫 번째 어긋남의 정확한 모양이다.</p>
+<h2 id="_4">두 번째 어긋남 — 도구에서 잰 것은 실행 하나였다</h2>
+<p>인덱스를 접고 쿼리 구조를 바꿨다. 조인이 폭발하기 전에 후보 키를 <code>#cand</code>로 끊고 그 작은 집합에만 나머지를 붙이는 2단 분해다.</p>
+<p>측정은 공정하게 했다. 관리 도구에서 <strong>같은 파라미터 값</strong>을 원본과 분해판에 각각 넣고, 실행 시간 통계와 실행계획을 나란히 놓고 비교했다. 분해판은 수백 밀리초 안쪽이었고 화면에서도 곧바로 떴다. 나는 여기서 끝났다고 판정했다. 그리고 선행글에 이렇게 썼다.</p>
+<blockquote>
+<p>무엇보다 이 변경은 프로시저 하나에 갇혀 있어서 다른 조회를 건드리지 않았다. 되돌리기도 쉬웠다.</p>
+</blockquote>
+<p>갇혀 있던 건 맞다. 다만 그 안에서 흔들리고 있었다.</p>
+<p>그런데 "아직 좀 느리다"는 얘기가 들어왔다. 애플리케이션 경로에서는 지연이 그대로 남아 있었던 것이다. 확인은 두 층으로 했다. 사용자 쪽 신고가 첫 신호였고, 확증은 캐시에 올라와 있는 계획의 <strong>실행 통계</strong>를 조회해 얻었다. 계획별 사용 내역을 훑자 느린 쪽 항목 하나가 계속 재사용되고 있는 것이 보였다. 내가 도구에서 잰 그 빠른 실행은 거기 없었다.</p>
+<p>남아 있던 계획 캡처를 지금 다시 열어보니 대비가 기계적으로 확인된다. 같은 프로시저의 두 실행이다.</p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>실행 A</th>
+<th>실행 B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>쿼리, 계획 해시, 컴파일 시간</td>
+<td>동일</td>
+<td>동일</td>
+</tr>
+<tr>
+<td>계획 출처</td>
+<td>캐시에서 꺼냄</td>
+<td>캐시에서 꺼냄</td>
+</tr>
+<tr>
+<td>컴파일 시점 값 = 실행 값</td>
+<td>파라미터 전부 일치</td>
+<td>스무 개 남짓 중 셋 불일치</td>
+</tr>
+<tr>
+<td>결과 행 수</td>
+<td>수십 행</td>
+<td>이천 행 가까이</td>
+</tr>
+<tr>
+<td>tempdb spill</td>
+<td>없음</td>
+<td>발생</td>
+</tr>
+<tr>
+<td>경과 시간</td>
+<td>기준</td>
+<td><strong>13배</strong></td>
+</tr>
+</tbody>
+</table>
+<p>쿼리가 같고 계획이 같고 컴파일까지 같다. 양쪽 다 새로 만든 계획이 아니라 캐시에서 꺼내 쓴 것이다. 다른 것은 파라미터뿐인데 경과 시간이 13배 벌어졌다. 계획은 문제의 지점을 1행으로 추정했는데 실제로는 이천 행 가까이 흘렀고, 그만큼의 중간 결과를 감당하지 못해 tempdb로 넘쳤다.</p>
+<p>원인은 여기까지 단정할 수 있다. <strong>첫 실행 값에 맞춰 만들어진 계획이 캐시에 남아, 값 분포가 다른 요청도 같은 계획을 그대로 탔다.</strong></p>
+<p>내가 도구에서 잰 실행은 파라미터가 전부 맞아떨어진 쪽이었다. 원본과 분해판에 같은 값을 넣었으니 <em>개선폭 측정</em>으로는 공정했다. 다만 그 값 하나가 운영에서 도는 실행 전체의 대표값이 아니었다. 첫 번째 어긋남과 같은 모양이다. 그때는 쿼리 표본이 하나였고, 이번엔 값 표본이 하나였다.</p>
+<h2 id="_5">세 번째 처방과 그 대가</h2>
+<p>풀이는 실행 시점마다 계획을 다시 만들게 하는 것이었다. 캐시에 굳은 계획을 재사용하지 않으니 값이 바뀌면 그 값에 맞는 계획이 선다.</p>
+<p>이 처방에도 대가가 있다. 매 실행마다 컴파일 비용을 낸다. 앞의 두 처방이 각각 대가를 치른 뒤였으니 이번엔 대가부터 지켜보기로 했다.</p>
+<p>반영 후에는 시간대를 지정해 CPU 사용량을 꾸준히 관찰했다. 피크 타임에도 미미한 것을 확인하고 나서 반영을 확정했다.</p>
+<p>여기서 처음으로 표본을 늘렸다. 앞의 두 판정은 각각 한 번의 관찰이었는데, 이번엔 시간대를 나눠 여러 번 봤고 가장 불리한 구간을 일부러 포함했다.</p>
+<p>결말은 정성으로만 쓸 수 있다. 그 뒤로 그 화면은 바로 열린다. <strong>애플리케이션 기준 응답시간은 그때 재두지 않았다.</strong> 도구에서 잰 숫자는 남아 있는데 애플리케이션 경로에서 잰 숫자는 없다. 그 경로가 문제였다는 걸 겪고도 정작 거기에는 눈금을 붙이지 않은 셈이다.</p>
+<h2 id="_6">세 번째 질문</h2>
+<p>선행글은 느린 쿼리 앞에서 던지는 두 질문으로 닫았다. 내가 인덱스를 막고 있나, 이 느림이 인덱스로 풀리는 종류인가. 둘 다 <em>무엇이 느린가</em>를 묻는다.</p>
+<p>세 번째 질문은 방향이 다르다. <strong>내가 잰 것이 몇 개인가.</strong></p>
+<p>두 번의 어긋남은 같은 자리에서 나왔다. 측정 자체는 옳았다. 그 인덱스는 정말 대상 조회를 빠르게 했고, 그 분해판은 정말 빨랐다. 틀린 것은 측정이 아니라 측정의 표본이었다. 하나를 재고 전체를 결론지었다.</p>
+<p>지금은 인덱스를 반영하기 전에 그 테이블을 쓰는 <strong>전체 프로시저를 먼저 뽑는다.</strong> 각 조회 쿼리를 확인해 인덱스가 어디에 어떻게 닿는지 영향도부터 본다. 첫 번째 어긋남이 남긴 절차다.</p>
+<p>값 표본 쪽은 아직 그만큼 정리되지 않았다. 두 번째 어긋남에서 얻은 것은 "도구에서 한 번 잰 것은 한 번 잰 것"이라는 사실이지, 그것을 매번 어떻게 확인하겠다는 절차가 아니다. 목록에 있는 것과 아직 없는 것을 갈라 적어 두는 게 지금의 정직한 상태다.</p>
+<h2 id="_7">학습</h2>
+<ul>
+<li><strong>검증 환경을 갖는 것과 검증하는 것은 다르다.</strong> 별개 DB가 있었고 사용자 없는 시간을 골랐는데도 뚫린 이유는 환경이 아니라 거기서 돌려본 쿼리가 하나였다는 데 있다.</li>
+<li><strong>같은 쿼리, 같은 계획, 같은 컴파일이어도 파라미터가 다르면 다른 시간이 나온다.</strong> 도구에서 한 번 재고 끝났다고 판정하면 그 판정은 그 한 번에 대해서만 참이다.</li>
+<li><strong>세 처방 다 대가가 있었는데, 그것을 안 시점이 매번 달랐다.</strong> 인덱스는 남의 쿼리가, 쿼리 재작성은 안 풀린 경로가, 실행마다 재계산은 CPU가 대가였다. 앞의 둘은 운영 사고와 사용자 신고가 알려줬고, 마지막 하나만 내가 관찰 구간을 정해 놓고 확인했다.</li>
+<li>"느리면 인덱스"는 절반만 맞다고 썼는데, 그 문장에 하나를 더한다. <strong>빨라진 것을 확인했다고 끝난 것도 아니다.</strong> 무엇을 몇 개나 확인했는지 적어 두지 않으면 측정은 아직 끝나지 않았다.</li>
+</ul>
+<div class="page-tags"><button class="tag-chip" data-tag="database">#database</button> <button class="tag-chip" data-tag="performance">#performance</button> <button class="tag-chip" data-tag="query-tuning">#query-tuning</button> <button class="tag-chip" data-tag="execution-plan">#execution-plan</button> <button class="tag-chip" data-tag="postmortem">#postmortem</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+
+<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/multi-hop-latency/"><span class="pn-label">← 이전 글</span><span class="pn-title">느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기</span></a><span></span></nav>
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/multi-hop-latency/">느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기</a><a class="rel-card" href="/posts/grub-manual-boot/">root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기</a><a class="rel-card" href="/posts/index-two-faces/">느린 쿼리의 두 얼굴 — 인덱스를 살릴 때와, 인덱스가 독이 될 때</a></section>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>
