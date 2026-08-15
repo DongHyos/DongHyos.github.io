@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>용어는 지키고 문장만 고쳤다 — LLM 지시문 32만 자를 다시 쓴 기록 — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/">
+<meta name="description" content="파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 원인은 문서 쪽에 없었고 그 문서를 쓰게 만드는 지시문에 있었다">
+<meta property="og:title" content="용어는 지키고 문장만 고쳤다 — LLM 지시문 32만 자를 다시 쓴 기록 — donghyos">
+<meta property="og:description" content="파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 원인은 문서 쪽에 없었고 그 문서를 쓰게 만드는 지시문에 있었다">
+<meta property="og:url" content="https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="용어는 지키고 문장만 고쳤다 — LLM 지시문 32만 자를 다시 쓴 기록 — donghyos">
+<meta name="twitter:description" content="파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 원인은 문서 쪽에 없었고 그 문서를 쓰게 만드는 지시문에 있었다">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "용어는 지키고 문장만 고쳤다 — LLM 지시문 32만 자를 다시 쓴 기록", "description": "파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 원인은 문서 쪽에 없었고 그 문서를 쓰게 만드는 지시문에 있었다", "datePublished": "2026-08-15", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/", "mainEntityOfPage": "https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/cc/" class="cat-link">Claude Code 자산</a>
+  <a href="/series/agent-pipeline/" class="series-link">시리즈: agent-pipeline</a>
+  <time>2026-08-15</time>
+  <span class="read-time">8분 읽기</span>
+</div>
+</div>
+<h1 id="llm-32">용어는 지키고 문장만 고쳤다 — LLM 지시문 32만 자를 다시 쓴 기록</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 원인은 문서 쪽에 없었고 그 문서를 쓰게 만드는 지시문에 있었다</li>
+<li><strong>접근</strong>: 한국어 문체 검수 도구를 들였으나 기술 용어까지 한글로 바꿔 버려 그대로 쓸 수 없었다. 용어를 세 층으로 가르는 사전을 먼저 세우고, 문체 규칙은 가장 작은 파일을 실제로 고치면서 뽑았다</li>
+<li><strong>결과·학습</strong>: 열세 차례에 걸쳐 약 32만 자를 교정했다. 강조 밀도는 3분의 1이 됐는데 분량은 늘지 않았고, 용어와 ID는 그대로 남았다</li>
+<li><strong>도움 되는 독자</strong>: 에이전트 스킬이나 프롬프트를 한국어로 써서 남에게 쓰게 하려는 개발자</li>
+</ul></div></aside>
+<p><a href="/posts/agent-pipeline-v3-project-knowledge/">3편</a>에서 LLM이 프로젝트를 모를 때 무엇을 채웠는지 썼다. 이 글은 그렇게 채워 만든 문서가 정작 읽히지 않는다는 보고를 받고 원인을 찾아간 기록이다.</p>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">문서는 나오는데 읽히지 않는다</a></li><li class="toc-h2"><a href="#_2">진단이 두 번 틀렸다</a></li><li class="toc-h2"><a href="#_3">고칠 자리는 산출물이 아니었다</a></li><li class="toc-h2"><a href="#_4">검수 도구를 들였는데 못 썼다</a></li><li class="toc-h2"><a href="#_5">판정이 갈리는 말은 지킨다</a></li><li class="toc-h2"><a href="#_6">규칙은 실물에서 뽑았다</a></li><li class="toc-h2"><a href="#_7">분모까지 빌려야 한다</a></li><li class="toc-h2"><a href="#_8">결과</a></li><li class="toc-h2"><a href="#_9">학습</a></li></ul></nav><h2 id="_1">문서는 나오는데 읽히지 않는다</h2>
+<p>이 파이프라인은 변경 요청 하나를 분석부터 테스트까지 여섯 단계로 흘려보낸다. 단계마다 명세가 떨어지고 다음 단계는 앞 단계가 남긴 명세를 읽고 움직인다. 사람도 그 문서를 읽고 승인한다. 그래서 문서가 읽히지 않으면 파이프라인 전체가 흔들린다.</p>
+<p>보고는 한 문장이었다. 결과물이 나오는데 용어가 이해하기 어렵고 한국어 같지 않다는 것이었다.</p>
+<h2 id="_2">진단이 두 번 틀렸다</h2>
+<p>처음 나온 진단은 문서만 읽고 추정한 것이었다. 줄표와 번역투가 범인이라고 봤다. 근거는 파이프라인 내부 문서의 줄표 밀도였다.</p>
+<p>산출물을 실제로 재보니 틀렸다. 산출물의 줄표 밀도는 1000자당 4.2였고 그것을 찍어내는 템플릿은 6.6이었다. 산출물 쪽이 오히려 낮았다.</p>
+<p>그래서 이번에는 한국어가 자연스러운 편이라는 결론이 나왔다. 이것도 틀렸다. 내가 되물어 실제 문장을 읽어 보니 어색한 것이 맞았다. 「채운 덩어리라는 것이 3단을 성립시키는 축이다」 같은 문장이 그대로 있었다.</p>
+<p>두 번 다 같은 오류였다. <strong>밀도를 재고 읽힘을 판정했다.</strong> 밀도는 대리 지표고 판정 대상은 사람이 한 번에 읽고 지나가느냐다. 대리 지표는 대상과 상관이 있을 뿐 대상이 아니다. 상관이 있으니 어디를 볼지 정하는 데는 쓸모가 있다. 다만 그것으로 합격을 선언하면 엉뚱한 자리를 고치게 된다.</p>
+<h2 id="_3">고칠 자리는 산출물이 아니었다</h2>
+<p>원인을 산출물에서 찾으면 산출물을 고치게 된다. 그런데 산출물은 매번 새로 나온다.</p>
+<p>분석 명세의 볼드 밀도를 시간순으로 늘어놓고 확인했다. 가장 오래된 산출물이 이미 1000자당 10.6이었고, 두 달이 지나도 그 값이 올라가지 않았다. 중간에 5.5로 내려갔다가 다시 9.2가 되는 식이다.</p>
+<p>산출물이 산출물을 물들이는 중이라면 값이 시간에 따라 누적돼야 한다. 그렇지 않다는 것은 <strong>처음부터 그 밀도로 나오게 되어 있다</strong>는 뜻이다. 문체는 앞 산출물에서 옮아오지 않았다. 스킬과 템플릿이 처음부터 그렇게 쓰게 하고 있었다. 고칠 것은 지시문이다.</p>
+<h2 id="_4">검수 도구를 들였는데 못 썼다</h2>
+<p>한국어 문체를 고치는 일이니 쓸 도구가 있었다. <code>humanizer</code>, <code>grammar-checker</code>, <code>style-guide</code>. 공개된 MIT 스킬이고 이 블로그 글도 이것으로 검수한다.</p>
+<p>그대로 돌리려다 멈췄다. 지시문에 기술 용어가 940회 넘게 노출돼 있었다.</p>
+<pre><code>route 195 · backlog 124 · frontmatter 121 · mock 102
+HARD-GATE 52 · stale 52 · placeholder 36 · seam 21
+</code></pre>
+<p><code>humanizer</code>의 검사 항목 중 셋이 정확히 이것들을 노린다. 불필요한 한자어, 영어 관용구 직역, AI 유행어 과다. 940곳을 그대로 훑게 두면 <code>stale</code>도 <code>mock</code>도 <code>seam</code>도 한글로 바뀐다. 그러면 그 용어로 판정하는 다른 파일과 연결이 끊긴다.</p>
+<p>도구가 잘못된 것은 아니다. 일반 산문용이라 <strong>용어 보존이라는 축이 아예 없다.</strong> 소설이나 에세이에 지켜야 할 식별자는 없으니 있을 이유도 없다. 도구를 옮겨 쓸 때는 그 도구가 좋은지를 묻는 것으로 부족하다. 내 대상에는 있는 축이 그 도구에도 있는지를 물어야 한다.</p>
+<h2 id="_5">판정이 갈리는 말은 지킨다</h2>
+<p>그래서 도구를 돌리기 전에 사전부터 세웠다. 용어를 세 층으로 갈랐다.</p>
+<table>
+<thead>
+<tr>
+<th>층</th>
+<th>처리</th>
+<th>기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>보존</td>
+<td>그대로 둔다</td>
+<td>개발자가 아는 말이거나 코드·경로·설정 키·값</td>
+</tr>
+<tr>
+<td>보존 + 뜻 병기</td>
+<td>두되 처음 나올 때 뜻을 한 번 적는다</td>
+<td>이 말로 판정이 갈리는데 뜻이 자명하지 않다</td>
+</tr>
+<tr>
+<td>교정 대상</td>
+<td>자유롭게 고친다</td>
+<td>그 밖의 산문</td>
+</tr>
+</tbody>
+</table>
+<p>가운데 층의 기준을 「어려운 말」이 아니라 「판정이 갈리는 말」로 잡았다. 어려움은 읽는 사람마다 다르고 근거를 적을 수 없다. 판정이 갈리는지는 문서를 보면 확인되고 한 줄로 근거를 적을 수 있다.</p>
+<p>실제로 항목마다 그 한 줄을 달았다. <code>stale</code>은 앞 단계가 남긴 문서를 믿고 갈지 다시 읽을지가 갈려서, 「확인 불가」는 심각도의 한 등급으로 읽히기 쉽지만 실은 판정을 못 했다는 별개 상태라서. 근거를 비워 두면 다음 사람이 쉬운 말로 바꾸자면서 되돌린다.</p>
+<p><a href="/posts/agent-pipeline-v2-dogfooding/">2편</a>에서는 매번 괄호로 풀어 써야 하는 단어를 찾으면 그 단어를 갈아치웠다. 여기서는 뜻을 달아 두고 그대로 지킨다. 두 처방이 갈리는 지점은 그 말을 내가 바꿀 수 있느냐다. 그때 갈아치운 것은 내가 지은 이름이었고, 지금 지키는 것은 업계가 쓰거나 코드에 박혀 있어 내 마음대로 못 바꾸는 말이다. 바꿀 수 있는 말은 바꾸고, 못 바꾸는 말은 처음 한 번만 설명하고 둔다.</p>
+<p>층을 나눈 뒤 내가 틀린 것도 드러났다. 사용자가 입력하는 명령어 이름과 설정 파일의 키·값을 가운데 층에 넣어 뒀다. 뜻을 병기할 대상으로 본 것이다. <strong>코드는 번역 대상이 아니다.</strong> 일곱 항목을 보존 층으로 옮기고 그 안에 「설정 키와 값」 자리를 따로 만들었다.</p>
+<h2 id="_6">규칙은 실물에서 뽑았다</h2>
+<p>순서를 정할 차례에 나는 가장 작은 파일부터 하기로 했다.</p>
+<p>효과만 따지면 템플릿이 먼저다. 산출물에 직접 복제되니까. 그런데 그렇게 하면 기준을 머릿속에서 먼저 세우고 큰 파일에 적용하게 된다. 기준을 실물에서 뽑고 싶었다. 초기화 스킬 하나를 실제로 고치고 나니 규칙 일곱 개가 손에 남았다.</p>
+<ol>
+<li>줄표로 이유를 잇지 말고 문장을 끊는다</li>
+<li>괄호 부연을 문장으로 푼다</li>
+<li>볼드는 항목 이름에만 붙인다</li>
+<li>명사구를 동사 문장으로 바꾼다</li>
+<li>생략된 주어를 되살린다</li>
+<li>영어를 직역하지 않는다</li>
+<li>용어, ID, 경로는 손대지 않는다</li>
+</ol>
+<p>그 파일에서 나온 수치가 이후 판단의 기준이 됐다.</p>
+<pre><code>        줄표    볼드    괄호      크기
+전      4.9    8.4    9.9    2,015자
+후      1.4    4.8    2.8    2,070자  (+2.7%)
+</code></pre>
+<p>밀도는 3분의 1이 됐는데 분량은 그대로다. <strong>압축을 걷어내도 길어지지 않는다.</strong> 괄호와 볼드와 줄표는 정보를 담은 척하고 있었을 뿐이다. 괄호에 접어 넣은 부연은 문장으로 펴도 길이가 같고, 줄표로 이어 붙인 이유는 마침표로 끊으면 오히려 짧아진다. 접어 두면 글자 수는 그대로고 읽는 사람에게 남는 실마리만 사라진다.</p>
+<p>일곱 번째 규칙이 앞의 사전과 같은 말이다. 정밀도와 문체는 별개 축이다. 그전까지 이 파이프라인은 「쉽게 쓰기」를 「식별자를 빼기」와 한 덩어리로 묶어 뒀고, 그래서 ID가 꼭 필요한 문서는 문체 규칙의 적용 밖에 있었다. 용어를 그대로 둔 채 문장만 고쳐도 된다는 것이 확인되면서 그 예외가 없어졌다.</p>
+<h2 id="_7">분모까지 빌려야 한다</h2>
+<p>규칙대로 고치고 나서 지표를 하나 더 재봤다. <code>humanizer</code>가 AI 문체를 가려낼 때 가장 강한 신호로 쓰는 것이 쉼표인데, 문장을 잘게 끊는 교정이 그 값을 나쁘게 만들었을 수 있어서다.</p>
+<p>1000자당 쉼표 개수를 세니 교정 뒤에 2.0이 늘어 있었다. 악화로 읽힌다. 그런데 그 도구가 실제로 쓰는 기준은 따로 있었다. 쉼표가 들어간 문장의 비율이고, 그 값으로 다시 재니 그때까지 고친 일곱 파일 중 다섯 개가 내려가 있었다. 문장을 끊어 분모가 커진 결과다.</p>
+<p>같은 교정을 두고 한 분모는 나빠졌다고 하고 다른 분모는 좋아졌다고 한다. 판정에 쓰이는 쪽은 뒤엣것이다. <strong>지표를 빌려 올 때는 그 지표의 분모까지 함께 빌려야 한다.</strong> 하마터면 없는 문제를 만들어 멀쩡한 교정을 되돌릴 뻔했다. 이번 작업에서 대리 지표에 세 번째로 미끄러진 자리였다.</p>
+<h2 id="_8">결과</h2>
+<p>열세 차례에 걸쳐 스킬 13개와 공용 문서 전량을 고쳤다. 약 32만 자다.</p>
+<p>용어 전환도 세 건 함께 했다. 그중 하나는 한 번 되돌아갔다가 다시 간 것이다. <code>blast radius</code>를 「파급」으로 바꾸는 작업이 한쪽만 바뀐 채 멈췄고, 표기가 두 갈래로 갈리자 그 변경은 원래대로 돌아갔다. 그런데 다시 세어 보니 그 말은 이미 네 갈래 표기로 갈려 있었고 절반은 이미 한국어였다. 지킬 일관성이 처음부터 없었다. <strong>반쪽만 바꿔서 생긴 문제의 해법은 되돌리기가 아니라 완주였다.</strong> 52곳을 옮기는 데 전수 검색을 세 번 돌렸다. 볼드 안에 들어간 형태, 하이픈이 붙은 형태처럼 치환 목록에 없던 모양이 매번 남았다.</p>
+<p>나머지 두 건도 같은 조건이었다. 코드에 박히지 않은 개념어이면서 낯선 말이다. 다만 발견한 자리에서 바로 바꾸지 않고 각각 그 스킬의 교정 차례가 왔을 때 함께 처리했다. 따로 손대면 아직 문체를 안 고친 파일을 두 번 건드리게 되고, 두 번 건드리는 파일에서는 앞의 변경이 뒤의 변경에 묻힌다.</p>
+<p>고친 파이프라인을 돌려 보고 확인한 것은 네 가지다. 문장이 한 번에 읽힌다. 볼드가 줄어 훑을 때 진짜 강조가 보인다. 용어와 ID가 그대로라 그 말로 판정하는 다른 문서와의 연결이 끊기지 않았고, 판정 기준도 손대기 전과 같다. 그리고 산출물을 사람에게 그대로 보여주거나 인용할 수 있게 됐다. 전에는 옆에서 말로 다시 풀어줘야 했다.</p>
+<p>재둔 수치는 교정한 쪽이지 효과 쪽이 아니다. 읽는 사람이 몇 초 만에 이해했는지는 남기지 않았고 지금 만들 수도 없다. 앞선 세 편과 같은 한계다. 다만 이번에는 그 판정을 대리 지표로 대신하지 않았다. 밀도가 내려간 것과 문서가 읽히는 것은 서로 다른 사실이고, 읽히는 쪽은 읽어 봐야 안다.</p>
+<h2 id="_9">학습</h2>
+<ul>
+<li><strong>대리 지표를 재고 대상을 판정하지 않는다.</strong> 상관 지표는 어디를 볼지 고르는 데 쓰고, 합격 판정은 대상을 직접 확인해서 내린다. 이번 작업에서 이 구분이 세 번 미끄러졌다. 없는 원인을 지목했고, 그다음엔 있는 문제를 없다고 했고, 마지막에는 분모를 잘못 잡아 멀쩡한 교정을 되돌릴 뻔했다. 세 번 다 실물을 다시 재서 잡았다.</li>
+<li><strong>정밀도와 문체는 별개 축이다.</strong> 용어를 지키면서 문장을 고칠 수 있다. 둘을 한 덩어리로 묶어 두면 식별자가 필요한 문서는 통째로 개선 대상 밖으로 밀려난다.</li>
+<li><strong>지켜야 할 말은 어려움으로 고르지 않는다. 판정이 갈리는가로 고른다.</strong> 어려움은 사람마다 다르고 근거를 남길 수 없다. 판정이 갈리는지는 문서에서 확인되고 한 줄로 적히며, 그 한 줄이 다음 사람의 되돌림을 막는다.</li>
+<li><strong>압축은 정보가 아니다.</strong> 볼드와 괄호와 줄표를 걷어내도 분량은 늘지 않았다. 강조가 사방에 있으면 강조가 아니고, 괄호에 접어 둔 말은 짧아 보일 뿐 읽는 값은 더 든다.</li>
+</ul>
+<div class="page-tags"><button class="tag-chip" data-tag="claude-code">#claude-code</button> <button class="tag-chip" data-tag="ai-workflow">#ai-workflow</button> <button class="tag-chip" data-tag="prose">#prose</button> <button class="tag-chip" data-tag="terminology">#terminology</button> <button class="tag-chip" data-tag="tooling">#tooling</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+<nav class="series-nav">
+<div class="seriesnav-head">시리즈 <a href="/series/agent-pipeline/">agent-pipeline</a> · 4/4편</div>
+<div class="seriesnav-links">
+<a class="seriesnav-item seriesnav-prev" href="/posts/agent-pipeline-v3-project-knowledge/"><span class="seriesnav-label">← 이전 글</span><span class="seriesnav-title">사실은 기계가 뽑고 규범은 사람이 정한다 — LLM이 프로젝트를 모를 때 무엇을 채웠나</span></a>
+<span class="seriesnav-item seriesnav-empty"></span>
+</div>
+</nav>
+
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/agent-pipeline-v3-project-knowledge/">사실은 기계가 뽑고 규범은 사람이 정한다 — LLM이 프로젝트를 모를 때 무엇을 채웠나</a><a class="rel-card" href="/posts/agent-pipeline-v2-dogfooding/">틀린 건 판단이었고 고친 건 문구였다 — 내 파이프라인으로 내 파이프라인을 만든 기록</a><a class="rel-card" href="/posts/agent-pipeline-v1-ownership/">고칠 수 없는 도구는 내 것이 아니다 — 오픈소스 워크플로 둘을 계승해 내 파이프라인으로</a></section>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>
