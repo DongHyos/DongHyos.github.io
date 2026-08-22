@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
+<meta name="author" content="donghyos">
+<meta name="google-site-verification" content="PytTU91wwtAeizhm88EFq6bvI2IcF_3Uq7nvFZq--YQ">
+<title>낮추는 건 한 줄이었다 — 구동 권한을 내리고 깨진 자리로 폴더 기준 만들기 — donghyos</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
+<link rel="canonical" href="https://donghyos.github.io/posts/least-privilege-folder-baseline/">
+<meta name="description" content="구동 계정의 권한을 낮추라는 지적. 계정을 바꾸는 일 자체는 명령 몇 줄인데 그 뒤가 문제다">
+<meta property="og:title" content="낮추는 건 한 줄이었다 — 구동 권한을 내리고 깨진 자리로 폴더 기준 만들기 — donghyos">
+<meta property="og:description" content="구동 계정의 권한을 낮추라는 지적. 계정을 바꾸는 일 자체는 명령 몇 줄인데 그 뒤가 문제다">
+<meta property="og:url" content="https://donghyos.github.io/posts/least-privilege-folder-baseline/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="낮추는 건 한 줄이었다 — 구동 권한을 내리고 깨진 자리로 폴더 기준 만들기 — donghyos">
+<meta name="twitter:description" content="구동 계정의 권한을 낮추라는 지적. 계정을 바꾸는 일 자체는 명령 몇 줄인데 그 뒤가 문제다">
+<meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
+<meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "낮추는 건 한 줄이었다 — 구동 권한을 내리고 깨진 자리로 폴더 기준 만들기", "description": "구동 계정의 권한을 낮추라는 지적. 계정을 바꾸는 일 자체는 명령 몇 줄인데 그 뒤가 문제다", "datePublished": "2026-08-22", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/least-privilege-folder-baseline/", "mainEntityOfPage": "https://donghyos.github.io/posts/least-privilege-folder-baseline/"}</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="/search-index.js" defer></script>
+<script src="/search.js" defer></script>
+<script data-goatcounter="https://donghyos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="logo" aria-label="donghyos">
+      <svg width="132" height="24" viewBox="0 0 132 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <rect x="1" y="2" width="20" height="20" rx="5" fill="var(--accent)"/>
+        <text x="6" y="17" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="#fff">D</text>
+        <text x="28" y="17" font-family="Pretendard, sans-serif" font-size="15" font-weight="700" fill="currentColor">donghyos</text>
+      </svg>
+    </a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/posts/" class="active">Posts</a>
+      <a href="/categories/">Categories</a>
+      <a href="/series/">Series</a>
+      <a href="/about/">About</a>
+    </nav>
+    <button id="search-toggle" aria-label="검색">⌘K</button>
+  </div>
+</header>
+<main class="container">
+<article>
+<div class="post-header">
+<div class="post-meta">
+  <a href="/categories/work/" class="cat-link">실무 경험</a>
+  
+  <time>2026-08-22</time>
+  <span class="read-time">6분 읽기</span>
+</div>
+</div>
+<h1 id="_1">낮추는 건 한 줄이었다 — 구동 권한을 내리고 깨진 자리로 폴더 기준 만들기</h1>
+<aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
+<li><strong>다루는 문제</strong>: 구동 계정의 권한을 낮추라는 지적. 계정을 바꾸는 일 자체는 명령 몇 줄인데 그 뒤가 문제다</li>
+<li><strong>접근</strong>: 개발 서버에서 먼저 낮춰 깨지는 자리를 전부 겪은 뒤, 폴더를 역할 단위로 갈라 필요한 권한을 정의하고 운영에 적용했다</li>
+<li><strong>결과·학습</strong>: 막히는 자리를 개발에서 다 겪고 나니 남은 것은 역할별 기준 한 장이었다. 그리고 강제할 권한이 없는 개선은 쓸 수 있는 형태로 만들어야 퍼진다</li>
+<li><strong>도움 되는 독자</strong>: 최소 권한 원칙을 적용해야 하는데 어디부터 손대야 할지, 무엇이 깨질지 감이 안 오는 개발자·운영자</li>
+</ul></div></aside>
+<p>점검에서 애플리케이션이 필요 이상의 권한으로 돌고 있다는 지적을 받았다. 조치 방향은 명확하다. 전용 계정을 만들고, 파일 소유자를 그 계정으로 옮기고, 프로세스를 그 계정으로 띄우면 된다.</p>
+<p><strong>여기까지가 한 줄이고, 일은 그 뒤에 있다.</strong> 권한을 낮춘다는 것은 지금까지 되던 쓰기 중 일부를 막는다는 뜻이고, 무엇이 막히는지는 낮춰 보기 전에는 목록으로 나오지 않는다.</p>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_2">무엇이 막히는지가 문제다</a></li><li class="toc-h2"><a href="#_3">개발 서버에서 먼저 깨뜨렸다</a></li><li class="toc-h2"><a href="#_4">경로가 아니라 역할로 적었다</a></li><li class="toc-h2"><a href="#_5">하나의 규칙으로 묶이지 않았다</a></li><li class="toc-h2"><a href="#_6">여기까지가 이번 범위였다</a></li><li class="toc-h2"><a href="#_7">강제할 수는 없었다</a></li><li class="toc-h2"><a href="#_8">학습</a></li></ul></nav><h2 id="_2">무엇이 막히는지가 문제다</h2>
+<p>애플리케이션은 자기가 어디에 쓰는지 친절하게 알려주지 않는다. 높은 권한으로 도는 동안에는 어디에 쓰든 다 통과하므로, <strong>쓰기가 필요한 자리가 코드나 설정 어디에도 정리돼 있지 않은 채로 굴러간다.</strong> 그 상태가 몇 년 이어지면 아무도 전체 목록을 모른다.</p>
+<p>처음 구축할 때는 높은 권한으로 띄우는 편이 빠르다. 무엇이 필요한지 몰라도 되기 때문이다. 그리고 한번 돌기 시작하면 굳이 건드릴 이유가 생기지 않는다. 지적을 받고 나서야 목록이 없다는 사실이 드러난다.</p>
+<p>낮추고 나서 걸린 것은 두 부류였고, 성격이 서로 달랐다.</p>
+<p><strong>하나는 로그와 임시 파일이다.</strong> 애플리케이션이 스스로 쓰는 것들이라 뜨자마자, 혹은 조금 굴러가자마자 막힌다. 발견이 빠르다는 점에서는 다루기 쉬운 쪽이다.</p>
+<p><strong>다른 하나는 업로드와 첨부 경로다.</strong> 이쪽이 고약하다. <strong>사용자가 그 기능을 써야만 쓰기가 일어나기 때문이다.</strong> 권한을 낮추고 애플리케이션이 정상 기동하고 화면도 잘 뜨면 다 된 것처럼 보인다. 그러다 누군가 파일을 올리는 순간 처음 드러난다. 조치와 발견 사이에 시차가 생기고, 그 시차는 사용자 쪽에서 끝난다.</p>
+<h2 id="_3">개발 서버에서 먼저 깨뜨렸다</h2>
+<p>그래서 순서를 이렇게 잡았다. <strong>운영에 바로 적용하지 않고 개발 서버에서 먼저 낮췄다.</strong></p>
+<p>권한을 미리 조사해서 안전하게 적용하는 방법도 있다. 코드에서 파일을 쓰는 지점을 훑고 설정에 적힌 경로를 모으는 식이다. 그런데 그 조사로는 다 못 찾는다. 라이브러리가 내부적으로 쓰는 임시 경로, 프레임워크가 만드는 작업 디렉터리, 설정에 상대 경로로만 적혀 실제 위치가 실행 시점에 정해지는 것들이 빠진다.</p>
+<p><strong>조사로 목록을 만드는 것보다 낮춰 놓고 깨지는 것을 줍는 편이 빠르고 정확했다.</strong> 개발 서버는 그렇게 깨뜨려도 되는 자리다. 여기서 실패를 미리 소진하면 운영에서는 이미 아는 목록을 적용하는 일만 남는다.</p>
+<p>다만 개발에서 만든 목록이 운영에 그대로 맞는다는 보장은 없다. 운영에만 붙어 있는 연동이나 운영에서만 켜지는 기능이 있으면 그 경로는 개발에서 드러나지 않는다. 개발에서 소진되는 것은 애플리케이션이 어느 환경에서나 쓰는 자리까지다.</p>
+<p>그 한계를 빼고 나면, 여기서 나온 목록이 그대로 다음 단계의 재료가 됐다.</p>
+<h2 id="_4">경로가 아니라 역할로 적었다</h2>
+<p>깨진 자리를 목록으로 갖고 있으면 그 경로에 권한을 주는 것으로 끝난다. 그렇게 하면 그 서버는 돌아간다. 다만 다른 서버에는 쓸 수 없다. <strong>경로는 시스템마다 다르기 때문이다.</strong></p>
+<p>그래서 폴더를 역할로 갈랐다.</p>
+<p>아래는 그 기준을 리눅스 파일 권한으로 옮긴 형태다. 실제 값은 환경마다 달라지므로 원칙만 남긴 재구성 예제로 읽으면 된다. 구동 계정을 <code>app</code>이라고 하자.</p>
+<pre><code>폴더 역할              권한   구동 계정에게 열어 준 것
+실행 파일·라이브러리    500   읽기와 실행. 쓰기는 없다
+설정                  400   읽기만
+로그                  700   쓰기
+임시·작업              700   쓰기. 재시작 때 지운다
+사용자 파일            700   쓰기
+</code></pre>
+<p><strong>뒤 두 자리를 전부 0으로 둔 것</strong>이 이 표의 뼈대다. 같은 서버에 다른 계정이 있고 다른 애플리케이션이 돈다면, 그쪽에서 이 폴더들이 보일 이유가 없다. 권한을 낮춘다는 것은 root에서 내려오는 일이기도 하지만 <strong>옆으로도 닫는 일</strong>이다.</p>
+<p>실행 파일 쪽에 쓰기를 주지 않은 것도 같은 이유다. 구동 계정이 침해됐을 때 자기가 실행하는 코드를 덮어쓸 수 있으면 한 번의 침입이 영구적인 것이 된다. 대신 배포할 때마다 권한을 열었다 닫아야 하는 번거로움이 생기는데, 그 번거로움 자체가 뒤에서 이야기할 한계를 가리킨다.</p>
+<p>위 값은 폴더에 거는 것이고, <strong>그 안에 놓이는 파일은 따로 봐야 한다.</strong> 폴더의 실행 비트는 안으로 들어갈 수 있느냐를 정하지만 파일의 실행 비트는 그것이 실행될 수 있느냐를 정한다. 둘은 다른 이야기다. 사용자 파일이 쌓이는 자리는 폴더에 쓰기가 반드시 필요하지만, 거기 올라온 파일에는 실행 비트가 붙으면 안 된다. 붙는 순간 업로드 기능이 그대로 통로가 된다.</p>
+<p>표를 만들고 끝낼 뻔한 것이 하나 더 있다. <strong>애플리케이션이 실행 중에 새로 만드는 파일은 이 표를 따르지 않는다.</strong> 프로세스가 파일을 만들 때 적용하는 기본 마스크, 즉 umask가 그 권한을 정하기 때문이다. 폴더에 아무리 기준을 걸어 둬도 애플리케이션이 만든 로그 파일이 기타 읽기가 열린 채로 떨어지면 옆을 닫은 의미가 없다. 구동 계정의 umask까지 함께 잡아야 표가 실제로 지켜진다.</p>
+<p>역할로 적으면 두 가지가 달라진다. 첫째, 경로가 다른 시스템에도 그대로 적용된다. 둘째, <strong>새 폴더가 생겼을 때 어느 역할인지만 판단하면 권한이 정해진다.</strong> 목록에 없는 경로가 나올 때마다 다시 물어보지 않아도 된다.</p>
+<h2 id="_5">하나의 규칙으로 묶이지 않았다</h2>
+<p>정리하다 보니 애플리케이션을 띄우는 방식마다 권한 요구가 달랐다.</p>
+<p>외장 Tomcat은 여러 애플리케이션이 한 인스턴스를 공유하므로 배포 디렉터리에 쓰기가 필요하고, 그 쓰기가 여러 애플리케이션에 동시에 걸린다. 내장 Tomcat은 애플리케이션마다 프로세스가 따로 뜨므로 쓰기가 필요한 자리도 그 프로세스 안쪽으로 좁아진다. NGINX는 성격이 또 다르다. 낮은 포트를 잡아야 해서 애초에 마스터와 워커의 계정이 갈리는 구조다.</p>
+<p>셋을 한 규칙으로 묶으려 하면 가장 헐거운 쪽에 맞추게 된다. 셋 중 쓰기를 가장 많이 요구하는 쪽이 기준이 되고, 나머지 둘은 필요 없는 권한을 그대로 쥔 채 남는다. 그러면 낮추는 의미가 줄어든다. 그래서 셋을 나눠 각각의 기준을 따로 적었다.</p>
+<h2 id="_6">여기까지가 이번 범위였다</h2>
+<p>이 구조에는 남는 구멍이 있다. 구동 계정이 파일의 소유자이므로 <strong>그 계정은 자기 파일의 권한을 다시 바꿀 수 있다.</strong> 실행 파일에 쓰기를 막아 뒀어도 소유자는 <code>chmod</code> 한 번으로 열 수 있다. 제대로 닫으려면 소유자를 배포·관리 계정으로 두고 구동 계정은 그룹으로 읽기와 실행만 갖는 단계가 하나 더 필요하다.</p>
+<p>그 단계까지 가지는 않았다. 이번 조치의 범위는 root에서 내려오는 것까지였다. 그래도 차이는 작지 않다. root로 돌 때는 침해가 곧 시스템 전체였는데, 구동 계정으로 내려온 뒤에는 닿는 범위가 그 애플리케이션이 쓰는 자리 안으로 묶인다. 남은 한 단계는 그 안에서 코드까지 지킬 것이냐의 문제다.</p>
+<h2 id="_7">강제할 수는 없었다</h2>
+<p>운영 적용까지 마친 뒤 이 기준을 문서로 만들어 다른 팀에도 공유했다.</p>
+<p>여기서 내 위치는 애매하다. 다른 시스템의 담당자에게 이렇게 하라고 요구할 권한이 나에게는 없다. 문서를 보내는 것까지가 내가 할 수 있는 전부다.</p>
+<p>그런데 문의와 적용 요청이 왔다. 돌아보면 그 이유는 <strong>문서가 판단을 요구하지 않는 형태였기 때문</strong>인 것 같다. 원칙만 적힌 문서는 받는 사람이 자기 시스템에 맞게 해석하는 일을 떠안는데, 역할별로 갈라 둔 기준은 자기 폴더가 어느 역할인지만 보면 된다. 적용 비용이 낮으면 권한이 없어도 요청이 온다.</p>
+<h2 id="_8">학습</h2>
+<ul>
+<li><strong>권한 축소는 낮추는 작업이 아니라 쓰기가 필요한 자리를 찾는 작업이다.</strong> 계정을 바꾸는 명령은 몇 줄이고, 시간은 전부 무엇이 막히는지 알아내는 데 든다. 높은 권한으로 도는 동안에는 그 목록이 어디에도 적혀 있지 않다.</li>
+<li><strong>조사보다 깨뜨려 보는 편이 빠른 경우가 있다.</strong> 라이브러리와 프레임워크가 내부적으로 쓰는 자리는 코드를 훑어서 다 못 찾는다. 깨뜨려도 되는 환경이 있다면 거기서 실패를 미리 소진하는 것이 정확하다.</li>
+<li><strong>사용자 행동에 딸린 쓰기는 조치 직후에 드러나지 않는다.</strong> 기동하고 화면이 뜨는 것으로 확인을 끝내면 파일 업로드 같은 경로가 남는다. 확인 항목은 애플리케이션이 스스로 하는 일과 사용자가 시켜야 일어나는 일로 갈라야 한다.</li>
+<li><strong>폴더에 기준을 걸어도 프로세스가 만드는 파일은 그 기준을 따르지 않는다.</strong> 새로 생기는 파일의 권한은 umask가 정한다. 폴더만 정리하고 끝내면 런타임에 떨어지는 로그와 임시 파일이 열린 채로 남아, 옆을 닫으려던 설계가 그 자리에서 무너진다.</li>
+<li><strong>강제할 권한이 없는 개선은 적용 비용을 낮춰야 퍼진다.</strong> 원칙을 적으면 받는 쪽이 해석을 떠안고, 역할별 기준을 적으면 대조만 하면 된다. 따르라고 말할 수 없는 자리에서는 문서의 형태가 설득을 대신한다.</li>
+</ul>
+<div class="page-tags"><button class="tag-chip" data-tag="security">#security</button> <button class="tag-chip" data-tag="least-privilege">#least-privilege</button> <button class="tag-chip" data-tag="linux">#linux</button> <button class="tag-chip" data-tag="tomcat">#tomcat</button> <button class="tag-chip" data-tag="nginx">#nginx</button> <button class="tag-chip" data-tag="operations">#operations</button></div>
+</article>
+<div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
+
+<nav class="prev-next"><a class="pn-item pn-prev" href="/posts/canvas-device-coordinates/"><span class="pn-label">← 이전 글</span><span class="pn-title">같은 좌표, 다른 자리 — 논리 좌표와 물리 좌표를 갈라 변환을 한 군데로</span></a><span></span></nav>
+<section class="related"><h2>같은 분류의 다른 글</h2><a class="rel-card" href="/posts/canvas-device-coordinates/">같은 좌표, 다른 자리 — 논리 좌표와 물리 좌표를 갈라 변환을 한 군데로</a><a class="rel-card" href="/posts/verified-not-finished/">계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록</a><a class="rel-card" href="/posts/multi-hop-latency/">느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기</a></section>
+<section class="comments">
+<script src="https://giscus.app/client.js"
+  data-repo="DongHyos/DongHyos.github.io"
+  data-repo-id="R_kgDOIAIyPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOIAIyPs4C-Dq2"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="ko"
+  crossorigin="anonymous"
+  async>
+</script>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2026 donghyos · <a href="/feed.xml">RSS</a></p>
+  </div>
+</footer>
+</body>
+</html>

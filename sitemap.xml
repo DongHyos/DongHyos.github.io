@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://donghyos.github.io/</loc><lastmod>2026-08-20</lastmod></url>
-  <url><loc>https://donghyos.github.io/posts/</loc><lastmod>2026-08-20</lastmod></url>
+  <url><loc>https://donghyos.github.io/</loc><lastmod>2026-08-22</lastmod></url>
+  <url><loc>https://donghyos.github.io/posts/</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://donghyos.github.io/about/</loc></url>
+  <url><loc>https://donghyos.github.io/posts/least-privilege-folder-baseline/</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/canvas-device-coordinates/</loc><lastmod>2026-08-20</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/</loc><lastmod>2026-08-15</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/agent-pipeline-v3-project-knowledge/</loc><lastmod>2026-08-11</lastmod></url>
@@ -33,12 +34,12 @@
   <url><loc>https://donghyos.github.io/posts/ai-shorts-pipeline-v3-diversification/</loc><lastmod>2026-05-30</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/</loc><lastmod>2026-05-29</lastmod></url>
   <url><loc>https://donghyos.github.io/posts/ai-shorts-pipeline-v1-architecture/</loc><lastmod>2026-05-29</lastmod></url>
-  <url><loc>https://donghyos.github.io/categories/</loc><lastmod>2026-08-20</lastmod></url>
+  <url><loc>https://donghyos.github.io/categories/</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://donghyos.github.io/categories/proj/</loc></url>
   <url><loc>https://donghyos.github.io/categories/work/</loc></url>
   <url><loc>https://donghyos.github.io/categories/cc/</loc></url>
   <url><loc>https://donghyos.github.io/categories/meta/</loc></url>
-  <url><loc>https://donghyos.github.io/series/</loc><lastmod>2026-08-20</lastmod></url>
+  <url><loc>https://donghyos.github.io/series/</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://donghyos.github.io/series/agent-pipeline/</loc></url>
   <url><loc>https://donghyos.github.io/series/ai-shorts-pipeline/</loc></url>
   <url><loc>https://donghyos.github.io/series/dongstock-ops/</loc></url>

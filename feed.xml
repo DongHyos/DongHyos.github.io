@@ -7,7 +7,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Wed, 19 Aug 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Fri, 21 Aug 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>낮추는 건 한 줄이었다 — 구동 권한을 내리고 깨진 자리로 폴더 기준 만들기</title>
+    <link>https://donghyos.github.io/posts/least-privilege-folder-baseline/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/least-privilege-folder-baseline/</guid>
+    <pubDate>Fri, 21 Aug 2026 15:00:00 GMT</pubDate>
+    <description>구동 계정의 권한을 낮추라는 지적. 계정을 바꾸는 일 자체는 명령 몇 줄인데 그 뒤가 문제다</description>
+  </item>
   <item>
     <title>같은 좌표, 다른 자리 — 논리 좌표와 물리 좌표를 갈라 변환을 한 군데로</title>
     <link>https://donghyos.github.io/posts/canvas-device-coordinates/</link>
@@ -210,13 +217,6 @@
     <guid isPermaLink="true">https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/</guid>
     <pubDate>Thu, 28 May 2026 15:00:00 GMT</pubDate>
     <description>1편 파이프라인의 조회수를 올리려 영상 길이·품질·주제를 개선하다 만난 AI 영상 모델의 근본 한계</description>
-  </item>
-  <item>
-    <title>AI 숏폼 자동화 파이프라인 v1 — 4단계 아키텍처와 프롬프트 변수화 (1편)</title>
-    <link>https://donghyos.github.io/posts/ai-shorts-pipeline-v1-architecture/</link>
-    <guid isPermaLink="true">https://donghyos.github.io/posts/ai-shorts-pipeline-v1-architecture/</guid>
-    <pubDate>Thu, 28 May 2026 15:00:00 GMT</pubDate>
-    <description>AI 영상 생성 모델만으로 숏폼 콘텐츠를 엔드투엔드 자동 생성하는 파이프라인 구축이 가능한가</description>
   </item>
 </channel>
 </rss>
