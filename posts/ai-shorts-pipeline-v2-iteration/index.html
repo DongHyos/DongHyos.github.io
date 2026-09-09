@@ -11,17 +11,17 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
 <link rel="canonical" href="https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/">
-<meta name="description" content="1편 파이프라인의 조회수를 올리려 영상 길이·품질·주제를 개선하다 만난 AI 영상 모델의 근본 한계">
+<meta name="description" content="숏폼 영상의 조회수를 높이려 길이와 품질을 개선하는 과정에서 겪은 세척 장면의 불연속성">
 <meta property="og:title" content="AI 영상은 시간 순서를 모른다 — Veo 3.1 Extension 실험 회고 (2편) — donghyos">
-<meta property="og:description" content="1편 파이프라인의 조회수를 올리려 영상 길이·품질·주제를 개선하다 만난 AI 영상 모델의 근본 한계">
+<meta property="og:description" content="숏폼 영상의 조회수를 높이려 길이와 품질을 개선하는 과정에서 겪은 세척 장면의 불연속성">
 <meta property="og:url" content="https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AI 영상은 시간 순서를 모른다 — Veo 3.1 Extension 실험 회고 (2편) — donghyos">
-<meta name="twitter:description" content="1편 파이프라인의 조회수를 올리려 영상 길이·품질·주제를 개선하다 만난 AI 영상 모델의 근본 한계">
+<meta name="twitter:description" content="숏폼 영상의 조회수를 높이려 길이와 품질을 개선하는 과정에서 겪은 세척 장면의 불연속성">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "AI 영상은 시간 순서를 모른다 — Veo 3.1 Extension 실험 회고 (2편)", "description": "1편 파이프라인의 조회수를 올리려 영상 길이·품질·주제를 개선하다 만난 AI 영상 모델의 근본 한계", "datePublished": "2026-05-29", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/", "mainEntityOfPage": "https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "AI 영상은 시간 순서를 모른다 — Veo 3.1 Extension 실험 회고 (2편)", "description": "숏폼 영상의 조회수를 높이려 길이와 품질을 개선하는 과정에서 겪은 세척 장면의 불연속성", "datePublished": "2026-05-29", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/", "mainEntityOfPage": "https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -57,40 +57,40 @@
   <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
   <a href="/series/ai-shorts-pipeline/" class="series-link">시리즈: ai-shorts-pipeline</a>
   <time>2026-05-29</time>
-  <span class="read-time">6분 읽기</span>
+  <span class="read-time">7분 읽기</span>
 </div>
 </div>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
-<li><strong>다루는 문제</strong>: 1편 파이프라인의 조회수를 올리려 영상 길이·품질·주제를 개선하다 만난 AI 영상 모델의 근본 한계</li>
-<li><strong>접근</strong>: Veo 3.1 Extension API로 8→15초 확장 + 5단계 시간축 서사 프롬프트. BMAD 실험 게이트로 정량 검증</li>
-<li><strong>결과·학습</strong>: 시간축 서사 실험은 0.0/5로 실패. 핵심 학습 = AI 영상 모델은 프롬프트의 시간 순서를 따르지 않는다, 그리고 대량 자동 업로드가 알고리즘 추천을 끊는 역설</li>
-<li><strong>도움 되는 독자</strong>: 영상 생성 모델로 <em>시간 순서가 있는</em> 콘텐츠를 만들려는 개발자 / AI 자동 생성 채널의 알고리즘 리스크가 궁금한 사람</li>
+<li><strong>다루는 문제</strong>: 숏폼 영상의 조회수를 높이려 길이와 품질을 개선하는 과정에서 겪은 세척 장면의 불연속성</li>
+<li><strong>접근</strong>: Veo 3.1 Extension API로 영상을 8초에서 15초로 늘리고, 5단계 세척 프롬프트의 결과를 미리 정한 기준으로 직접 채점했다.</li>
+<li><strong>결과·학습</strong>: 첫 실험은 평균 0.0/5점이었다. 세척 과정을 2단계로 단순화하고 연장 구간에 남길 오염을 명시하면서 영상이 개선됐다.</li>
+<li><strong>도움 되는 독자</strong>: 시간 순서가 있는 영상을 생성하거나 프롬프트 실험의 평가 기준을 정하려는 개발자</li>
 </ul></div></aside>
 <h1 id="ai-veo-31-extension-2">AI 영상은 시간 순서를 모른다 — Veo 3.1 Extension 실험 회고 (2편)</h1>
-<p><a href="/posts/ai-shorts-pipeline-v1-architecture/">1편</a>에서 AI 숏폼 자동화 파이프라인을 5일 만에 구축했다. 결과는 영상당 700~900회, 자동화 가설은 검증됐지만 시장 가설은 미달이었다. 이 글은 그 후 한 달간 <em>조회수를 끌어올리려</em> 시도하다 만난 두 가지 벽 — AI 영상 모델의 근본 한계와 플랫폼 알고리즘의 함정 — 에 대한 기록이다.</p>
+<p><a href="/posts/ai-shorts-pipeline-v1-architecture/">1편</a>에서 AI 숏폼 자동화 파이프라인을 5일 만에 구축했다. 영상당 조회수는 700~900회였다. 제작 자동화는 구현했지만 조회수는 기대에 못 미쳤다. 이 글에서는 영상 길이와 품질을 개선하려던 실험, 그리고 업로드를 늘린 뒤 조회수가 줄어든 경험을 돌아본다.</p>
 <nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#1">1. 문제 정의</a></li><li class="toc-h2"><a href="#2">2. 접근</a></li><li class="toc-h3"><a href="#15">길이 가설 — 왜 15초인가</a></li><li class="toc-h3"><a href="#_1">가설 — 시간축 서사 프롬프트</a></li><li class="toc-h3"><a href="#bmad">검증 — BMAD 실험 게이트</a></li><li class="toc-h3"><a href="#mcp">주제 다양화 — MCP 시장조사</a></li><li class="toc-h2"><a href="#3">3. 구현·실험</a></li><li class="toc-h3"><a href="#005">실험 결과 — 0.0/5</a></li><li class="toc-h3"><a href="#_2">피벗</a></li><li class="toc-h2"><a href="#4">4. 결과</a></li><li class="toc-h2"><a href="#5">5. 학습</a></li></ul></nav><h2 id="1">1. 문제 정의</h2>
-<p>목표는 단순했다. <em>조회수를 올린다</em>. 가설은 세 갈래로 세웠다.</p>
+<p>목표는 조회수를 올리는 것이었다. 가설은 세 갈래로 세웠다.</p>
 <ol>
-<li><strong>영상 품질</strong> — 더 자연스러운 세척 영상이 시청 완료율을 높인다</li>
-<li><strong>영상 길이</strong> — 8초 단일 클립보다 긴 영상이 더 많은 정보를 담아 체류 시간을 늘린다</li>
-<li><strong>주제 다양성</strong> — 한 가지 주제(PC 부품 청소)보다 여러 주제가 더 넓은 시청자층에 도달한다</li>
+<li><strong>영상 품질</strong> — 더 자연스러운 세척 영상이 시청 완료율을 높인다.</li>
+<li><strong>영상 길이</strong> — 8초짜리 클립보다 긴 영상이 세척 과정을 충분히 보여 줘 시청 시간을 늘린다.</li>
+<li><strong>주제 다양성</strong> — PC 부품 청소 외의 주제를 다루면 더 넓은 시청자층에 도달한다.</li>
 </ol>
-<p>이 중 <em>길이</em> 가설이 가장 큰 기술적 도전이자 가장 큰 실패였다. 이 글의 중심에 둔다.</p>
+<p>이 글에서는 길이 가설을 중심으로 다룬다. 영상을 늘리는 것부터 어려웠다. 연장 구간에서 세척 장면의 연속성이 깨졌기 때문이다.</p>
 <h2 id="2">2. 접근</h2>
 <h3 id="15">길이 가설 — 왜 15초인가</h3>
-<p>YouTube Shorts는 최대 60초까지 허용하는데 8초 클립 하나로는 짧다. <em>15초짜리 클립 여러 개를 묶으면 60초를 채울 수 있겠다</em>는 계산이었다.</p>
-<p>문제는 Veo 3.1이 단일 호출로 8초까지만 생성한다는 점이다. 더 긴 영상은 <strong>Extension API</strong>로 만든다 — 8초 클립의 마지막 프레임을 이어받아 7초를 더 생성해 15초를 만드는 방식이다.</p>
-<p>그런데 막상 만들어 보니 <em>8초 본편과 7초 연장분의 이음새가 부자연스러웠다</em>. 연장 시점에서 물줄기 방향이 바뀌거나, 세척 진행 상태가 되돌아가거나, 카메라가 갑자기 점프했다. 단순히 클립을 이어 붙이는 1편의 FFmpeg concat과는 다른 문제였다. <em>생성 단계의 연속성</em> 자체가 깨졌다.</p>
+<p>당시 제작 목표는 60초였다. 15초짜리 클립 여러 개를 묶으면 목표 길이를 채울 수 있겠다고 생각했다. 60초는 이 프로젝트의 제작 목표이며 Shorts의 최대 길이는 아니다. YouTube는 2024년 10월 15일 이후 업로드한 정사각형·세로형 영상에 대해 최대 3분까지 Shorts로 분류한다고 안내한다. (<a href="https://support.google.com/youtube/answer/15424877?hl=ko">YouTube 공식 안내</a>)</p>
+<p>실험에서는 Veo 3.1로 8초짜리 클립을 생성한 뒤 <strong>Extension API</strong>로 7초를 더 생성해 15초로 늘렸다. 연장은 기존 영상의 끝부분을 바탕으로 후속 영상을 생성하는 방식이다. (<a href="https://ai.google.dev/gemini-api/docs/veo?hl=en">Google 공식 문서</a>)</p>
+<p>그런데 만들어 보니 8초 본편과 7초 연장분의 이음새가 부자연스러웠다. 연장 시점에서 물줄기 방향이 바뀌거나 세척 진행 상태가 되돌아가고, 카메라가 갑자기 이동했다. 1편에서 FFmpeg로 완성된 클립을 이어 붙일 때와 달리 생성 단계부터 장면의 연속성이 깨졌다.</p>
 <h3 id="_1">가설 — 시간축 서사 프롬프트</h3>
-<p>이음새 문제를 프롬프트로 풀 수 있다고 봤다. 가설은 <em>세척 과정을 </em><em>5단계 시간축 서사</em><em>(충격 → 박리 → 용해 → 복원 → 마무리)로 자세히 서술하면, 모델이 그 순서대로 점진적인 세척 영상을 생성할 것</em>이라는 것. 프롬프트에 "먼저 고압수가 충격을 주고, 그다음 표면 오염이 박리되고…" 식으로 단계별 진행을 명시했다.</p>
+<p>이음새 문제를 프롬프트로 풀 수 있다고 봤다. 세척 과정을 <strong>5단계 시간축 서사</strong>(충격 → 박리 → 용해 → 복원 → 마무리)로 자세히 서술하면 모델이 순서대로 세척 영상을 생성할 것이라는 가설이었다. 프롬프트에 “먼저 고압수가 충격을 주고, 그다음 표면 오염이 벗겨지고…”처럼 단계별 진행을 명시했다.</p>
 <h3 id="bmad">검증 — BMAD 실험 게이트</h3>
-<p>이 가설을 <em>감</em>이 아니라 <em>정량</em>으로 검증하기로 했다. 1편에서 쓴 BMAD V6 방법론에는 <strong>실험 게이트</strong> 패턴이 있다 — 가설마다 채점 기준을 먼저 정하고, 실험 점수가 기준 미달이면 다음 단계로 넘어가지 않는다. 기준은 0~5점 4개 항목(시간 순서 인식 / 카메라 변화 / 오염의 점진적 변화 / 전체 품질), 통과선은 평균 3.0으로 잡았다.</p>
+<p>1편에서 쓴 BMAD V6의 단계별 개발 흐름에 실험 게이트를 두었다. 채점 기준과 통과선을 먼저 정하고, 결과가 기준에 못 미치면 다음 구현 단계로 넘어가지 않는 방식이다. 첫 실험에서는 시간 순서 인식, 카메라 변화, 오염의 점진적 변화, 전체 품질을 각각 0~5점으로 평가했다. 통과선은 평균 3.0점이었다. 자동 측정값은 아니며, 생성된 영상을 직접 보고 매긴 점수다.</p>
 <h3 id="mcp">주제 다양화 — MCP 시장조사</h3>
-<p>주제 가설은 <em>무작정</em> 늘리지 않았다. MCP 검색 도구(<code>exa</code>·<code>tavily</code>)로 어떤 satisfying 주제가 수요 있는지 먼저 조사하고, 확인된 주제만 Gemini 기반 <code>PromptDiversifier</code>로 프롬프트를 자동 변형해 투입했다.</p>
+<p>주제를 늘릴 때는 MCP(Model Context Protocol) 검색 도구인 <code>exa</code>와 <code>tavily</code>로 후보를 조사했다. 시각적 만족감을 주는 satisfying 영상 중 어떤 소재를 다룰지 고른 뒤, Gemini 기반 <code>PromptDiversifier</code>로 프롬프트를 자동 변형해 투입했다. 검색 결과는 후보 선정에 활용했으며, 실제 채널에서의 수요까지 검증한 것은 아니었다.</p>
 <h2 id="3">3. 구현·실험</h2>
-<p>한 달간 영상 50편 이상을 생성했다. 테스트 실험본과 실제 업로드본이 섞인 누적이다. 그 안에서 시간축 서사 가설을 반복 검증했다.</p>
+<p>한 달간 생성한 영상은 50편 이상이었다. 테스트 영상과 실제 업로드 영상을 합친 수이며, 모두 같은 조건으로 시간축 서사 가설을 검증한 것은 아니다. 아래는 별도 실험 기록이 남아 있는 GPU 세척 영상의 첫 평가 결과다.</p>
 <h3 id="005">실험 결과 — 0.0/5</h3>
-<p>15초 시간축 서사 프롬프트(약 1,800자)로 생성한 영상을 채점했다.</p>
+<p>약 1,800자의 5단계 프롬프트로 생성하고 15초로 연장한 영상을 채점했다.</p>
 <table>
 <thead>
 <tr>
@@ -117,38 +117,36 @@
 </tr>
 <tr>
 <td><strong>평균</strong></td>
-<td><strong>0.0</strong></td>
+<td><strong>0.0/5</strong></td>
 </tr>
 </tbody>
 </table>
-<p>전 항목 0점. 솔직히 충격이었다. 영상을 한 편씩 직접 돌려 보며 원인을 좁혔다. 패턴은 일관됐다.</p>
+<p>모든 항목이 0점이었다. 예상보다 낮은 결과라 영상을 다시 보며 어떤 장면에서 기대와 어긋났는지 확인했다.</p>
 <blockquote>
-<p>5단계를 아무리 자세히 서술해도, 모델은 프롬프트를 <em>"장면 전체의 분위기와 컨셉"</em>으로 해석한다. 그래서 점진적 세척 과정 대신 <em>dirty 상태에서 갑자기 clean 상태로</em> 건너뛰어 렌더링한다.</p>
+<p>세척이 단계적으로 진행되지 않고, 오염된 상태에서 갑자기 깨끗한 상태로 바뀌었다.</p>
 </blockquote>
-<p>즉 <strong>AI 영상 생성 모델은 프롬프트의 시간 순서를 순서대로 실행하지 않는다.</strong> 텍스트는 <em>시퀀스</em>지만 모델은 그것을 <em>하나의 정적 컨셉</em>으로 압축한다.</p>
-<pre class="mermaid">flowchart LR
-    P["프롬프트: 충격→박리→용해→복원→마무리"] --> M[Veo 3.1]
-    M --> R["렌더 결과: dirty → (점프) → clean"]
-    R -.기대.-> E["점진적 5단계 진행"]
-    R ==실제==> A["단일 컨셉으로 압축"]
-</pre>
-<p>여기서 중요한 회고가 하나 있다. <em>당시의 나는 이것을 "Veo의 한계"로 결론지었다.</em> 하지만 지금 돌아보면 이건 <strong>내 프롬프트 설계의 실패에 가깝다</strong>. 시간 순서를 <em>서술</em>로 풀려 한 것 자체가 잘못이었다. 모델에게 시퀀스를 강제하려면 <em>클립을 쪼개 각각 생성하고 편집 단계에서 잇는</em> 구조로 갔어야 했다. 1편에서 얻은 "프롬프트가 90%"라는 교훈을 여기서 뼈아프게 다시 확인했다.</p>
+<p>이 실험에서는 프롬프트에 적은 시간 순서가 영상에 반영되지 않았다. 당시에는 모델이 여러 단계를 하나의 콘셉트로 받아들인다고 해석했다. 하지만 출력 영상만으로 모델 내부의 처리 방식을 확인할 수는 없다.</p>
+<iframe src="/images/ai-shorts-pipeline-v2-iteration/temporal-sequence.html" title="5단계 세척 프롬프트의 기대와 관찰 결과" loading="lazy" style="display:block;width:100%;height:auto;aspect-ratio:8/5;min-height:468px;border:0;"></iframe>
+
+<p><a href="/images/ai-shorts-pipeline-v2-iteration/temporal-sequence.html">도표 크게 보기</a></p>
+<p>당시에는 이를 Veo의 한계로 결론지었다. 지금 돌아보면 한 번의 생성과 연장에 다섯 단계의 진행을 맡긴 프롬프트 설계도 돌아봐야 했다. 단계별 클립을 따로 생성해 편집하는 방법도 대안으로 생각할 수 있다. 다만 이 실험에서 실제로 시도한 방향은 세척 과정을 두 단계로 줄이는 것이었다.</p>
 <h3 id="_2">피벗</h3>
-<p>5단계 서사를 버리고 <strong>2단계 프로세스</strong>로 단순화했다. 8초는 <em>세척 과정</em>, 연장 7초는 <em>자연스러운 완성</em>. 모델에게 5단계 시퀀스를 강제하는 대신, 큰 덩어리 2개만 맡겼다. 점수는 0.0에서 의미 있게 올라갔다. 완전한 해결은 아니었지만 <em>방향 전환은 유효</em>했다. 실험 게이트가 없었다면 0.0짜리 접근을 붙잡고 더 오래 헤맸을 것이다.</p>
+<p>5단계 서사를 <strong>2단계 과정</strong>으로 단순화했다. 첫 8초에는 세척 과정을 보여 주고, 연장 7초에는 남은 오염을 씻어 내도록 유도했다. 처음에는 8초 안에 세척이 끝나 연장 구간에서 깨끗한 곳에 물만 뿌리는 문제가 있었다. 그래서 프롬프트에 “표면의 때는 씻겨 나가지만 틈새에는 두꺼운 때가 남아 있다”는 상태를 명시했다. 연장 구간이 이어받을 세척 대상을 남긴 것이다.</p>
+<p>이후 영상에서는 세척의 진행과 연장 구간의 연결이 나아졌다. 실험 기록의 최종 평가는 평균 5.0/5점이었다. 다만 피벗 후 평가 항목을 과정의 점진성, Extension 전환, 오염 변화, 전체 품질로 바꿨으므로 첫 실험의 0점과 같은 척도에서 비교할 수는 없다.</p>
 <video src="/images/ai-shorts-pipeline-v2-iteration/pivot-result.mp4" autoplay muted loop playsinline width="360" style="display:block;margin:24px auto;border-radius:8px;max-width:100%;"></video>
 
 <blockquote>
-<p>피벗 후 결과(8초 + Extension 7초, 15초). 더러운 상태에서 점진적으로 세척이 진행된다 — 5단계 서사 프롬프트로는 얻지 못했던 <em>시간축 연속성</em>이 2단계 단순화로 살아났다.</p>
+<p>피벗 후 결과 영상(8초 + 연장 7초). 세척 과정을 단순화하고 남은 오염을 명시한 뒤 얻은 15초 영상이다.</p>
 </blockquote>
 <h2 id="4">4. 결과</h2>
-<p>발전 시도 후 조회수는 <em>그대로인 경우도 있었고, 일부는 1천 회를 넘기기도</em> 했다. 1편의 700~900에서 개선은 있었지만 폭발적이지 않았다. 여전히 알고리즘 추천이 본격 발동하는 임계에는 닿지 못했다.</p>
-<p>그리고 한 달의 시도는 <em>예상치 못한 벽</em>에서 끝났다. 채널 두 개를 운영하며 AI로 영상을 대량 생성·업로드하던 어느 시점부터, <strong>신규 영상의 추천 노출이 사실상 0으로 떨어졌다.</strong> 조회수가 700도 900도 아닌 한 자릿수. 업로드 빈도가 일정 수준을 넘어선 뒤 나타난 변화였고, 이것이 cleaning 시리즈를 사실상 종료한 결정타였다.</p>
+<p>개선 후에도 조회수가 비슷한 영상이 있었고, 일부는 약 1,200회까지 올랐다. 1편의 700~900회보다 높게 나온 사례는 있었지만 품질 개선이 조회수 상승으로 이어졌는지 판단할 비교 실험은 없었다.</p>
+<p>한편 채널 두 개에서 업로드를 늘리던 중 조회수가 0인 신규 영상이 나오기 시작했다. 당시에는 추천이 끊겼다고 받아들였다. 다만 기록에 남은 것은 조회수이며, 추천 노출 수나 감소 원인은 확인하지 못했다. 업로드 증가와 조회수 감소가 함께 나타났다는 관찰만으로 플랫폼의 제재나 추천 정책을 단정하기는 어렵다.</p>
 <h2 id="5">5. 학습</h2>
 <p>이 시도에서 세 가지를 배웠다.</p>
-<p><strong>첫째, AI 영상 생성 모델은 프롬프트의 시간 순서를 따르지 않는다.</strong> 텍스트 프롬프트는 시퀀스로 읽히지 않고 단일 컨셉으로 압축된다. <em>시간 순서가 있는 콘텐츠</em>가 필요하면 프롬프트 서술로 풀려 하지 말고, <strong>클립을 단계별로 쪼개 각각 생성한 뒤 편집 단계에서 이어야 한다</strong>. 이 원칙은 Veo뿐 아니라 Sora 등 다른 영상 생성 모델에도 적용될 가능성이 높다.</p>
-<p><strong>둘째, 실험 게이트의 정량 검증은 시간을 아낀다.</strong> 0.0/5라는 명확한 숫자가 <em>"이 접근은 틀렸다"</em>를 빠르게 확정해 줬다. 감으로 판단했다면 5단계 서사를 더 다듬으며 한참을 더 썼을 것이다. 가설에 <em>채점 기준을 먼저 정하고 들어가는</em> 습관은 다음 실험에도 그대로 가져갈 자산이다.</p>
-<p><strong>셋째, AI 자동화의 대량 생산은 양날의 검이다.</strong> AI 파이프라인의 강점은 <em>대량 생성</em>인데, 내 경우 그 강점이 <em>플랫폼 알고리즘 앞에서는 약점</em>으로 돌아왔다. <em>많이 만들 수 있다</em>는 것과 <em>많이 올려야 한다</em>는 것은 다른 문제였다. 생산 비용을 0에 가깝게 낮춘 자동화가 역설적으로 채널의 발목을 잡았다. (플랫폼 노출 정책은 비공개이므로 이는 단일 사례의 관찰이다.)</p>
-<p>cleaning 주제는 여기서 접었다. 다만 파이프라인 자체를 버린 것은 아니다. 다음은 <em>다른 satisfying 주제</em>로 같은 파이프라인을 확장한 이야기다. 3편에서 다룬다.</p>
+<p><strong>첫째, 생성 구간이 이어받을 상태를 설계해야 한다.</strong> 이번 실험에서는 다섯 단계를 자세히 서술해도 원하는 순서가 나오지 않았다. 세척 과정을 줄이고 첫 구간 끝에 틈새 오염을 남기자 연장 구간이 개선됐다. 이 결과에서는 앞 구간의 끝 상태가 뒷 구간의 세척을 이어 갈 단서가 됐다.</p>
+<p><strong>둘째, 평가 기준을 먼저 정하면 방향을 바꿀 근거가 생긴다.</strong> 첫 실험의 0.0/5점은 해당 결과가 기대에 못 미친다는 판단을 명확히 했다. 다만 직접 매긴 점수에는 평가자의 판단이 들어가며, 기준을 바꾸면 이전 점수와 단순 비교할 수 없다. 실험 간 개선 정도를 비교하려면 공통 평가 항목을 유지하고 변경한 항목을 따로 기록해야 한다.</p>
+<p><strong>셋째, 제작 자동화와 채널 성장은 별도로 검증해야 한다.</strong> 자동화로 수작업은 줄었지만 영상 생성에는 여전히 API 비용이 들었다. 더 많이 업로드한다고 조회수가 늘지도 않았다. 업로드 빈도가 미친 영향을 확인하려면 조회수뿐 아니라 추천 노출과 시청 지속 시간도 함께 살펴봐야 한다.</p>
+<p>PC 부품 청소 주제는 여기서 마무리했다. 파이프라인은 유지했고, 다른 satisfying 주제로도 영상을 만들어 보고 싶었다. <a href="/posts/ai-shorts-pipeline-v3-diversification/">3편</a>에서는 주제를 확장한 과정을 다룬다.</p>
 <div class="page-tags"><button class="tag-chip" data-tag="ai-video">#ai-video</button> <button class="tag-chip" data-tag="veo3">#veo3</button> <button class="tag-chip" data-tag="prompt-engineering">#prompt-engineering</button> <button class="tag-chip" data-tag="bmad">#bmad</button> <button class="tag-chip" data-tag="mcp">#mcp</button> <button class="tag-chip" data-tag="youtube-algorithm">#youtube-algorithm</button> <button class="tag-chip" data-tag="side-project">#side-project</button></div>
 </article>
 <div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
