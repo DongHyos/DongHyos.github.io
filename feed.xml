@@ -167,7 +167,7 @@
     <link>https://donghyos.github.io/posts/testcontainer-integration/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/testcontainer-integration/</guid>
     <pubDate>Fri, 05 Jun 2026 15:00:00 GMT</pubDate>
-    <description>공용 DB로 통합 테스트를 돌리다, 테스트 데이터가 운영으로 새어 들어갔다.</description>
+    <description>공용 개발 DB에 남은 테스트 데이터가 기준정보 이관 때 운영 DB로 함께 넘어갔다</description>
   </item>
   <item>
     <title>AI는 같은 얼굴을 두 번 그리지 못한다 — 캐릭터 일관성을 위해 남긴 사람의 자리</title>
