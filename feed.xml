@@ -209,7 +209,7 @@
     <link>https://donghyos.github.io/posts/ai-shorts-pipeline-v3-diversification/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/ai-shorts-pipeline-v3-diversification/</guid>
     <pubDate>Fri, 29 May 2026 15:00:00 GMT</pubDate>
-    <description>단일 주제(PC 부품 청소) 파이프라인을 13개 주제로 확장하면서, 주제마다 긴 프롬프트를 손으로 다시 쓰지 않고 자동 복제하는 문제</description>
+    <description>PC 부품 청소에서 여러 주제로 영상을 확장하면서, 매번 프롬프트를 다시 쓰는 수작업을 줄이는 문제</description>
   </item>
   <item>
     <title>AI 영상은 시간 순서를 모른다 — Veo 3.1 Extension 실험 회고 (2편)</title>
