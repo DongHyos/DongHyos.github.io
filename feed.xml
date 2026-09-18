@@ -132,7 +132,7 @@
     <link>https://donghyos.github.io/posts/grub-manual-boot/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/grub-manual-boot/</guid>
     <pubDate>Fri, 19 Jun 2026 15:00:00 GMT</pubDate>
-    <description>보안 패치(openssl 업그레이드) 직후 root 접근이 막히고, 복구하려 재부팅하니 부팅까지 깨진 이중 장애</description>
+    <description>OpenSSL 업그레이드 직후 root 권한을 얻지 못했고, 복구를 위한 재부팅에서도 GRUB 명령줄에 멈춘 상황</description>
   </item>
   <item>
     <title>움직임은 비싸다 — 모든 컷을 영상으로 만들지 않는 법</title>

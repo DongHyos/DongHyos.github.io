@@ -11,17 +11,17 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
 <link rel="canonical" href="https://donghyos.github.io/posts/grub-manual-boot/">
-<meta name="description" content="보안 패치(openssl 업그레이드) 직후 root 접근이 막히고, 복구하려 재부팅하니 부팅까지 깨진 이중 장애">
+<meta name="description" content="OpenSSL 업그레이드 직후 root 권한을 얻지 못했고, 복구를 위한 재부팅에서도 GRUB 명령줄에 멈춘 상황">
 <meta property="og:title" content="root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기 — donghyos">
-<meta property="og:description" content="보안 패치(openssl 업그레이드) 직후 root 접근이 막히고, 복구하려 재부팅하니 부팅까지 깨진 이중 장애">
+<meta property="og:description" content="OpenSSL 업그레이드 직후 root 권한을 얻지 못했고, 복구를 위한 재부팅에서도 GRUB 명령줄에 멈춘 상황">
 <meta property="og:url" content="https://donghyos.github.io/posts/grub-manual-boot/">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기 — donghyos">
-<meta name="twitter:description" content="보안 패치(openssl 업그레이드) 직후 root 접근이 막히고, 복구하려 재부팅하니 부팅까지 깨진 이중 장애">
+<meta name="twitter:description" content="OpenSSL 업그레이드 직후 root 권한을 얻지 못했고, 복구를 위한 재부팅에서도 GRUB 명령줄에 멈춘 상황">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기", "description": "보안 패치(openssl 업그레이드) 직후 root 접근이 막히고, 복구하려 재부팅하니 부팅까지 깨진 이중 장애", "datePublished": "2026-06-20", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/grub-manual-boot/", "mainEntityOfPage": "https://donghyos.github.io/posts/grub-manual-boot/"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기", "description": "OpenSSL 업그레이드 직후 root 권한을 얻지 못했고, 복구를 위한 재부팅에서도 GRUB 명령줄에 멈춘 상황", "datePublished": "2026-06-20", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/grub-manual-boot/", "mainEntityOfPage": "https://donghyos.github.io/posts/grub-manual-boot/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -57,60 +57,83 @@
   <a href="/categories/work/" class="cat-link">실무 경험</a>
   
   <time>2026-06-20</time>
-  <span class="read-time">6분 읽기</span>
+  <span class="read-time">8분 읽기</span>
 </div>
 </div>
-<h1 id="root-grub">root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기</h1>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
-<li><strong>다루는 문제</strong>: 보안 패치(openssl 업그레이드) 직후 root 접근이 막히고, 복구하려 재부팅하니 부팅까지 깨진 이중 장애</li>
-<li><strong>접근</strong>: GRUB rescue 셸에서 커널을 손으로 올려 로그인 없는 root 셸로 진입, openssl을 롤백</li>
-<li><strong>결과·학습</strong>: 정상 부팅 복구. GRUB → 커널 → initramfs → 루트로 이어지는 부팅 체인을 명령으로 직접 다뤄본 경험</li>
-<li><strong>도움 되는 독자</strong>: 부팅이 깨진 리눅스 서버를 GRUB 프롬프트에서 복구해야 하는 개발자·운영자</li>
+<li><strong>다루는 문제</strong>: OpenSSL 업그레이드 직후 root 권한을 얻지 못했고, 복구를 위한 재부팅에서도 GRUB 명령줄에 멈춘 상황</li>
+<li><strong>접근</strong>: GRUB에서 커널과 initramfs를 지정해 복구용 root 셸로 진입하고 OpenSSL을 롤백했다</li>
+<li><strong>결과·학습</strong>: root 접근과 정상 부팅을 복구했다. 두 종류의 root와 부팅 단계를 구분하되, 정상화 결과만으로 두 장애의 원인이 같다고 단정하지 않는다</li>
+<li><strong>도움 되는 독자</strong>: 리눅스 서버의 부팅 문제를 콘솔에서 진단·복구하는 개발자와 운영자</li>
 </ul></div></aside>
-<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">보안 패치가 서버를 못 켜게 만들었다</a></li><li class="toc-h2"><a href="#grub">GRUB 명령줄에서 커널을 직접 올리기</a></li><li class="toc-h2"><a href="#_2">결과</a></li><li class="toc-h2"><a href="#_3">학습</a></li></ul></nav><h2 id="_1">보안 패치가 서버를 못 켜게 만들었다</h2>
-<p>보안 취약점 대응으로 한 RHEL 8 서버의 openssl을 업그레이드해야 했다. openssl은 단순한 라이브러리가 아니라 <code>sudo</code>, <code>sshd</code>, PAM 같은 인증 경로가 의존하는 핵심 구성요소다. 그래서 이 한 번의 업그레이드가 권한 체계 전체를 건드렸다. 라이브러리의 ABI가 어긋나거나 링크가 깨지면, 그 위에 얹힌 인증 모듈들이 한꺼번에 동작을 멈춘다. <code>sudo</code>가 인증 단계에서 실패하면 권한 상승은 그 자리에서 막힌다.</p>
-<p>업그레이드 직후 <strong>root로 승격이 불가능해졌다.</strong> 일반 계정 로그인은 되지만 root 권한을 얻을 수 없으니, 망가진 openssl을 되돌리는 것조차 할 수 없었다. 정공법은 <em>로그인 인증을 거치지 않는</em> 환경, 즉 single user mode로 부팅해 거기서 openssl을 롤백하는 것이었다. 그래서 재부팅했다.</p>
-<p>그런데 부팅 자체가 깨져 있었다. 익숙한 부팅 메뉴 대신 <code>grub&gt;</code> 프롬프트만 떠 있었다. <code>grub.cfg</code>를 불러오지 못한 채 <strong>GRUB rescue 셸</strong>로 떨어진 것이다. 롤백을 하러 들어가려던 길목에서 openssl 사태에서 파생된 두 번째 장애를 만난 셈이다. <em>root도 막히고, 부팅도 막혔다.</em></p>
-<h2 id="grub">GRUB 명령줄에서 커널을 직접 올리기</h2>
-<p>GRUB rescue는 <code>grub.cfg</code> 없이 떨어진 최소 셸이다. 부팅 메뉴가 없으니 커널을 <em>손으로</em> 지정해 올려야 한다. 게다가 일반 모드보다 명령이 제한적이라, <code>ls</code>로 장치를 보고 <code>set</code>으로 변수를 잡고 <code>linux</code>·<code>initrd</code>로 커널을 올리는 최소한의 명령만 남는다. 자동완성도 메뉴도 없으니 경로와 버전을 정확히 알고 있어야 한다. 순서 자체는 단순하다. 부팅 파일이 있는 파티션을 찾고, 그것을 root로 지정하고, 커널과 initramfs를 차례로 로드한 뒤 부팅한다.</p>
-<pre class="mermaid">flowchart TB
-    P["전원"] --> G["GRUB"]
-    G -->|정상| K["커널 vmlinuz"]
-    G -.->|"grub.cfg 읽기 실패 ✗"| R["GRUB rescue 셸"]
-    R ==>|"수동 부팅"| K
-    K --> I["initramfs<br/>LVM 모듈 적재"]
-    I --> RT["루트 파일시스템<br/>/dev/mapper/rootvg-root"]
-    RT --> SH["init=/bin/bash<br/>로그인 없는 root 셸"]
-    SH --> FX["openssl 롤백<br/>→ 정상 부팅"]
-    style R fill:#ffe0e0,stroke:#d98a8a,color:#1a1a1a
-    style K fill:#e0ecff,stroke:#88a0d9,color:#1a1a1a
-    style SH fill:#e0ffe0,stroke:#8ab98a,color:#1a1a1a
-    style FX fill:#e0ffe0,stroke:#8ab98a,color:#1a1a1a
-</pre>
-<p><em>정상이라면 GRUB가 <code>grub.cfg</code>를 읽어 곧장 커널로 넘어간다. 이번엔 그 한 칸이 끊겨 rescue 셸로 떨어졌고, 거기서부터 커널을 손으로 다시 이어 붙였다 — 끊긴 지점에서 체인을 수동으로 재생한 것이다.</em></p>
-<p>이 과정을 명령으로 옮기면 이렇다.</p>
-<pre><code>grub&gt; ls                              # 디스크·파티션 목록 확인
-grub&gt; ls (hd0,gpt2)/                  # 부팅 파일이 있는 파티션 탐색 (xfs)
+<h1 id="root-grub">root도 부팅도 막혔다 — GRUB 명령줄에서 서버를 되살리기</h1>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">권한 복구를 하려다 부팅 문제를 만나다</a></li><li class="toc-h2"><a href="#_2">먼저 프롬프트를 구분한다</a></li><li class="toc-h2"><a href="#_3">부팅 파일을 찾아 수동으로 시작하기</a></li><li class="toc-h2"><a href="#root">이름은 같지만 대상이 다른 두 root</a></li><li class="toc-h2"><a href="#root_1">복구용 root 셸에서 변경 사항 되돌리기</a></li><li class="toc-h2"><a href="#_4">복구 결과와 원인 판단의 경계</a></li><li class="toc-h2"><a href="#_5">학습</a></li></ul></nav><h2 id="_1">권한 복구를 하려다 부팅 문제를 만나다</h2>
+<p>보안 취약점 대응으로 RHEL 8 서버의 OpenSSL을 업그레이드한 직후 root 권한을 얻을 수 없게 됐다. 일반 계정으로는 로그인할 수 있었지만 권한을 높일 수 없어 변경 사항을 되돌리기도 어려웠다. 내가 맡은 일은 이 상태의 서버를 복구하는 것이었다.</p>
+<p>라이브러리를 교체하면 이를 사용하는 프로그램에 호환성 문제가 생길 수 있다. 하지만 당시 실패한 인증 모듈이나 교체된 파일을 특정할 기록은 충분하지 않다. <code>sudo</code>, <code>sshd</code>, PAM 전체가 같은 이유로 망가졌다고 설명하기보다, 업그레이드 직후 권한 획득이 막혔다는 관찰에서 출발해야 한다.</p>
+<p>복구용 환경으로 들어가 OpenSSL을 되돌리려 재부팅했다. 그런데 예상한 부팅 메뉴 대신 <code>grub&gt;</code> 프롬프트가 나타났다. 권한 문제를 고치기 전에 운영체제를 수동으로 시작할 경로부터 찾아야 했다.</p>
+<h2 id="_2">먼저 프롬프트를 구분한다</h2>
+<p><code>grub&gt;</code>는 GRUB 명령줄이며 <code>grub rescue&gt;</code>와 같지 않다. 원문에서는 두 상태를 모두 rescue 셸이라고 불렀지만, rescue 모드에서는 보통 <code>insmod</code>, <code>ls</code>, <code>set</code>, <code>unset</code>처럼 사용할 수 있는 명령이 제한된다. 아래의 <code>linux</code>, <code>initrd</code>, <code>boot</code> 흐름을 rescue 프롬프트에 그대로 적용할 수 있다고 보면 안 된다. <a href="https://www.gnu.org/software/grub/manual/grub/html_node/Commands.html">GNU GRUB 명령 안내</a></p>
+<p>GNU GRUB 문서에 따르면 rescue 셸은 보통 <code>normal</code> 모듈을 불러오지 못했을 때 나타난다. 이 경우에는 모듈 위치를 가리키는 <code>prefix</code>와 장치, 파일시스템 접근부터 확인해야 한다. 이번 기록의 <code>grub&gt;</code> 프롬프트만으로 <code>grub.cfg</code>가 손상됐거나 읽기에 실패했다고 확정할 수는 없다. <a href="https://www.gnu.org/software/grub/manual/grub/html_node/GRUB-only-offers-a-rescue-shell.html">GRUB rescue 진단</a></p>
+<p>내가 수행한 복구는 GRUB 명령줄에서 부팅 파일을 찾아 커널을 올리는 방식이었다. 다음 도표는 그 작업 흐름을 보여준다. 화살표는 복구 단계의 순서이며, OpenSSL 변경이 GRUB 문제를 일으켰다는 인과를 나타내지는 않는다.</p>
+<iframe src="/images/grub-manual-boot/recovery-flow.html" title="GRUB 명령줄에서 시작한 일회성 복구 흐름" loading="lazy" style="display:block;width:100%;height:auto;aspect-ratio:8/5;min-height:468px;border:0;"></iframe>
+
+<p><a href="/images/grub-manual-boot/recovery-flow.html">도표 크게 보기</a></p>
+<h2 id="_3">부팅 파일을 찾아 수동으로 시작하기</h2>
+<p>먼저 <code>ls</code>로 GRUB가 인식한 디스크와 파티션을 확인했다. 이어 각 파티션의 파일 목록을 살펴 <code>vmlinuz</code>와 대응하는 <code>initramfs</code>를 찾았다. 당시 복구 기록을 바탕으로 정리한 명령은 다음과 같다. <code>grub&gt;</code>는 프롬프트 표시이며 입력할 명령의 일부가 아니다.</p>
+<pre><code class="language-text">grub&gt; ls
+grub&gt; ls (hd0,gpt2)/
 grub&gt; set root=(hd0,gpt2)
 grub&gt; linux /vmlinuz-4.18.0-553.8.1.el8_10.x86_64 root=/dev/mapper/rootvg-root ro init=/bin/bash
 grub&gt; initrd /initramfs-4.18.0-553.8.1.el8_10.x86_64.img
 grub&gt; boot
 </code></pre>
-<p><code>ls</code>만으로는 어느 파티션에 부팅 파일이 있는지 바로 알 수 없다. <code>ls (hd0,gpt1)/</code>, <code>ls (hd0,gpt2)/</code>처럼 하나씩 들여다보며 <code>vmlinuz</code>와 <code>initramfs</code>가 들어 있는 파티션을 찾는다. 이 서버는 <code>(hd0,gpt2)</code>가 xfs로 잡힌 <code>/boot</code>였고, 거기서 커널 파일의 <em>정확한</em> 버전 문자열을 확인해 그대로 타이핑했다. 손으로 치는 만큼 버전 한 글자라도 틀리면 안 된다.</p>
-<p>여기서 헷갈리기 쉬운 두 지점이 있다.</p>
-<p><strong>첫째, <code>set root</code>의 root와 <code>linux ... root=</code>의 root는 다른 레이어다.</strong> 앞의 것은 <em>GRUB가 부팅 파일을 읽을</em> 파티션이고(여기선 <code>(hd0,gpt2)</code>, xfs), 뒤의 것은 <em>리눅스 커널이 마운트할</em> 루트 파일시스템이다. 이 서버는 LVM이라 뒤쪽 root는 <code>/dev/mapper/rootvg-root</code>다. 둘을 같은 것으로 착각하면 부팅이 안 된다.</p>
-<p><strong>둘째, 커널(<code>vmlinuz</code>)과 initramfs는 같은 버전이어야 한다.</strong> 버전이 어긋나면 커널이 필요한 모듈을 initramfs에서 못 찾아 부팅 도중 멈춘다. 특히 이 서버는 루트가 LVM 위에 있어서, LVM을 인식하는 모듈이 initramfs 안에 들어 있어야 <code>/dev/mapper/rootvg-root</code>를 마운트할 수 있다. 커널과 initramfs가 짝이 맞아야 이 모듈 로딩이 성립한다. 패닉의 순간에 가장 먼저 의심할 것이 이 짝이다.</p>
-<p>마지막으로 <code>init=/bin/bash</code>. 인증이 깨진 상태였으므로 일반적인 <code>single</code>/<code>rescue.target</code>은 답이 아니었다 — 그쪽은 root 비밀번호를 묻는데, 그 인증 경로가 바로 망가진 부분이기 때문이다. <code>init=/bin/bash</code>는 systemd를 거치지 않고 곧장 root 셸을 띄운다. <em>로그인이 필요 없는</em> 환경이 정확히 이것이었다. 다만 <code>linux</code> 줄 끝의 <code>ro</code>는 루트를 읽기 전용으로 올린다는 뜻이라, 들어간 뒤 무언가를 되돌리려면 쓰기 가능으로 다시 마운트하는 단계가 한 번 더 필요하다.</p>
-<h2 id="_2">결과</h2>
-<p>root 셸로 들어간 뒤 루트 파일시스템을 쓰기 가능으로 다시 마운트하고(<code>mount -o remount,rw /</code>), openssl을 이전 버전으로 롤백했다. 인증 경로가 되살아나면서 root 접근이 돌아왔다.</p>
-<p>수동 부팅은 <em>그 한 번</em>을 띄우기 위한 다리였다. 그리고 openssl을 되돌린 뒤 재부팅하자, <code>grub.cfg</code>를 따로 재생성하지 않았는데도 정상으로 부팅됐다. 부팅 실패는 영구 손상이 아니라 깨진 시스템 상태에서 파생된 <em>증상</em>이었고, 근본 원인인 openssl을 걷어내자 부팅 체인도 따라 제자리로 돌아온 것이다. 수동 부팅은 그 원인에 닿기 위한 일회성 통로였을 뿐, 부팅 자체를 영구 수리한 작업이 아니었다.</p>
-<h2 id="_3">학습</h2>
+<p>이 사례에서는 <code>(hd0,gpt2)</code>가 XFS 파일시스템의 <code>/boot</code> 파티션이었다. 별도의 <code>/boot</code> 파티션을 GRUB의 읽기 대상으로 정했으므로 커널 경로를 <code>/vmlinuz-...</code>로 썼다. <code>/boot</code>가 별도 파티션이 아닌 환경에서는 경로가 달라질 수 있다. 디스크 번호, 커널 버전, 논리 볼륨 이름은 서버마다 확인해야 하며 RHEL의 공통 기본값이 아니다.</p>
+<p>명령 이름도 부팅 환경에 따라 확인해야 한다. 이 글은 기록에 남은 <code>linux</code>와 <code>initrd</code>를 사용하지만, RHEL 8의 UEFI 부팅 항목에는 <code>linuxefi</code>와 <code>initrdefi</code>가 쓰이는 구성도 있다. 기존 부팅 항목과 사용 가능한 명령을 기준으로 판단해야 한다. <a href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/customizing_anaconda/customizing-the-boot-menu_customizing-anaconda">RHEL 8 UEFI 부팅 항목</a></p>
+<p><code>linux</code>는 커널을 메모리에 적재하고 뒤의 인자를 커널 명령줄로 전달한다. <code>initrd</code>는 초기 사용자 공간에 쓸 이미지를 적재하며 <code>linux</code> 뒤에 실행한다. 마지막 <code>boot</code>에서 적재한 커널의 실행으로 넘어간다. 커널 파일을 골랐다는 사실과 운영체제가 실제로 시작됐다는 사실은 다른 단계다. <a href="https://www.gnu.org/software/grub/manual/grub/html_node/GNU_002fLinux.html">GNU/Linux 수동 부팅</a></p>
+<h2 id="root">이름은 같지만 대상이 다른 두 root</h2>
+<p>여기서 중요한 구분은 <code>set root</code>와 커널 인자 <code>root=</code>다.</p>
+<table>
+<thead>
+<tr>
+<th>설정</th>
+<th>역할</th>
+<th>이 사례의 값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>set root</code></td>
+<td>GRUB가 커널과 initramfs 파일을 읽는 장치</td>
+<td><code>(hd0,gpt2)</code></td>
+</tr>
+<tr>
+<td><code>root=</code></td>
+<td>리눅스가 최종 루트 파일시스템으로 사용할 대상</td>
+<td><code>/dev/mapper/rootvg-root</code></td>
+</tr>
+</tbody>
+</table>
+<p>앞의 root를 설정해도 리눅스의 루트가 자동으로 정해지는 것은 아니다. 이 서버에서는 <code>/boot</code>와 실제 루트가 달랐고, 실제 루트는 논리 볼륨 관리자(LVM)가 관리하는 볼륨에 있었다. initramfs의 초기 사용자 공간에서 저장 장치를 준비하고 해당 볼륨을 활성화해야 실제 루트로 넘어갈 수 있다.</p>
+<p>커널과 initramfs도 대응하는 조합을 골라야 한다. initramfs에는 초기 부팅에 필요한 드라이버와 도구가 들어간다. LVM 루트라면 장치 매퍼 지원뿐 아니라 볼륨을 찾고 활성화하는 도구와 설정도 필요하다. 단순히 ‘LVM 모듈 하나가 있으면 된다’고 설명할 수는 없다.</p>
+<p>파일명에 적힌 버전이 맞는지 확인하는 것은 첫 점검이다. 이름이 맞아도 필요한 구성 요소가 빠졌거나 루트 대상이 잘못 지정돼 있으면 부팅은 실패할 수 있다. 반대로 부팅 실패가 곧 커널·initramfs 버전 불일치를 뜻하는 것도 아니다.</p>
+<h2 id="root_1">복구용 root 셸에서 변경 사항 되돌리기</h2>
+<p><code>init=/bin/bash</code>는 실제 루트로 넘어간 뒤 실행할 init 프로그램을 Bash로 지정하려는 인자다. 일반적인 로그인 과정을 거치지 않는 복구용 셸을 얻기 위해 사용했다. initramfs 단계까지 생략한다는 뜻은 아니다. <a href="https://www.kernel.org/doc/html/v6.6/admin-guide/kernel-parameters.html">리눅스 커널의 init 인자</a></p>
+<p>RHEL의 <code>rescue.target</code>은 systemd가 제공하는 별도의 단일 사용자 복구 환경이다. <code>init=/bin/bash</code>와 같은 방식이 아니며, root 인증을 요구하는 구성에서는 인증 상태를 고려해야 한다. 다만 당시 rescue 모드의 인증도 동일한 원인으로 실패했는지까지 확인한 기록은 없다. 내가 실제 사용한 경로는 Bash를 init으로 지정하는 방식이었다. <a href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/managing_monitoring_and_updating_the_kernel/assembly_making-temporary-changes-to-the-grub-menu_managing-monitoring-and-updating-the-kernel">RHEL 8 복구 모드</a></p>
+<p>커널 인자의 <code>ro</code>는 루트를 읽기 전용으로 마운트하도록 지정한다. 복구 셸에 도달한 뒤에는 실제 루트 파일시스템을 대상으로 다음 명령을 실행해 쓰기 가능 상태로 바꿨다.</p>
+<pre><code class="language-sh">mount -o remount,rw /
+</code></pre>
+<p>이후 OpenSSL을 이전 상태로 되돌려 root 접근을 복구했다. 당시 롤백에 사용한 패키지 명령과 대상 버전은 이 글에서 재현할 수 있을 만큼 남아 있지 않아 임의로 덧붙이지 않았다. 복구 셸은 평소의 서비스와 네트워크가 모두 올라온 환경이 아니므로, 필요한 파일과 마운트 상태도 함께 확인해야 한다.</p>
+<h2 id="_4">복구 결과와 원인 판단의 경계</h2>
+<p>OpenSSL을 되돌린 뒤 root 접근이 가능해졌고, 재부팅에서도 정상적으로 올라왔다. <code>grub.cfg</code>를 별도로 재생성하지 않았다는 점도 당시 작업 기록의 일부다. 수동 부팅은 변경 사항을 되돌릴 환경에 도달하는 데 사용했다.</p>
+<p>다만 이 결과만으로 OpenSSL이 GRUB 명령줄 진입까지 직접 유발했다고 결론 내릴 수는 없다. GRUB는 설치된 리눅스의 일반 사용자 공간보다 먼저 실행된다. 운영체제의 인증 라이브러리 문제와 부트로더의 설정·모듈 로딩 문제를 같은 경로로 묶으려면 추가 근거가 필요하다.</p>
+<p>확인된 범위는 ‘업그레이드 직후 권한 획득이 막힘’, ‘재부팅 후 GRUB 명령줄에서 수동 부팅’, ‘롤백 후 권한과 정상 부팅 회복’이다. 실패 로그와 부팅 설정의 전후 비교가 없는 상태에서 두 증상의 관계까지 확정하지는 않는다. 복구가 성공한 것과 원인을 끝까지 규명한 것은 구분해서 남긴다.</p>
+<h2 id="_5">학습</h2>
 <ul>
-<li><strong>부팅은 한 덩어리가 아니라 체인이다.</strong> GRUB가 커널을 올리고, 커널이 initramfs로 임시 루트를 띄우고, 거기서 진짜 루트(LVM)를 마운트한다. 어디서 끊겼는지 알면 그 지점만 손으로 이어주면 된다. GRUB 프롬프트는 막다른 길이 아니라 그 체인을 수동으로 재생하는 자리다.</li>
-<li><strong><code>set root</code>(GRUB의 읽기 대상)와 <code>root=</code>(커널의 마운트 대상)는 다른 레이어다.</strong> 이 구분을 모르면 같은 복구 명령을 쳐도 안 된다.</li>
-<li><strong>시스템 핵심 라이브러리 변경은 권한과 부팅을 동시에 끊을 수 있다.</strong> openssl 하나가 인증 경로 전체에 걸쳐 있어, 업그레이드 한 번이 root 접근과 부팅을 함께 막았다. 보안 패치라도 <em>롤백 경로</em>(로그인 없이 들어가는 법, 스냅샷)를 먼저 확보해 두는 편이 안전하다.</li>
-<li><strong>증상과 원인을 구분하면 과잉 수리를 피한다.</strong> GRUB 장애는 독립적인 문제가 아니라 openssl 사태의 증상이었다. <code>grub.cfg</code>를 붙잡고 따로 복구하는 대신 근본 원인을 되돌리자, 증상은 따라 사라졌다. 수동 부팅은 원인에 닿기 위한 다리였을 뿐, 그 자체가 목적지가 아니었다.</li>
-<li><strong>부팅 단계의 복구는 SSH 밖에서만 가능하다.</strong> GRUB 프롬프트는 네트워크가 올라오기 전 단계라 SSH로는 닿지 않는다. 이런 작업은 물리 콘솔이나 IPMI·iLO 같은 out-of-band 콘솔이 유일한 통로다 — 서버를 맡는다면 그 접근 경로를 미리 확인해 둬야 한다.</li>
+<li>프롬프트와 부팅 단계를 먼저 확인한다. <code>grub&gt;</code>, <code>grub rescue&gt;</code>, initramfs 셸, 리눅스 root 셸은 사용할 수 있는 명령과 복구 대상이 다르다.</li>
+<li>부팅 파일의 위치와 실제 루트 파일시스템을 구분한다. 이번에는 별도 <code>/boot</code>에서 커널을 읽고 LVM의 루트로 넘어갔다.</li>
+<li>수동 부팅과 영구 설정 수리는 다른 작업이다. 한 번 부팅한 뒤에도 재부팅 결과와 설정 상태를 확인해야 한다.</li>
+<li>정상화 결과로 미확인 원인을 채우지 않는다. 이번 기록에서는 롤백 뒤 회복한 사실까지 설명할 수 있다.</li>
+<li>운영체제의 SSH가 올라오기 전에도 접근할 콘솔을 확보한다. 물리 콘솔, 원격 관리 콘솔, 가상 머신·클라우드의 콘솔 등 환경에 맞는 경로와 부팅 항목을 수정할 권한을 미리 확인해야 한다.</li>
 </ul>
 <div class="page-tags"><button class="tag-chip" data-tag="linux">#linux</button> <button class="tag-chip" data-tag="grub">#grub</button> <button class="tag-chip" data-tag="boot-recovery">#boot-recovery</button> <button class="tag-chip" data-tag="troubleshooting">#troubleshooting</button> <button class="tag-chip" data-tag="incident">#incident</button></div>
 </article>
