@@ -11,17 +11,17 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
 <link rel="canonical" href="https://donghyos.github.io/posts/multi-hop-latency/">
-<meta name="description" content="여러 계층을 거치는 중계 요청이 느릴 때, &quot;총 시간&quot;만으로는 어느 홉이 범인인지(우리 서버인지 외부 의존인지) 알 수 없다">
+<meta name="description" content="여러 계층을 거치는 중계 요청이 느릴 때, 총 응답 시간만으로는 지연 구간을 찾기 어렵다.">
 <meta property="og:title" content="느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기 — donghyos">
-<meta property="og:description" content="여러 계층을 거치는 중계 요청이 느릴 때, &quot;총 시간&quot;만으로는 어느 홉이 범인인지(우리 서버인지 외부 의존인지) 알 수 없다">
+<meta property="og:description" content="여러 계층을 거치는 중계 요청이 느릴 때, 총 응답 시간만으로는 지연 구간을 찾기 어렵다.">
 <meta property="og:url" content="https://donghyos.github.io/posts/multi-hop-latency/">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기 — donghyos">
-<meta name="twitter:description" content="여러 계층을 거치는 중계 요청이 느릴 때, &quot;총 시간&quot;만으로는 어느 홉이 범인인지(우리 서버인지 외부 의존인지) 알 수 없다">
+<meta name="twitter:description" content="여러 계층을 거치는 중계 요청이 느릴 때, 총 응답 시간만으로는 지연 구간을 찾기 어렵다.">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기", "description": "여러 계층을 거치는 중계 요청이 느릴 때, \"총 시간\"만으로는 어느 홉이 범인인지(우리 서버인지 외부 의존인지) 알 수 없다", "datePublished": "2026-06-21", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/multi-hop-latency/", "mainEntityOfPage": "https://donghyos.github.io/posts/multi-hop-latency/"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기", "description": "여러 계층을 거치는 중계 요청이 느릴 때, 총 응답 시간만으로는 지연 구간을 찾기 어렵다.", "datePublished": "2026-06-21", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/multi-hop-latency/", "mainEntityOfPage": "https://donghyos.github.io/posts/multi-hop-latency/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -57,53 +57,91 @@
   <a href="/categories/work/" class="cat-link">실무 경험</a>
   
   <time>2026-06-21</time>
-  <span class="read-time">5분 읽기</span>
+  <span class="read-time">7분 읽기</span>
 </div>
 </div>
-<h1 id="_1">느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기</h1>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
-<li><strong>다루는 문제</strong>: 여러 계층을 거치는 중계 요청이 느릴 때, "총 시간"만으로는 어느 홉이 범인인지(우리 서버인지 외부 의존인지) 알 수 없다</li>
-<li><strong>접근</strong>: 각 계층이 이미 남기고 있던 요청/응답 타임스탬프를 <em>상관 ID로 join</em>해 end-to-end 지연을 홉별·gap별로 분해</li>
-<li><strong>결과·학습</strong>: 병목이 외부 제공자 구간임을 데이터로 특정. "느리다"가 "이 외부 의존이 느리다, 증거는 여기"로 바뀌었다. 상용 APM 없이 로그 + 상관 ID면 분산 추적이 된다</li>
-<li><strong>도움 되는 독자</strong>: 다중 홉·외부 의존 구조에서 지연의 책임 소재를 데이터로 가르고 싶은 백엔드 개발자</li>
+<li><strong>다루는 문제</strong>: 여러 계층을 거치는 중계 요청이 느릴 때, 총 응답 시간만으로는 지연 구간을 찾기 어렵다.</li>
+<li><strong>접근</strong>: 계층별 요청·응답 로그를 같은 요청번호로 조인해 전체 소요 시간과 외부 호출 시간을 비교했다.</li>
+<li><strong>결과·학습</strong>: 지연의 대부분이 외부 호출 구간에 있음을 확인했다. 중첩된 시간을 구분하고 측정 범위 안에서 원인을 좁히는 법을 배웠다.</li>
+<li><strong>도움 되는 독자</strong>: 여러 서버와 외부 API를 거치는 요청의 지연을 기존 로그로 추적하려는 백엔드 개발자.</li>
 </ul></div></aside>
-<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_2">&quot;느리다&quot;는 보고는 절반만 말한다</a></li><li class="toc-h2"><a href="#_3">각 계층은 이미 시각을 남기고 있었다</a></li><li class="toc-h2"><a href="#_4">병목은 우리가 아니었다</a></li><li class="toc-h2"><a href="#_5">학습</a></li></ul></nav><h2 id="_2">"느리다"는 보고는 절반만 말한다</h2>
-<p>내가 맡은 건 외부 사업자들과 API로 연동하는 중계 구간이었다. 한 요청은 여러 계층을 차례로 거친다. <strong>게이트웨이 → 우리 내부 서버 → 외부 제공자 API</strong>, 그리고 그 응답이 다시 거꾸로 돌아온다.</p>
-<p>요청이 느리다는 신호 자체는 잡혔다. 게이트웨이가 요청마다 <em>총 처리시간</em>을 기록하니까. 문제는 그 총 시간 안에서 <strong>어디가 느린지는 안 보인다</strong>는 것이다. 우리 게이트웨이가 느린가? 우리 내부 서버가 느린가? 아니면 외부 제공자가 응답을 늦게 주는가?</p>
-<p>예를 들어 한 요청이 3초 걸렸다고 하자. 게이트웨이 로그가 보여주는 건 그 '3초'라는 <em>총합</em> 하나다. 그 안에서 게이트웨이가 50ms, 우리 내부 서버가 100ms를 쓰고 나머지 2.8초가 어딘가에서 샜다 해도, 총 시간만으로는 그 2.8초가 <em>어느 홉의 것인지</em> 영영 알 수 없다. 평균 응답시간 그래프를 아무리 들여다봐도 층위가 한 숫자로 합쳐져 있어 범인이 드러나지 않는다. 더 답답한 건, 느린 게 외부 탓이어도 화면에는 <em>우리 시스템이 느린 것처럼</em> 보인다는 점이다.</p>
-<p>책임 소재를 모르면 행동을 못 한다. 우리 코드를 파고들어야 할지, 외부에 항의해야 할지 알 수가 없다. 게다가 너무 느리면 게이트웨이가 Read Time Out으로 연결을 끊어버려 더 답답했다. <strong>"느리다"는 어느 홉인지 모르면 절반만 아는 것이다.</strong></p>
-<h2 id="_3">각 계층은 이미 시각을 남기고 있었다</h2>
-<p>다행히 새 인프라가 필요하진 않았다. 각 계층이 <em>자기</em> "요청 받은 시각"과 "응답 보낸 시각"을 이미 로그에 남기고 있었기 때문이다. 게이트웨이도, 내부 서버도, 외부와 주고받는 계층도 각자.</p>
-<p>그리고 결정적으로, 한 요청은 모든 계층에서 <strong>같은 요청번호(상관 ID)</strong>로 추적되고 있었다. 이게 열쇠였다. 어려운 부분은 로그를 <em>만드는</em> 게 아니라 <em>잇는</em> 것이었으니까. 각 계층의 기록은 서로 다른 테이블에, 다른 시각 포맷으로 따로 쌓이고 있었다. 그 흩어진 기록을 <em>같은 요청번호를 공유한다</em>는 사실 하나가 하나의 타임라인으로 묶어줬다. 상관 ID로 꿰면 <em>한 요청에 대한 모든 홉의 in/out 시각</em>이 한 줄에 모인다. 상용 분산 추적 도구 없이, 이미 쌓이고 있는 로그만으로 추적이 가능했다.</p>
-<p>이게 되려면 전제가 하나 있다. 상관 ID가 <em>모든 계층을 관통해 전파</em>되어야 한다는 것이다. 한 계층이라도 자기만의 ID를 새로 발급해 앞단과 끊으면, 타임라인은 거기서 단절되고 그 뒤 홉은 끝내 엮이지 않는다. 분산 추적을 "나중에 붙이기 어렵다"고 하는 이유가 이것이다. 상관 ID의 전파는 <em>설계 단계의 결정</em>이지 사후에 쿼리로 메울 수 있는 게 아니다. 마침 이 시스템은 플랫폼 요청번호를 처음부터 끝까지 들고 다녔고, 덕분에 사후에 쿼리만으로 추적을 복원할 수 있었다.</p>
-<h2 id>상관 ID로 홉을 꿰어 분해하기</h2>
-<p>핵심 산수는 단순하다. <em>한 홉의 처리시간 = 그 홉의 응답시각 − 요청시각</em>이고, <em>홉 간 gap = 다음 홉 요청시각 − 이전 홉 응답시각</em>이다. 게이트웨이 로그를 기준으로 나머지 계층 로그를 요청번호로 <code>left join</code>하면 한 번에 분해된다.</p>
-<pre><code class="language-sql">-- 한 요청이 거친 각 계층의 시간을, 요청번호(상관 ID)로 엮어 분해한다
-SELECT
+<h1 id="_1">느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기</h1>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_2">총 응답 시간만으로는 조사할 곳을 정하기 어려웠다</a></li><li class="toc-h2"><a href="#_3">이미 남기던 로그를 요청번호로 연결했다</a></li><li class="toc-h2"><a href="#_4">계층별 시간은 서로 겹친다</a></li><li class="toc-h2"><a href="#_5">조인할 때는 측정 경계와 로그 누락을 함께 본다</a></li><li class="toc-h2"><a href="#_6">외부 호출 구간으로 조사 범위를 좁혔다</a></li><li class="toc-h2"><a href="#_7">학습</a></li></ul></nav><h2 id="_2">총 응답 시간만으로는 조사할 곳을 정하기 어려웠다</h2>
+<p>내가 맡은 중계 구간은 게이트웨이, 내부 서버, 외부 제공자 API를 차례로 거쳤다. 응답은 역순으로 돌아왔다. 게이트웨이는 요청마다 총 처리 시간을 기록했지만, 그 숫자만으로는 어느 구간에서 오래 걸렸는지 알기 어려웠다. 나는 계층별 로그를 요청번호로 연결하는 SQL을 작성해 지연 구간을 확인했다.</p>
+<p>전체 응답이 3초 걸려도 내부 처리에 대부분을 썼는지, 외부 응답을 기다렸는지에 따라 다음 조사가 달라진다. 응답이 더 늦어지면 게이트웨이의 읽기 타임아웃으로 요청이 실패하기도 했다. 총 응답 시간에 더해 내부 서버와 외부 호출의 소요 시간을 함께 볼 필요가 있었다.</p>
+<h2 id="_3">이미 남기던 로그를 요청번호로 연결했다</h2>
+<p>각 계층에는 요청과 응답 시각이 남아 있었다. 기록은 서로 다른 테이블에 흩어져 있었지만 같은 요청번호를 공유했다. 나는 이 번호를 상관 ID로 삼아 한 요청의 기록을 모았다. 외부 구간도 우리 쪽에서 기록한 호출 시작과 응답 수신 시각으로 확인했다.</p>
+<p>여기서 중요한 것은 기록 사이의 관계를 복원할 수 있느냐다. 같은 ID를 전달하면 조인이 단순해지지만, 계층별 ID가 달라도 부모 요청과 자식 요청의 대응 관계가 남아 있으면 연결할 수 있다. 반대로 시간대가 비슷하다는 이유만으로 로그를 묶으면 동시 요청을 혼동할 수 있다.</p>
+<p>이 작업은 기존 로그를 이용한 요청 추적이었다. OpenTelemetry처럼 작업 단위인 스팬(span)과 부모·자식 관계를 명시적으로 수집하는 체계를 도입한 것은 아니다. 요청번호가 같아도 재시도와 병렬 호출을 구별할 정보가 없으면 세부 호출 관계까지 복원하기 어렵다. <a href="https://opentelemetry.io/docs/specs/otel/trace/api/">OpenTelemetry 추적 API</a></p>
+<h2 id="_4">계층별 시간은 서로 겹친다</h2>
+<p>계산 전에 측정 구간부터 구분해야 한다. 외부 응답을 동기적으로 기다리는 구조에서는 내부 서버의 소요 시간에 외부 호출 시간이 포함된다. 게이트웨이의 총 시간에는 두 구간이 모두 들어간다.</p>
+<p>다음은 실제 측정값이 아닌 설명용 예시다. 외부 호출이 한 번이고 재시도나 병렬 처리가 없으며, 시각은 같은 기준으로 맞췄다고 가정했다. 단위는 밀리초(ms)다.</p>
+<table>
+<thead>
+<tr>
+<th>측정 구간</th>
+<th style="text-align: right;">시작 시각</th>
+<th style="text-align: right;">종료 시각</th>
+<th style="text-align: right;">소요 시간</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>게이트웨이 요청 수신 → 응답 전송</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3,000</td>
+<td style="text-align: right;">3,000</td>
+</tr>
+<tr>
+<td>내부 서버 요청 수신 → 응답 전송</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">2,950</td>
+<td style="text-align: right;">2,900</td>
+</tr>
+<tr>
+<td>내부 서버의 외부 호출 시작 → 응답 수신</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">2,900</td>
+<td style="text-align: right;">2,800</td>
+</tr>
+</tbody>
+</table>
+<p>세 소요 시간을 더하면 중복 계산이 된다. 이 예시에서는 내부 서버가 외부 호출 전에 쓴 시간이 50ms, 응답을 받은 뒤 쓴 시간이 50ms다. 두 시간을 합친 100ms와 외부 호출 2,800ms가 내부 서버의 2,900ms를 이룬다. 이 100ms도 순수한 CPU 실행 시간은 아니며 다른 대기가 포함될 수 있다.</p>
+<p>따라서 <strong>다음 계층의 요청 시각에서 이전 계층의 응답 시각을 빼면 계층 간 대기 시간을 구할 수 없다.</strong> 위 예시에서 내부 서버의 요청 시각 50에서 게이트웨이의 응답 시각 3,000을 빼면 −2,950ms가 나온다. 하위 호출이 끝나야 상위 요청이 끝나는 구조를 거꾸로 계산한 결과다.</p>
+<p>서로 다른 서버의 시각을 뺄 때는 시계 오차도 고려해야 한다. 시간대를 통일해도 서버 시계가 동기화되는 것은 아니다. 작은 차이를 곧바로 네트워크나 큐 대기로 해석하지 않아야 한다. Jaeger도 이런 시계 오차가 추적 시각에 미치는 영향을 별도로 다룬다. <a href="https://www.jaegertracing.io/docs/1.76/deployment/#clock-skew-adjustment">Jaeger 시계 오차 설명</a></p>
+<h2 id="_5">조인할 때는 측정 경계와 로그 누락을 함께 본다</h2>
+<p>아래 SQL은 당시 운영 코드를 옮긴 것이 아니라 핵심 방식을 PostgreSQL 16 문법으로 재구성한 예제다. 세 테이블은 요청번호당 최대 한 행이며, 시작·종료 시각은 <code>timestamptz</code> 형식이라고 가정했다. 게이트웨이 테이블에는 미완료 요청도 남고, 아직 기록되지 않은 종료 시각은 <code>NULL</code>이다.</p>
+<p><code>app_log</code>는 내부 요청 전체를, <code>ext_log</code>는 같은 내부 서버에서 외부 호출을 감싼 구간을 기록한다. 위 표처럼 외부 응답을 받은 뒤 내부 요청이 완료되는 구조를 전제로, 외부 호출 전후의 시간은 같은 서버의 시각끼리 계산한다. 타임스탬프 차이는 구간(interval)이므로 초로 추출한 뒤 1,000을 곱해 밀리초로 바꿨다. <a href="https://www.postgresql.org/docs/16/functions-datetime.html">PostgreSQL 날짜·시간 연산</a></p>
+<pre><code class="language-sql">SELECT
     g.req_no,
-    g.gw_ms                     AS 게이트웨이,   -- 게이트웨이 자체 처리
-    a.res_at - a.req_at         AS 내부서버,     -- 우리 내부 처리
-    e.res_at - e.req_at         AS 외부대기,     -- 외부 제공자 응답 대기
-    a.req_at - g.done_at        AS gw_to_내부     -- 계층 간 gap
-FROM      gw_log  g
+    1000 * EXTRACT(EPOCH FROM (g.done_at - g.recv_at))
+        AS gateway_total_ms,
+    1000 * EXTRACT(EPOCH FROM (a.done_at - a.recv_at))
+        AS app_total_ms,
+    1000 * EXTRACT(EPOCH FROM (e.end_at - e.start_at))
+        AS external_call_ms,
+    1000 * EXTRACT(EPOCH FROM (e.start_at - a.recv_at))
+        AS app_before_call_ms,
+    1000 * EXTRACT(EPOCH FROM (a.done_at - e.end_at))
+        AS app_after_call_ms
+FROM gw_log g
 LEFT JOIN app_log a ON a.req_no = g.req_no
 LEFT JOIN ext_log e ON e.req_no = g.req_no
-WHERE g.kind = 'response'
-ORDER BY (e.res_at - e.req_at) DESC;   -- 외부 대기가 긴 순
+ORDER BY external_call_ms DESC NULLS LAST;
 </code></pre>
-<p>게이트웨이가 이중화(HA)되어 있어 노드별로도 쪼갰다. 두 노드의 평균을 따로 내면, 전체 평균에 가려 보이지 않던 <em>한 노드만의 문제</em>가 드러나기 때문이다. 평균은 종종 범인을 숨긴다.</p>
-<p><code>left join</code>을 쓴 데에는 이유가 있다. 어떤 요청은 모든 홉에 도달하지 못한다. 중간에서 에러가 나거나 타임아웃으로 끊긴 요청은 뒷 계층 로그가 <em>없다</em>. <code>inner join</code>이면 그런 요청이 통째로 사라지는데, 정작 보고 싶은 게 그것들이다. <code>left join</code>은 빈자리(NULL)로 <em>어느 홉에서 멈췄는지</em>까지 말해준다. 또 홉 간 gap에 주목할 만하다. 어느 서버의 처리시간도 아닌 네트워크 전송이나 큐 대기 같은 시간이 거기 숨고, 이 gap이 의외로 큰 경우가 종종 범인이었다. (타임스탬프 빼기는 ms 단위까지 봐야 한다. 초 단위로 반올림하면 수백 ms짜리 gap이 0으로 뭉개져 사라진다.)</p>
-<h2 id="_4">병목은 우리가 아니었다</h2>
-<p>분해해보니 답은 분명했다. 지연의 대부분은 <strong>외부 제공자 구간</strong>에 있었다. 게이트웨이도, 우리 내부 서버도 빠른데, <em>외부 제공자의 응답을 기다리는 시간</em>이 길었다.</p>
-<p>이 결과가 중요한 이유는 그것이 <em>행동을 바꾸기</em> 때문이다. "느리다"가 <strong>"이 외부 의존이 느리다, 데이터는 여기 있다"</strong>로 바뀌었다. 우리 코드를 헤집는 대신 <em>맞는</em> 행동을 할 수 있게 됐다. 근거를 들고 외부 제공자에 개선을 요청하거나, 그 API에 한해 타임아웃을 늘려 Read Time Out을 줄이는 식으로. "그쪽이 느린 것 같아요"라는 추측이 아니라, 홉별 숫자로 책임 소재를 가른 것이다.</p>
-<p>분해 전과 후의 진짜 차이는 <em>대화의 질</em>이었다. 전에는 "느린 것 같다", "그쪽이 문제인 것 같다"는 인상으로 회의가 돌았다. 분해 후에는 "이 API는 외부 구간이 대부분이고 우리 구간은 수십 ms"라는 한 줄로 끝났다. 추측을 두고 다투는 대신, 같은 숫자를 보고 다음 행동을 정하게 됐다.</p>
-<h2 id="_5">학습</h2>
+<p>요청번호당 한 행이라는 전제는 실제 로그에 적용하기 전에 확인해야 한다. 재시도나 여러 외부 호출로 행이 늘어나면 요청번호만으로 조인한 결과도 중복될 수 있다. 이때는 호출·시도 식별자로 관계를 구분해야 한다. 병렬 호출의 소요 시간을 단순히 합쳐 전체 시간에서 빼는 방식도 맞지 않는다. 계산값이 음수라면 0으로 보정하기보다 시계 변경, 잘못 연결된 로그, 측정 경계의 불일치를 먼저 확인해야 한다.</p>
+<p><code>LEFT JOIN</code>은 대응하는 하위 로그가 없어도 게이트웨이 요청을 남긴다. 다만 <code>NULL</code>만으로 요청이 어느 계층에서 멈췄는지 확정할 수는 없다. 실제 미도달 외에도 로그 수집 누락·지연이나 키 불일치가 가능하다. 완료되지 않은 요청의 시간을 0으로 채우지 않고 오류·타임아웃 기록과 함께 확인해야 한다. 완료 요청의 지연 통계를 낼 때도 미완료·누락 건수는 따로 봐야 한다.</p>
+<p>이중화된 게이트웨이는 노드별 평균도 비교했다. 이는 특정 노드에 지연이 몰렸는지 살피기 위한 분류였다. 같은 방식을 다시 적용한다면 API와 시간대를 맞추고 요청 수, 지연의 상위 백분위수, 오류율도 함께 확인할 것이다. 노드마다 처리하는 요청의 구성이 다르면 평균 차이만으로 노드 자체의 문제라고 판단하기 어렵다.</p>
+<h2 id="_6">외부 호출 구간으로 조사 범위를 좁혔다</h2>
+<p>당시 로그를 연결해 보니 지연의 대부분이 외부 호출 구간에 있었다. 내가 만든 쿼리의 성과는 전체 응답 시간에 묻혀 있던 이 구간을 찾아낸 것이다. 내부 코드의 어느 부분이든 막연히 의심하는 대신, 시간이 오래 걸린 외부 API와 요청을 구체적으로 확인할 수 있었다.</p>
+<p>다만 우리 쪽에서 잰 외부 호출 시간은 외부 서버 내부의 처리 시간과 같지 않다. 네트워크 왕복 시간이 포함되고, 기록 위치에 따라 연결 확보나 클라이언트 내부 대기도 포함될 수 있다. 따라서 이 결과만으로 외부 제공자의 내부 코드가 원인이라고 확정할 수는 없다. 호출 경계와 연결 상태를 확인하고 상대 측 로그와 대조할 범위를 좁힌 근거로 보는 것이 맞다.</p>
+<p>운영에서는 응답이 느린 일부 API의 타임아웃을 늘리는 대응도 했다. 이는 늦게 오는 응답을 더 기다리도록 한 조정이며 외부 API를 빠르게 만든 것은 아니다. 이런 조정은 상위 요청의 제한 시간과 더 오래 점유되는 연결·작업 스레드의 여유를 함께 검토해야 한다.</p>
+<h2 id="_7">학습</h2>
 <ul>
-<li><strong>다중 홉에서 "느리다"는 어느 홉인지 모르면 행동 불가다.</strong> 총 시간이 아니라 <em>홉별 분해</em>가 있어야 책임 소재가 갈린다. 그 전까지의 모든 논의는 추측이다.</li>
-<li><strong>상관 ID 하나면 분산 추적의 절반은 공짜다.</strong> 각 계층이 이미 타임스탬프를 남기고 있다면, 그걸 같은 ID로 엮는 것만으로 end-to-end가 보인다. 상용 APM이 없어도 로그와 상관 ID면 시작할 수 있다.</li>
-<li><strong>외부 의존이 병목일 때, 그걸 <em>입증</em>하는 것이 곧 협상력이다.</strong> "우리 탓 아니에요"는 데이터가 있을 때만 통한다. 분해는 그 데이터를 만든다.</li>
-<li><strong>평균은 범인을 숨긴다.</strong> HA라면 노드별로, 가능하면 구간별로 쪼개라. 합쳐 놓은 숫자가 가장 거짓말을 잘한다.</li>
-<li><strong>관측의 출발점은 새 도구가 아니라 <em>이미 있는 신호를 잇는 것</em>일 때가 많다.</strong> 우리에겐 APM이 없었지만 상관 ID와 계층별 타임스탬프는 이미 있었다. 부족했던 건 인프라가 아니라 그걸 엮는 한 번의 쿼리였다.</li>
+<li><strong>총 시간과 포함된 구간을 구분해야 한다.</strong> 내부 서버의 요청 처리 시간에는 외부 호출 대기가 들어갈 수 있다. 조인에 앞서 각 시각을 어디에서 남기는지 확인해야 계산 결과를 해석할 수 있다.</li>
+<li><strong>기존 로그도 조사 범위를 좁히는 근거가 된다.</strong> 내가 추가한 것은 흩어진 기록을 연결하는 쿼리였다. 같은 요청을 식별할 수 있었기에 지연이 집중된 구간을 찾을 수 있었다.</li>
+<li><strong>관측한 구간과 원인 확정은 구분해야 한다.</strong> 외부 호출이 오래 걸렸다는 사실은 다음 조사의 출발점이다. 내부 처리, 전송, 연결 대기를 더 나누려면 그 경계를 관측할 추가 기록이 필요하다.</li>
 </ul>
 <div class="page-tags"><button class="tag-chip" data-tag="observability">#observability</button> <button class="tag-chip" data-tag="distributed-tracing">#distributed-tracing</button> <button class="tag-chip" data-tag="latency">#latency</button> <button class="tag-chip" data-tag="sql">#sql</button> <button class="tag-chip" data-tag="troubleshooting">#troubleshooting</button></div>
 </article>
