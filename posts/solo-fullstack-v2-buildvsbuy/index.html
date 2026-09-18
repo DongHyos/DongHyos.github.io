@@ -11,17 +11,17 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
 <link rel="canonical" href="https://donghyos.github.io/posts/solo-fullstack-v2-buildvsbuy/">
-<meta name="description" content="1인 개발자가 직접 만든 완전 자동 파이프라인(종량제 API + 인프라)을 계속 운영할 가치가 있는가">
+<meta name="description" content="1인 개발자가 직접 만든 영상 제작 파이프라인을 계속 운영할 가치가 있는가">
 <meta property="og:title" content="자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편) — donghyos">
-<meta property="og:description" content="1인 개발자가 직접 만든 완전 자동 파이프라인(종량제 API + 인프라)을 계속 운영할 가치가 있는가">
+<meta property="og:description" content="1인 개발자가 직접 만든 영상 제작 파이프라인을 계속 운영할 가치가 있는가">
 <meta property="og:url" content="https://donghyos.github.io/posts/solo-fullstack-v2-buildvsbuy/">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편) — donghyos">
-<meta name="twitter:description" content="1인 개발자가 직접 만든 완전 자동 파이프라인(종량제 API + 인프라)을 계속 운영할 가치가 있는가">
+<meta name="twitter:description" content="1인 개발자가 직접 만든 영상 제작 파이프라인을 계속 운영할 가치가 있는가">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)", "description": "1인 개발자가 직접 만든 완전 자동 파이프라인(종량제 API + 인프라)을 계속 운영할 가치가 있는가", "datePublished": "2026-06-02", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/solo-fullstack-v2-buildvsbuy/", "mainEntityOfPage": "https://donghyos.github.io/posts/solo-fullstack-v2-buildvsbuy/"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)", "description": "1인 개발자가 직접 만든 영상 제작 파이프라인을 계속 운영할 가치가 있는가", "datePublished": "2026-06-02", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/solo-fullstack-v2-buildvsbuy/", "mainEntityOfPage": "https://donghyos.github.io/posts/solo-fullstack-v2-buildvsbuy/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -57,89 +57,82 @@
   <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
   <a href="/series/solo-fullstack/" class="series-link">시리즈: solo-fullstack</a>
   <time>2026-06-02</time>
-  <span class="read-time">5분 읽기</span>
+  <span class="read-time">6분 읽기</span>
 </div>
 </div>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
-<li><strong>다루는 문제</strong>: 1인 개발자가 직접 만든 완전 자동 파이프라인(종량제 API + 인프라)을 계속 운영할 가치가 있는가</li>
-<li><strong>접근</strong>: 대시보드를 덜어낸 뒤 완전 자동화의 전제를 재검토 — 종량제 풀자동과 구독제 반자동을 비용·품질로 저울질</li>
-<li><strong>결과·학습</strong>: 반자동 + 구독제로 회귀했다. 핵심 = 자동화 수준을 낮추니 비용이 줄면서, 종량제였으면 비싸서 못 썼을 고급 모델을 정액으로 쓰게 돼 품질은 올랐다. 빌드 vs 바이는 규모의 함수다</li>
-<li><strong>도움 되는 독자</strong>: 사이드 프로젝트에서 직접 구축 vs 기성 도구를 저울질하는 개발자 / AI 과금 모델(종량제 vs 구독제)을 고민하는 사람</li>
+<li><strong>다루는 문제</strong>: 1인 개발자가 직접 만든 영상 제작 파이프라인을 계속 운영할 가치가 있는가</li>
+<li><strong>접근</strong>: 서버 중심 자동화와 구독 도구·스크립트를 엮은 반자동 방식을 비용·관리 범위·모델 선택으로 비교</li>
+<li><strong>결과·학습</strong>: Claude Code 중심으로 전환하면서 비용 때문에 쓰기 어려웠던 LLM을 활용하게 됐다. 구독료 외의 생성 비용과 검수 시간은 여전히 남는다</li>
+<li><strong>도움 되는 독자</strong>: 사이드 프로젝트에서 직접 구축할 범위와 기성 도구를 활용할 범위를 고민하는 개발자</li>
 </ul></div></aside>
 <h1 id="1-vs-2">자동화를 포기하니 더 나은 모델이 왔다 — 1인 개발의 빌드 vs 바이 (2편)</h1>
-<p><a href="/posts/solo-fullstack-v1-stack/">1편</a>에서 대시보드를 덜어내며 질문 하나가 남았다 — <em>그 파이프라인 자체는 정말 필요한가?</em> 이 글은 그 질문을 끝까지 밀어붙여 직접 만든 자동화를 <em>끄게 된</em> 기록이고, 그 끝에서 만난 예상 못 한 보상에 대한 기록이다. 1편이 <em>무엇을 만들지 않을지</em>였다면, 2편은 한 발 더 나아가 <em>이미 만든 것을 끌 수 있는지</em>를 묻는다.</p>
-<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#1">1. 문제 정의 — 파이프라인은 필요한가</a></li><li class="toc-h2"><a href="#2-vs">2. 접근 — 종량제 풀자동 vs 구독제 반자동</a></li><li class="toc-h2"><a href="#3">3. 결정 — 반자동 + 구독제, 그리고 예상 못 한 보상</a></li><li class="toc-h2"><a href="#4-vs">4. 결과 — 빌드 vs 바이는 규모의 함수다</a></li><li class="toc-h2"><a href="#5">5. 학습</a></li></ul></nav><h2 id="1">1. 문제 정의 — 파이프라인은 필요한가</h2>
-<p>1편에서 완전 자동 파이프라인을 설계했다. API가 작업을 큐에 넣고, 워커가 AI로 영상을 만들고, 그 현황을 대시보드가 관제한다. 그런데 그 대시보드를 덜어냈다. 풀 자동화의 한 축 — <em>무인 운영을 지켜보는 눈</em> — 이 사라진 것이다.</p>
-<p>여기서 더 근본적인 질문이 따라왔다. 완전 자동화란 결국 <em>사람이 손대지 않아도 영상이 찍혀 나오는 것</em>인데, 그러려면 AI를 <strong>종량제 API</strong>로 쉴 새 없이 호출해야 한다. 1인이 하루에 만드는 영상은 고작 몇 편이다. 이 규모에, 종량제 호출과 그것을 떠받치는 인프라(키 관리·쿼터·재시도·비용 추적)를 <em>무인으로</em> 굴릴 가치가 있는가?</p>
-<p>무인 운영은 생각보다 무겁다. 사람이 보지 않는 동안 호출이 실패하면 재시도해야 하고, 비용이 튀면 알아서 멈춰야 하고, 결과가 어긋나면 무언가 잡아내야 한다. 그 '무언가'를 코드로 대신 세우는 게 풀자동의 본질인데, 그 코드 자체가 또 내가 짜고 유지할 몫이다. <em>자동화를 자동화하는 비용</em>인 셈이다.</p>
-<h2 id="2-vs">2. 접근 — 종량제 풀자동 vs 구독제 반자동</h2>
-<p>두 길을 비용과 품질로 저울질했다.</p>
+<p><a href="/posts/solo-fullstack-v1-stack/">1편</a>에서 대시보드 개발을 멈추며 질문 하나가 남았다. <em>작업 큐와 워커를 중심으로 만든 제작 경로도 계속 필요한가?</em> 이 글은 그 경로 대신 Claude Code와 스크립트로 영상을 만들게 된 기록이다. 전환하면서 비용 때문에 쓰기 어려웠던 대규모 언어 모델(LLM)을 활용하게 됐다. 직접 구축할 범위를 줄인 것이 모델을 선택하는 방식까지 바꿨다.</p>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#1">1. 문제 정의 — 파이프라인은 필요한가</a></li><li class="toc-h2"><a href="#2">2. 접근 — 서버 중심 자동화와 구독 도구 비교</a></li><li class="toc-h2"><a href="#3">3. 결정 — 반자동 + 구독제, 그리고 예상 못 한 보상</a></li><li class="toc-h2"><a href="#4">4. 결과 — 무엇을 사고 무엇을 계속 만들 것인가</a></li><li class="toc-h2"><a href="#5">5. 학습</a></li></ul></nav><h2 id="1">1. 문제 정의 — 파이프라인은 필요한가</h2>
+<p>초기 플랫폼은 API가 작업을 큐에 넣고 워커가 생성·조립을 수행하는 구조였다. 대시보드로 진행 상황을 확인하려 했지만 실제 연동까지 완성하지는 않았다. 설계에는 단계별 검수도 들어 있었다. 처음부터 사람이 전혀 개입하지 않는 제작이 구현돼 있었던 것은 아니다.</p>
+<p>그 상태에서 서버 중심 경로를 계속 발전시킬 이유를 다시 따졌다. 작업을 더 자동으로 이어 붙이려면 호출 실패와 재시도, 사용량 한도, 비용을 관리해야 한다. 결과가 어긋났을 때 멈추거나 검수를 요청하는 처리도 필요하다. 기능을 만드는 시간뿐 아니라 이후 유지보수까지 내가 맡아야 했다.</p>
+<p>API에 결제해 실제로 테스트하면서 생각이 점차 바뀌었다. 대시보드를 쓰지 않는다면 구독 도구 안에서 필요한 작업을 진행해도 되겠다는 판단이었다. 당시 내 제작 방식에 필요한 것은 여러 작업을 무인으로 처리하는 플랫폼보다, 결과를 확인하면서 다음 단계를 실행할 수 있는 도구였다.</p>
+<h2 id="2">2. 접근 — 서버 중심 자동화와 구독 도구 비교</h2>
+<p>비교한 것은 아래 두 구성이었다. 자동화 수준과 과금 방식이 반드시 묶이는 것은 아니지만, 이 프로젝트에서는 구독 도구를 활용하는 쪽으로 실행 방식도 함께 바뀌었다.</p>
 <table>
 <thead>
 <tr>
-<th></th>
-<th>종량제 API · 풀자동</th>
-<th>구독제 도구 · 반자동</th>
+<th>비교 항목</th>
+<th>기존 서버 중심 경로</th>
+<th>Claude Code 중심 반자동</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>과금</td>
-<td>사용량 비례</td>
-<td>정액</td>
+<td>LLM 이용</td>
+<td>API 호출량에 따른 과금</td>
+<td>구독 요금제의 제공 범위 안에서 이용</td>
 </tr>
 <tr>
-<td>운영 부담</td>
-<td>키·쿼터·재시도·비용 추적</td>
-<td>거의 없음</td>
+<td>이미지·음성·영상 생성</td>
+<td>별도 생성 API 호출</td>
+<td>생성 스크립트에서 별도 API 호출 유지</td>
 </tr>
 <tr>
-<td>사람 개입</td>
-<td>없음(무인)</td>
-<td>일부 단계 수동</td>
+<td>관리 대상</td>
+<td>큐·워커와 호출 실패·재시도 처리</td>
+<td>커스텀 스킬·스크립트와 외부 API 관리</td>
 </tr>
 <tr>
-<td>모델 선택</td>
-<td><em>비용에 직결</em> — 좋은 모델 = 비싼 호출</td>
-<td>정액 안에서 자유</td>
+<td>사람의 역할</td>
+<td>설계된 검수 단계에서 확인</td>
+<td>단계별 확인과 재생성 판단에 참여</td>
 </tr>
 <tr>
-<td>유리한 규모</td>
-<td>대량·무인</td>
-<td>소량·1인</td>
+<td>모델 선택 기준</td>
+<td>호출 비용과 필요한 성능</td>
+<td>요금제의 모델 제공 범위와 사용 한도</td>
 </tr>
 </tbody>
 </table>
-<p>핵심은 <em>모델 선택</em> 행이다. 종량제에선 더 좋은(=더 비싼) 모델을 쓸수록, 풀자동으로 많이 부를 때 비용이 그대로 비례해 커진다. 그래서 자연히 <em>싸고 적당한 모델</em>로 품질을 타협하게 된다.</p>
-<p>영상 생성은 이 구조에서 특히 불리하다. 텍스트를 한 번 부르는 것과 달리, 영상 한 컷을 만드는 호출은 단가가 훨씬 높고 해상도·길이에 따라 더 뛴다. 영상 한 편이 여러 컷으로 이뤄지니, 풀자동으로 매일 찍어내면 <em>호출 수 × 높은 단가</em>가 그대로 청구서가 된다. '좋은 모델로 더 많이'가 곧 '비용 폭증'인 영역인 것이다.</p>
-<p>머리로만 따지지 않고 실제로 API에 결제해 테스트도 돌려봤다. 점진적으로 확인한 결론은 분명했다 — <em>대시보드(관제)도 없이 풀자동을 고집할 동기가 약하다.</em> 무인 운영의 편익보다, 그것을 떠받치는 비용과 모델 타협의 무게가 더 컸다.</p>
+<p>내게 가장 큰 차이는 LLM 선택이었다. API를 쓰던 때에는 비용이 부담돼 더 좋은 모델을 쓰기 어려웠다. 구독 도구를 이용하면 내 작업량을 요금제 안에서 처리할 수 있겠다고 보았다. 이는 내 사용 방식에 대한 판단이며, 구독제가 어떤 작업량에서도 더 저렴하다는 뜻은 아니다.</p>
+<p>여기서 LLM과 영상 생성 모델의 비용을 구분해야 한다. 대본과 프롬프트를 Claude Code에서 작성해도 이미지·음성·영상 생성 API의 호출료까지 구독료에 포함되지는 않는다. 실제 제작 스크립트에도 이런 외부 호출이 남아 있다. 영상 제작 전체가 정액으로 바뀐 것으로 계산하면 비교부터 틀어진다.</p>
+<p>또한 구독은 무제한 사용을 뜻하지 않는다. Claude Code에는 <a href="https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan">요금제별 사용 한도</a>가 있고, <a href="https://support.claude.com/en/articles/9876003-i-have-a-paid-claude-subscription-pro-max-team-or-enterprise-plans-why-do-i-have-to-pay-separately-to-use-the-claude-api-and-console">Claude API 이용료는 구독과 별도</a>다. 같은 도구라도 어떤 계정과 과금 방식으로 사용하는지 확인해야 한다.</p>
 <h2 id="3">3. 결정 — 반자동 + 구독제, 그리고 예상 못 한 보상</h2>
-<p>완전 자동을 내려놓고 <strong>반자동 + 구독제</strong>로 돌아섰다. 영상 생성의 일부 단계에 사람(나)이 개입하는 대신, AI는 정액 구독제 도구로 쓴다.</p>
-<p>반자동이라고 손으로 다 만든다는 뜻은 아니다. 반복되는 생성·조립은 여전히 자동이되, <em>판단이 필요한 길목</em> — 어떤 컷을 다시 뽑을지, 어디서 멈출지 — 에만 내가 들어선다. 무인을 포기한 자리에 사람의 판단을 끼워 넣은 것이다. 그 워크플로의 실제는 3편에서 펼친다.</p>
-<p>그리고 여기서 예상 못 한 보상을 만났다. <strong>자동화 수준을 <em>낮췄는데<em> 결과물 품질은 오히려 </em>올라갔다.</em></strong> 이유는 단순하다. 종량제 풀자동이었다면 비용 때문에 <em>아껴 썼을</em> 고급 LLM 모델을, 정액 구독 안에서는 마음껏 쓸 수 있었기 때문이다. 호출 한 번의 단가를 신경 쓰지 않으니, 가장 좋은 모델을 <em>기본값</em>으로 둘 수 있었다.</p>
-<p>정리하면 이런 교환이었다 — <em>자동화(무인·규모)를 내주고, 그 대가로 모델 품질을 얻었다.</em> 1인 창작자에게는 후자가 훨씬 값졌다. 영상 한 편의 질이 곧 결과를 가르는데, 무인 운영은 애초에 내 규모에 필요 없는 사치였다.</p>
-<p>더 좋은 모델이 주는 건 단지 보기 좋은 결과가 아니었다. 프롬프트를 더 정확히 이해하고 더 일관된 결과를 내니 <em>다시 뽑는 횟수</em>가 줄었다. 반자동에서 내가 개입하는 가장 잦은 순간이 "이건 다시"인데, 그 빈도 자체가 낮아진 것이다. 모델 품질이 올라가자 역설적으로 <em>사람이 손댈 일도 줄었다</em> — 자동화를 포기한 자리를 더 나은 모델이 메운 셈이다.</p>
-<pre class="mermaid">flowchart TB
-    A["완전 자동화<br/>종량제 API · 무인 · 모델 타협"]
-    A -->|자동화 한 단계 낮춤| B["반자동<br/>구독제 · 사람 개입"]
-    B --> C["비용 ↓<br/>정액 · 운영 제거"]
-    B --> D["모델 품질 ↑<br/>고급 모델 자유"]
-    D --> E["재생성 ↓ → 수작업도 ↓"]
-</pre>
+<p>제작의 중심을 Claude Code와 커스텀 스킬로 옮겼다. 대본과 프롬프트를 작성하고, 생성·조립 스크립트를 실행하고, 결과를 확인하면서 다음 단계로 넘어간다. 반복 작업은 스크립트가 맡고 어떤 결과를 채택하거나 다시 만들지는 내가 판단한다.</p>
+<p>이 전환으로 얻은 것은 <strong>비용 때문에 쓰기 어려웠던 더 좋은 LLM을 활용할 수 있게 됐다는 점</strong>이다. 호출 단가를 따지던 작업을 구독 요금제의 범위 안에서 진행하게 됐다. 자동화 범위를 줄이는 결정이 LLM을 사용하는 선택지를 넓혀 준 것이다.</p>
+<p>다만 더 좋은 LLM을 썼다는 경험을 최종 영상 품질 향상이나 재생성 횟수 감소로 곧바로 해석할 수는 없다. 영상에는 대본·프롬프트뿐 아니라 생성 모델과 편집도 영향을 준다. 전후 품질과 재생성 횟수를 같은 기준으로 집계한 자료가 없으므로, 이 글에서 확인할 수 있는 성과는 작업 방식의 전환과 LLM 활용 범위의 변화다.</p>
+<iframe src="/images/solo-fullstack-v2-buildvsbuy/workflow-tradeoff.html" title="구독 도구로 전환한 뒤 남은 작업과 비용" loading="lazy" style="display:block;width:100%;height:auto;aspect-ratio:8/5;min-height:468px;border:0;"></iframe>
+
+<p><a href="/images/solo-fullstack-v2-buildvsbuy/workflow-tradeoff.html">도표 크게 보기</a></p>
 <blockquote>
-<p>자동화 수준을 <em>한 단계 낮추자</em> 비용·품질·수작업이 한꺼번에 개선됐다. "더 자동화"가 늘 정답은 아니라는 역설.</p>
+<p>구독 도구, 직접 만든 스크립트, 사람의 검수가 함께 남았다. 전환 뒤에도 각 부분의 비용과 관리 책임을 따로 봐야 한다.</p>
 </blockquote>
-<h2 id="4-vs">4. 결과 — 빌드 vs 바이는 규모의 함수다</h2>
-<p>이 결정을 일반화하면 <em>빌드 vs 바이</em>의 문제가 된다. 직접 인프라를 구축(빌드)할 것인가, 기성 구독제 도구를 살(바이) 것인가.</p>
-<p>내 경우 답은 명확히 <em>바이</em>였다. 1인·소량 규모에서 빌드의 비용은 두 겹이다 — 운영 관리, 그리고 <em>종량제가 강요하는 모델 타협</em>. 바이는 그 둘을 한 번에 걷어내고 비용을 정액으로 고정한다.</p>
-<p>단, 이건 <em>규모의 함수</em>라는 점을 분명히 해야 한다. 영상을 하루 수백·수천 편 <em>무인</em>으로 찍어내야 한다면 답은 뒤집힌다 — 그 규모에선 종량제 풀자동의 단위 비용이 구독제를 앞지르고, 사람의 개입은 병목이 된다. 빌드와 바이의 경계는 <em>"만들 줄 아는가"</em>가 아니라 <em>"이 규모에서 만들 가치가 있는가"</em>에 있다.</p>
-<p>그 경계가 어디냐고 묻는다면 <em>사람의 개입이 병목이 되는 지점</em>이라 답하겠다. 하루 몇 편에 몇 번 "다시"를 누르는 건 부담이 아니다. 그러나 하루 수백 편이라면 그 개입은 물리적으로 불가능해지고, 무인 풀자동만이 답이 된다. 빌드와 바이의 분기점은 결국 <em>사람이 감당할 수 있는 개입의 총량</em>에 걸려 있다.</p>
+<h2 id="4">4. 결과 — 무엇을 사고 무엇을 계속 만들 것인가</h2>
+<p>이 결정은 <em>빌드 vs 바이</em>, 즉 직접 구축할지 기성 도구를 이용할지의 문제였다. 내 선택은 기성 도구를 중심에 두되 제작에 필요한 코드는 계속 쓰는 조합이었다. 커스텀 스킬과 생성·조립 스크립트를 유지했고, 작업 정보를 저장하는 API와 데이터베이스도 활용했다. 앞서 만든 코드를 모두 없앤 것은 아니다.</p>
+<p>비용 비교 역시 구독료와 API 청구액만 맞대서는 부족하다. 외부 생성 API 사용료와 실행 환경 비용을 더하고, 유지보수 시간과 결과를 확인하는 시간도 함께 봐야 한다. 이 글에는 전환 전후의 전체 지출과 작업 시간을 집계한 자료가 없다. 따라서 절감액이나 손익분기점을 수치로 제시할 수는 없다.</p>
+<p>제작량이 커지면 사람의 확인 시간이 병목이 될 수 있다. 그러나 그 사실만으로 직접 만든 플랫폼의 단위 비용이 더 낮아지는 것은 아니다. 검수에 걸리는 시간, 실패 후 복구 비용, 구독 도구의 한도와 필요한 품질을 함께 비교해야 한다. 내가 택한 반자동 방식도 이런 조건이 달라지면 다시 평가할 대상이다.</p>
+<p>다시 비교한다면 먼저 영상 한 편을 만드는 데 드는 외부 호출료와 사람의 개입 시간을 기록할 것이다. 이어 같은 품질 기준에서 서버 중심 경로가 그 시간을 얼마나 줄이는지 확인할 수 있다. 단순히 제작 편수가 늘었다는 이유보다, 어느 단계에서 비용이나 대기가 쌓이는지 알아야 자동화할 범위도 정할 수 있다.</p>
 <h2 id="5">5. 학습</h2>
-<p><strong>자동화 수준은 공짜가 아니다.</strong> 완전 자동화는 종량제 비용·운영 관리·모델 타협을 한 묶음으로 떠안는다. 자동화를 <em>한 단계만 낮춰도</em> 그 묶음 전체에서 풀려날 수 있다. "더 자동화"가 항상 정답은 아니다.</p>
-<p><strong>과금 모델이 결과물의 상한을 정한다.</strong> 같은 작업이라도 종량제 위에서는 "좋은 모델 = 비싼 호출"이라 품질을 아끼게 되고, 구독제 위에서는 그 족쇄가 풀린다. <em>어떤 과금 구조 위에 서 있느냐</em>가 내가 쓸 수 있는 모델을, 곧 결과물의 상한을 정한다. 이건 영상뿐 아니라 LLM을 쓰는 모든 사이드 프로젝트에 그대로 적용된다.</p>
-<p><strong>빌드 vs 바이는 규모로 푼다.</strong> 1인·소량에선 바이가, 대량·무인에선 빌드가 이긴다. 화려한 자동화를 짓기 전에 <em>자신의 규모를 정직하게 보는 것</em>이 먼저다.</p>
-<p>덧붙여, <em>직접 만든 것을 끄는 결정 자체가 비용</em>이었다. 이미 짜둔 파이프라인을 두고 "안 쓴다"고 정하기까지, 들인 시간이 아깝다는 관성과 싸워야 했다. 그러나 매몰 비용은 앞으로의 판단 근거가 되지 못한다 — <em>이미 만든 것</em>이 아니라 <em>지금 내 규모</em>가 기준이어야 했다.</p>
-<p>그래서 "바이"로 돌아선 지금, 나는 실제로 어떻게 영상을 만드는가? 구독제 도구(Claude Code) 위에서 커스텀 스킬과 사람의 개입을 엮은 <em>반자동 워크플로</em> — 그 실제를 3편에서 다룬다.</p>
+<p><strong>자동화는 관리할 범위까지 포함해 선택한다.</strong> 큐와 워커가 작업을 이어 주더라도 실패 처리와 검수 설계는 남는다. 나는 구독 도구와 스크립트로 필요한 단계를 실행하는 쪽을 택했다.</p>
+<p><strong>과금 방식은 모델 선택에 영향을 준다.</strong> 내 경우 구독제가 더 좋은 LLM을 활용하는 계기가 됐다. 다만 제공 모델과 사용 한도, 별도 API 비용을 함께 확인해야 같은 선택을 다른 프로젝트에서도 검토할 수 있다.</p>
+<p><strong>직접 만들 줄 알아도 전부 만들 필요는 없다.</strong> 이미 만든 코드의 양보다 앞으로 계속 관리할 이유가 기준이다. 내 작업에서는 구독 도구를 중심에 놓고 커스텀 스킬과 스크립트로 필요한 부분을 이어 썼다.</p>
+<p>그렇다면 각 단계에서 도구와 사람은 무엇을 맡는가? <a href="/posts/solo-fullstack-v3-hitl/">3편</a>에서는 Claude Code, 스크립트, 편집 도구를 연결한 반자동 제작 과정을 다룬다.</p>
 <div class="page-tags"><button class="tag-chip" data-tag="fullstack">#fullstack</button> <button class="tag-chip" data-tag="ai">#ai</button> <button class="tag-chip" data-tag="llm">#llm</button> <button class="tag-chip" data-tag="cost-optimization">#cost-optimization</button> <button class="tag-chip" data-tag="build-vs-buy">#build-vs-buy</button> <button class="tag-chip" data-tag="side-project">#side-project</button></div>
 </article>
 <div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
