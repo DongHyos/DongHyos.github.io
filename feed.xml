@@ -181,7 +181,7 @@
     <link>https://donghyos.github.io/posts/redis-session-sharing/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/redis-session-sharing/</guid>
     <pubDate>Wed, 03 Jun 2026 15:00:00 GMT</pubDate>
-    <description>단일 서버를 이중화하자, 사용자가 서버를 오갈 때마다 로그인이 풀렸다.</description>
+    <description>웹과 WAS를 1:1로 연결하던 구성을 교차 라우팅으로 바꾸자, 다른 WAS로 이동한 요청에서 로그인이 풀렸다</description>
   </item>
   <item>
     <title>사용자에겐 실패, 서버에선 성공이던 결제 — 커넥션 풀 고갈 추적</title>

@@ -11,17 +11,17 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
 <link rel="canonical" href="https://donghyos.github.io/posts/redis-session-sharing/">
-<meta name="description" content="단일 서버를 이중화하자, 사용자가 서버를 오갈 때마다 로그인이 풀렸다.">
+<meta name="description" content="웹과 WAS를 1:1로 연결하던 구성을 교차 라우팅으로 바꾸자, 다른 WAS로 이동한 요청에서 로그인이 풀렸다">
 <meta property="og:title" content="이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로 — donghyos">
-<meta property="og:description" content="단일 서버를 이중화하자, 사용자가 서버를 오갈 때마다 로그인이 풀렸다.">
+<meta property="og:description" content="웹과 WAS를 1:1로 연결하던 구성을 교차 라우팅으로 바꾸자, 다른 WAS로 이동한 요청에서 로그인이 풀렸다">
 <meta property="og:url" content="https://donghyos.github.io/posts/redis-session-sharing/">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로 — donghyos">
-<meta name="twitter:description" content="단일 서버를 이중화하자, 사용자가 서버를 오갈 때마다 로그인이 풀렸다.">
+<meta name="twitter:description" content="웹과 WAS를 1:1로 연결하던 구성을 교차 라우팅으로 바꾸자, 다른 WAS로 이동한 요청에서 로그인이 풀렸다">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로", "description": "단일 서버를 이중화하자, 사용자가 서버를 오갈 때마다 로그인이 풀렸다.", "datePublished": "2026-06-04", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/redis-session-sharing/", "mainEntityOfPage": "https://donghyos.github.io/posts/redis-session-sharing/"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로", "description": "웹과 WAS를 1:1로 연결하던 구성을 교차 라우팅으로 바꾸자, 다른 WAS로 이동한 요청에서 로그인이 풀렸다", "datePublished": "2026-06-04", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/redis-session-sharing/", "mainEntityOfPage": "https://donghyos.github.io/posts/redis-session-sharing/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -57,76 +57,63 @@
   <a href="/categories/work/" class="cat-link">실무 경험</a>
   
   <time>2026-06-04</time>
-  <span class="read-time">6분 읽기</span>
+  <span class="read-time">8분 읽기</span>
 </div>
 </div>
-<h1 id="redis">이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로</h1>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
-<li><strong>다루는 문제</strong>: 단일 서버를 이중화하자, 사용자가 서버를 오갈 때마다 로그인이 풀렸다.</li>
-<li><strong>접근</strong>: 톰캣 세션 클러스터링을 먼저 시도해 실패한 뒤, Redis 중앙 세션으로 상태를 분리했다.</li>
-<li><strong>결과·학습</strong>: 세션 공유로 진짜 이중화를 완성하고 무중단 배포까지 얻었다. 이중화의 본질이 서버 대수가 아니라 상태 공유임을 확인했다.</li>
-<li><strong>도움 되는 독자</strong>: 스케일아웃·이중화 과정에서 세션과 상태 공유를 설계해야 하는 백엔드 개발자.</li>
+<li><strong>다루는 문제</strong>: 웹과 WAS를 1:1로 연결하던 구성을 교차 라우팅으로 바꾸자, 다른 WAS로 이동한 요청에서 로그인이 풀렸다</li>
+<li><strong>접근</strong>: 톰캣 세션 클러스터링을 시도한 뒤 Redis 중앙 세션으로 전환하고, 중복 로그인 판단도 공통 저장소로 옮겼다</li>
+<li><strong>결과·학습</strong>: WAS가 바뀌어도 세션을 유지하고 한 대씩 배포할 수 있게 됐다. 요청 경로를 이중화할 때는 세션뿐 아니라 그 상태에 의존하는 로직도 함께 점검해야 한다</li>
+<li><strong>도움 되는 독자</strong>: 스케일아웃과 이중화 과정에서 세션 공유·중복 로그인·배포 방식을 설계하는 백엔드 개발자</li>
 </ul></div></aside>
+<h1 id="redis">이중화를 켰더니 로그인이 풀렸다 — 세션 클러스터링을 접고 Redis 중앙 세션으로</h1>
 <nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">문제: 이중화했더니 로그인이 풀린다</a></li><li class="toc-h2"><a href="#_2">접근: 세션 복제 대 중앙 세션</a></li><li class="toc-h2"><a href="#_3">구현: 세션 분리와 중복 로그인 로직의 분산화</a></li><li class="toc-h2"><a href="#_4">결과</a></li><li class="toc-h2"><a href="#_5">학습</a></li></ul></nav><h2 id="_1">문제: 이중화했더니 로그인이 풀린다</h2>
-<p>고가용성이 요구되는 공공 시스템을 운영하면서 이중화가 되어 있지 않은 구조를 마주했다. 정확히는 웹 서버와 WAS(웹 애플리케이션 서버)가 1:1로 고정돼 있었다. 1번 웹은 1번 WAS로만, 2번 웹은 2번 WAS로만 요청을 보냈다. 서버가 두 벌이라 이중화처럼 보였지만, 실제로는 독립된 두 수직 라인일 뿐이었다. 한 라인이 죽으면 그쪽 사용자는 그대로 영향을 받았고, 배포할 때도 무중단이 불가능했다. 새 버전을 올리려면 WAS를 내려야 했고, 그 라인에 붙은 사용자는 배포가 끝날 때까지 서비스가 끊겼다.</p>
-<p>진짜 이중화를 위해 웹 서버가 양쪽 WAS로 교차 라우팅하도록 구성을 바꿨다. 1번 웹의 요청도 2번 WAS로 갈 수 있게 했다. 그러자 곧바로 증상이 보고됐다. <strong>사용자가 서버를 오갈 때마다 로그인이 풀린다</strong>는 것이었다.</p>
-<p>원인은 세션이었다. 세션은 각 WAS의 로컬 메모리에 저장돼 있었다. 1번 WAS에서 로그인한 사용자가 다음 요청에서 2번 WAS로 라우팅되면, 그쪽에는 세션이 없으니 로그인하지 않은 사용자로 취급됐다. 로컬 세션을 전제로 짠 구조가 교차 라우팅이라는 새 전제와 충돌한 것이다.</p>
-<pre class="mermaid">graph LR
-    W1[웹 1] --> A1[WAS 1<br/>로컬 세션]
-    W2[웹 2] --> A2[WAS 2<br/>로컬 세션]
-</pre>
-<p>위 구조에서 교차 라우팅을 켜면, 세션이 없는 반대편 WAS로 요청이 흘러가는 순간 로그인이 끊겼다.</p>
-<pre class="mermaid">sequenceDiagram
-    participant U as 사용자
-    participant W as 웹(교차 라우팅)
-    participant A1 as WAS 1
-    participant A2 as WAS 2
-    U->>W: 로그인
-    W->>A1: 1번 WAS로 라우팅
-    A1->>A1: 세션 생성(로컬)
-    A1-->>U: 로그인 성공
-    U->>W: 다음 요청
-    W->>A2: 2번 WAS로 라우팅(교차)
-    A2--xU: 세션 없음 → 로그인 풀림
-</pre>
+<p>고가용성이 요구되는 공공 시스템에서 웹 서버와 WAS(웹 애플리케이션 서버)가 1:1로 고정된 구성을 운영하고 있었다. 웹 1은 WAS 1로만, 웹 2는 WAS 2로만 요청을 보냈다. 서버는 두 벌이었지만 한쪽 WAS가 멈추면 다른 WAS로 요청을 넘겨 처리하지 못했다. 배포를 위해 WAS를 내릴 때도 해당 경로를 사용하던 이용자가 영향을 받았다.</p>
+<p>이를 개선하려고 각 웹 서버가 양쪽 WAS로 요청을 보낼 수 있게 바꿨다. 그러자 다른 WAS로 라우팅된 사용자의 로그인이 풀린다는 문제가 보고됐다. 세션이 각 WAS의 로컬 메모리에 있었기 때문이다. WAS 1에서 로그인한 사용자의 다음 요청이 WAS 2로 가면, 그 서버에는 대응하는 세션이 없었다.</p>
+<iframe src="/images/redis-session-sharing/fixed-routing.html" title="웹과 WAS가 1대1로 연결된 기존 구조" loading="lazy" style="display:block;width:100%;height:auto;aspect-ratio:8/5;min-height:468px;border:0;"></iframe>
+
+<p><a href="/images/redis-session-sharing/fixed-routing.html">도표 크게 보기</a></p>
+<p>기존에는 요청 경로가 고정돼 있어 로컬 세션의 한계가 드러나지 않았다. 교차 라우팅으로 요청 경로는 바뀌었지만 로그인 상태는 각 서버에 남아 있었다. 다음 도표는 그 불일치를 단순화한 것이다.</p>
+<iframe src="/images/redis-session-sharing/session-loss.html" title="다른 WAS로 이동한 요청에서 로컬 세션을 찾지 못하는 흐름" loading="lazy" style="display:block;width:100%;height:auto;aspect-ratio:8/5;min-height:468px;border:0;"></iframe>
+
+<p><a href="/images/redis-session-sharing/session-loss.html">도표 크게 보기</a></p>
 <h2 id="_2">접근: 세션 복제 대 중앙 세션</h2>
-<p>여러 WAS가 같은 세션을 봐야 한다는 요구는 분명했고, 선택지는 둘이었다. 하나는 WAS끼리 세션을 실시간 복제하는 방식(세션 복제)이고, 다른 하나는 세션을 외부 한 곳에 두고 모든 WAS가 참조하는 방식(중앙 세션)이다.</p>
-<p>나는 톰캣 세션 클러스터링을 먼저 시도했다. 별도 저장소 없이 톰캣 설정만으로 세션을 복제할 수 있다는 점이 매력이었다. 그러나 실패했다. 세션 클러스터링은 한 WAS의 세션 변경을 다른 WAS로 밀어 복제하는데, 이 복제는 비동기로 일어난다. 로그인 직후처럼 세션이 막 바뀐 시점에 사용자의 다음 요청이 곧바로 다른 WAS로 라우팅되면, 복제가 도착하기 전이라 그 WAS는 여전히 빈 세션을 봤다. <strong>결국 로그인이 계속 풀렸다.</strong> 복제 모델은 노드가 늘수록 동기화 비용이 커지고, 그 지연이 그대로 로그인 풀림으로 드러났다.</p>
-<p>그래서 중앙 세션으로 방향을 틀었다. 세션을 한 곳에 두면 복제 지연이라는 문제 자체가 사라진다. 저장소 후보로는 관계형 DB의 세션 테이블도 있었지만, 세션은 수명이 짧고 읽기·쓰기가 잦은 데이터라 디스크 기반 저장소와 맞지 않았다. 나는 Redis를 택했다. 인메모리라 세션 조회가 빠르고, 키 만료(TTL)가 세션 수명 관리와 자연스럽게 맞았기 때문이다.</p>
-<p>중앙 세션에도 비용은 있다. 모든 요청이 세션을 외부에서 조회하므로 네트워크 왕복이 한 번 추가되고, 세션을 한 곳에 모은 만큼 그 저장소의 가용성이 중요해진다. 그럼에도 복제 지연으로 로그인이 풀리는 것보다, 빠른 인메모리 조회로 모두가 한 곳을 보게 하는 편이 분명했다.</p>
+<p>검토한 방식은 WAS끼리 세션을 복제하는 방식과 공통 저장소에서 세션을 읽는 방식이었다. 나는 별도 저장소를 추가하지 않고 시작할 수 있는 톰캣 세션 클러스터링을 먼저 시도했다. 그러나 당시 구성에서는 다른 WAS로 이동할 때 로그인이 풀리는 문제가 해결되지 않았고, 비동기 복제가 다음 요청을 따라가지 못하는 문제로 판단했다.</p>
+<p>비동기 복제에서는 변경 내용이 다른 노드에 반영되기 전에 응답이 반환될 수 있다. 다만 톰캣의 모든 세션 복제가 비동기인 것은 아니다. <a href="https://tomcat.apache.org/tomcat-9.0-doc/cluster-howto.html">공식 문서</a>는 동기·비동기 방식을 설정으로 구분하며, 전체 노드에 복제하는 방식과 백업 노드 한 곳에 복제하는 방식도 제공한다. 따라서 이 경험은 당시 구성에서 문제를 해결하지 못했다는 사례이며, 세션 복제 방식 전체가 부적합하다는 근거는 아니다.</p>
+<p>나는 각 WAS가 세션 사본을 유지하는 대신 Redis에서 공통 세션을 읽는 쪽을 택했다. 인메모리 접근과 키의 유효 기간을 정하는 TTL(Time To Live)이 선택 이유였다. 관계형 DB에도 세션을 저장할 수 있으며, <a href="https://spring.io/projects/spring-session/">Spring Session도 JDBC 저장소를 지원한다</a>. 세션이 짧게 유지되고 자주 읽힌다는 이유만으로 관계형 DB가 부적합하다고 단정할 수는 없다.</p>
+<p>중앙 세션은 상태를 공유하는 위치를 분명하게 해 주지만 저장소 접근 비용과 장애 의존성을 추가한다. 네트워크 호출 횟수는 세션 구현에 따라 달라지며, Redis의 복제본을 읽는 구성이라면 별도의 복제 지연도 고려해야 한다. Redis 자체도 기본적으로 <a href="https://redis.io/docs/latest/operate/oss_and_stack/management/replication/">비동기 복제</a>를 사용한다. 이 글에서 선택한 것은 WAS별 세션 사본을 공통 저장소로 옮기는 방식이지, 모든 동기화 문제를 없애는 방식은 아니다.</p>
 <h2 id="_3">구현: 세션 분리와 중복 로그인 로직의 분산화</h2>
-<p>방향이 정해진 뒤에도 손이 가는 부분은 남아 있었다. 기존 로컬 세션을 그대로 옮길 수는 없었다. 로컬 메모리의 세션 객체를 외부 저장소에 담으려면 직렬화 가능한 형태로 맞춰야 했고, 세션을 읽고 쓰는 기존 코드와도 호환을 유지해야 했다. 나는 세션 접근 지점을 Redis 조회로 바꾸되 호출하는 쪽 코드는 최대한 그대로 두며 점진적으로 옮겼다.</p>
-<p>진짜 난관은 <strong>중복 로그인 방지 로직</strong>이었다. 기존 로직은 단일 서버를 전제로 했다. 같은 계정이 이미 로그인해 있으면 기존 세션을 끊는데, 그 "이미 로그인했는지"를 단일 WAS의 로컬 메모리에서 확인했다. 다중 WAS 환경에서는 1번 WAS가 2번 WAS의 세션을 알 수 없으니 이 로직은 무력해진다. 단일 서버에서는 당연하던 가정이 분산되는 순간 소리 없이 무너졌다.</p>
-<p>나는 중복 로그인 판단의 기준점을 Redis로 옮겼다. 로그인 시 계정별 활성 세션을 Redis에 기록하고, 같은 계정이 새로 로그인하면 등록된 기존 세션을 무효화했다.</p>
-<pre><code class="language-java">// 로그인 시: 계정당 활성 세션을 Redis에 기록하고 기존 세션은 끊는다
-String prevSession = redis.get(&quot;login:account:&quot; + accountId);
-if (prevSession != null) {
-    redis.delete(&quot;session:&quot; + prevSession);   // 기존 세션 무효화
-}
-redis.set(&quot;login:account:&quot; + accountId, newSessionId);
-redis.set(&quot;session:&quot; + newSessionId, sessionData);
+<p>기존 세션 접근을 Redis 기반으로 바꾸면서 호출부와 저장할 데이터의 호환성을 맞췄다. 이때 중요한 것은 세션 객체를 외부에 보관하는 것뿐 아니라, 그 상태를 사용하는 코드도 같은 기준을 보도록 바꾸는 일이었다. 특히 단일 WAS의 메모리에 의존하던 중복 로그인 방지 로직을 함께 옮겨야 했다.</p>
+<p>기존 정책은 같은 계정이 새로 로그인하면 이전 세션을 무효화하는 방식이었다. 한 WAS의 로컬 메모리만 확인해서는 다른 WAS에 로그인한 세션을 알 수 없다. 그래서 계정별 활성 세션의 기준점을 Redis로 옮기고 새 로그인 때 기존 세션을 무효화하도록 했다.</p>
+<p>이 동작을 단순한 <code>GET → DELETE → SET</code> 예제로 옮기면 동시성 문제가 가려진다. 두 로그인이 같은 이전 세션을 읽은 뒤 각각 새 세션을 저장하면, 이전 세션만 삭제되고 새 세션 두 개는 모두 남을 수 있다. Redis 명령 하나의 원자성이 여러 명령으로 이루어진 로그인 처리 전체의 원자성을 뜻하지는 않는다.</p>
+<p>아래는 실제 운영 코드를 복원한 것이 아니라, 같은 계정의 로그인이 겹칠 때 하나의 처리 단위로 다뤄야 할 작업을 정리한 것이다.</p>
+<pre><code class="language-text">계정별 활성 세션 교체
+  이전 활성 세션 확인
+  이전 세션 무효화
+  새 세션 저장 및 만료 정책 적용
+  계정의 활성 세션을 새 세션으로 교체
 </code></pre>
-<p>남은 문제는 <strong>이미 화면을 보고 있는 사용자</strong>였다. 다른 곳에서 같은 계정이 로그인하면, 가만히 있던 기존 사용자도 즉시 쫓겨나야 한다. 그러나 사용자가 아무 요청도 보내지 않으면 서버는 세션이 무효화됐다는 사실을 전달할 길이 없다. 나는 클라이언트가 짧은 주기로 서버에 자기 세션의 유효성을 묻고, 무효화됐으면 로그아웃시키는 폴링 방식으로 해결했다.</p>
-<pre><code class="language-java">// 클라이언트가 주기적으로 호출하는 세션 유효성 확인
-boolean valid = redis.exists(&quot;session:&quot; + currentSessionId);
-return valid ? OK : LOGOUT;   // 다른 곳에서 재로그인 시 무효화되어 LOGOUT
+<p>구현할 때는 이런 읽기·수정 과정을 경쟁 요청과 조율해야 한다. 예를 들어 Redis의 <a href="https://redis.io/docs/latest/develop/using-commands/transactions/">WATCH를 이용한 조건부 트랜잭션</a>은 읽은 키가 바뀌었을 때 처리를 중단하고 재시도할 수 있게 한다. 당시 사용한 원자화 수단과 TTL 갱신의 세부 구현은 남은 기록으로 확인하지 못했으므로, 여기서 특정 방식을 적용했다고 주장하지 않는다. 계정 매핑의 정리, 세션 만료와 로그아웃 처리는 함께 맞춰야 할 조건이다.</p>
+<p>다른 곳에서 재로그인했을 때 이미 화면을 보고 있는 사용자에게 변화를 알리는 문제도 있었다. 당시에는 서버가 상태 변경을 보내는 연결을 사용하지 않았으므로, 클라이언트가 주기적으로 세션 유효성을 확인하는 폴링 방식을 택했다.</p>
+<pre><code class="language-text">클라이언트가 세션 유효성 확인 요청
+  → 서버가 세션과 계정의 현재 로그인 상태 확인
+  → 무효한 세션이면 로그아웃 안내
+  → 클라이언트가 로그인 화면으로 이동
 </code></pre>
-<p>폴링은 트레이드오프가 뚜렷한 선택이었다. 주기적 요청이 부하로 쌓이고, 무효화와 실제 로그아웃 사이에 폴링 주기만큼의 지연이 남는다. 서버가 클라이언트로 상태를 미는 방식(push)이 더 즉각적이지만, 당시 환경에서는 구현과 운영의 단순성을 우선해 폴링을 택했다.</p>
-<pre class="mermaid">graph LR
-    W1[웹 1] --> A1[WAS 1]
-    W1 --> A2[WAS 2]
-    W2[웹 2] --> A1
-    W2 --> A2
-    A1 --> R[(Redis<br/>중앙 세션)]
-    A2 --> R
-</pre>
+<p>폴링은 즉시 통지가 아니다. 보통 다음 확인 요청에서 무효화를 알게 되며, 네트워크 지연이나 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout#timeouts_in_inactive_tabs">백그라운드 탭의 실행 지연</a> 때문에 설정한 주기보다 늦어질 수도 있다. 또한 화면의 로그아웃 처리와 서버의 접근 차단은 별개다. 폴링은 화면을 갱신하는 수단이고, 인증이 필요한 요청에서도 세션의 유효성을 확인해야 한다.</p>
+<p>당시에는 주기적 요청과 통지 지연을 감수하고 구현·운영의 단순성을 택했다. 서버에서 상태를 보내는 방식도 대안이 될 수 있지만, 이 작업에서는 폴링으로 기존 사용자의 화면에 세션 무효화를 반영했다.</p>
+<iframe src="/images/redis-session-sharing/shared-session.html" title="양쪽 WAS가 Redis의 공통 세션을 사용하는 교차 라우팅 구조" loading="lazy" style="display:block;width:100%;height:auto;aspect-ratio:8/5;min-height:468px;border:0;"></iframe>
+
+<p><a href="/images/redis-session-sharing/shared-session.html">도표 크게 보기</a></p>
+<p>Redis는 공통 세션 저장소를 뜻하는 논리적 상자다. 당시 Redis의 복제·장애 조치 구성을 설명하는 도표는 아니다.</p>
 <h2 id="_4">결과</h2>
-<p>교차 라우팅이 정상 동작했다. 사용자가 어느 WAS로 라우팅되든 세션이 유지됐고, 로그인 풀림 보고가 사라졌다. 한쪽 WAS가 멈춰도 다른 WAS가 같은 세션을 이어받으니 비로소 진짜 이중화가 완성됐다.</p>
-<p>가장 큰 부수 효과는 <strong>무중단 배포</strong>였다. 세션이 Redis에 있으니 WAS를 한 대씩 내려 배포해도 사용자 세션이 살아 있었다. 한 WAS를 내려 배포하는 동안 교차 라우팅이 트래픽을 다른 WAS로 보냈고, 세션은 Redis에 남아 있으니 사용자는 배포가 진행 중인지조차 알 수 없었다. 배포를 위해 서비스 시간을 따로 잡을 필요가 없어졌다. 이중화를 위해 시작한 작업이 배포 방식까지 바꾼 셈이다.</p>
+<p>어느 WAS로 요청이 전달되든 같은 세션을 사용할 수 있게 됐고, 교차 라우팅 때 로그인이 풀리던 문제가 해소됐다. 중복 로그인 판단도 특정 WAS의 메모리에 묶이지 않게 됐다. 요청 경로를 바꾸는 작업과 세션에 의존하는 로직의 변경이 함께 이루어진 결과였다.</p>
+<p>그 결과 WAS를 한 대씩 배포하면서 사용자 세션을 유지할 수 있었다. 한쪽을 배포하는 동안 다른 WAS가 요청을 처리하고 Redis에 남은 세션을 사용했다. 이것이 이 경험에서 말하는 무중단 배포다. 기존 세션을 Redis로 옮기는 전환 자체를 무중단으로 수행했다는 의미와는 구분한다.</p>
+<p>세션 공유만으로 모든 장애나 배포 중 요청 손실이 방지되는 것은 아니다. 실제 배포에는 트래픽 제외·복귀, 처리 중 요청의 종료, 새 버전과 기존 세션 데이터의 호환성도 필요하다. Redis를 추가한 뒤에는 그 저장소의 가용성도 함께 봐야 한다. 이 글의 성과는 WAS가 바뀔 때 세션을 유지하고 순차 배포할 수 있게 된 범위다.</p>
 <h2 id="_5">학습</h2>
-<p><strong>이중화의 본질은 서버 대수가 아니라 상태 공유다.</strong> 서버를 두 대로 늘리는 일은 쉽다. 어려운 것은 그 두 대가 같은 상태를 보게 만드는 일이다. 웹-WAS 고정 매핑을 풀면 로컬에 있던 모든 상태가 공유 대상이 된다.</p>
-<p><strong>단일 서버를 전제로 짠 로직은 분산 환경에서 조용히 깨진다.</strong> 중복 로그인 방지처럼 한 서버 안에서는 당연히 동작하던 로직이, 다중 서버가 되면 무력해진다. 상태에 의존하는 로직은 그 상태가 어디에 있는지부터 점검해야 한다.</p>
-<p><strong>먼저 시도해 실패한 대안이 결정의 근거가 됐다.</strong> 세션 클러스터링의 실패는 시간 낭비가 아니라 복제 모델의 한계, 곧 동기화 지연을 직접 확인한 과정이었다. 그 실패가 중앙 저장 모델을 택한 분명한 근거가 됐다.</p>
+<p><strong>요청 경로를 바꾸면 상태의 위치도 점검한다.</strong> 서버가 두 벌이어도 다른 서버가 기존 로그인 상태를 읽지 못하면 세션은 이어지지 않는다. 이 사례에서는 교차 라우팅과 중앙 세션을 함께 적용했다.</p>
+<p><strong>공유 저장소에 옮긴 뒤에도 처리 단위를 확인한다.</strong> 중복 로그인 방지는 세션 저장 외에 계정별 활성 세션의 교체와 무효화가 맞물린다. 상태를 한곳에 둔 것과 여러 명령을 동시 요청에 안전하게 처리하는 것은 서로 다른 과제다.</p>
+<p><strong>실패한 대안은 당시 조건 안에서 해석한다.</strong> 톰캣 클러스터링으로 문제를 해결하지 못한 경험은 Redis를 선택한 근거였다. 다만 동기화 방식과 설정에 따라 결과가 달라질 수 있으므로, 그 경험을 모든 세션 복제의 한계로 확대하지 않는다.</p>
 <div class="page-tags"><button class="tag-chip" data-tag="backend">#backend</button> <button class="tag-chip" data-tag="redis">#redis</button> <button class="tag-chip" data-tag="session">#session</button> <button class="tag-chip" data-tag="high-availability">#high-availability</button> <button class="tag-chip" data-tag="troubleshooting">#troubleshooting</button></div>
 </article>
 <div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
