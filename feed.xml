@@ -160,7 +160,7 @@
     <link>https://donghyos.github.io/posts/solo-fullstack-v4-reuse/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/solo-fullstack-v4-reuse/</guid>
     <pubDate>Mon, 08 Jun 2026 15:00:00 GMT</pubDate>
-    <description>한 AI 영상 제작 파이프라인을 두 번째 제품으로 옮길 때, 무엇이 *진짜* 재사용되고 무엇이 버려지는가</description>
+    <description>AI 영상 제작 파이프라인을 다른 제품으로 옮길 때, 미리 만든 교체용 인터페이스와 실제 재사용한 코드의 경계가 달랐다</description>
   </item>
   <item>
     <title>테스트가 운영 DB를 오염시켰다 — 공용 DB를 버리고 Testcontainers 격리로</title>
