@@ -139,7 +139,7 @@
     <link>https://donghyos.github.io/posts/solo-fullstack-v5-video/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/solo-fullstack-v5-video/</guid>
     <pubDate>Sat, 13 Jun 2026 15:00:00 GMT</pubDate>
-    <description>영상 생성 모델(Veo)은 1클립에 $1를 넘는다 — 모든 컷을 영상화할 수 없을 때 *어디를* 움직일 것인가</description>
+    <description>영상 생성 비용을 관리하면서 어느 컷에 움직임을 줄지 결정하는 방법</description>
   </item>
   <item>
     <title>느린 쿼리의 두 얼굴 — 인덱스를 살릴 때와, 인덱스가 독이 될 때</title>
