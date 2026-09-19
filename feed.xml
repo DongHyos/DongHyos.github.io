@@ -118,7 +118,7 @@
     <link>https://donghyos.github.io/posts/anonymization-workflow/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/anonymization-workflow/</guid>
     <pubDate>Thu, 25 Jun 2026 15:00:00 GMT</pubDate>
-    <description>전 직장의 실제 경험은 최고의 글감이지만, 회사, 고객, 크리덴셜, 동료를 노출하지 않고 쓰려면</description>
+    <description>실무 경험을 공개할 때 회사명뿐 아니라 사건의 정황과 기술 정보도 노출될 수 있다.</description>
   </item>
   <item>
     <title>느린 게 우리 탓인가 외부 탓인가 — 다중 홉 요청의 지연을 홉별로 분해하기</title>
