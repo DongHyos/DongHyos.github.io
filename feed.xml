@@ -104,7 +104,7 @@
     <link>https://donghyos.github.io/posts/safe-autotrade-v2-cage/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/safe-autotrade-v2-cage/</guid>
     <pubDate>Tue, 30 Jun 2026 15:00:00 GMT</pubDate>
-    <description>주문이나 결제처럼 되돌릴 수 없는 작업을 자동화할 때, &quot;실패&quot;보다 &quot;나갔는지 모르는 모호한 상태&quot;가 더 위험하다</description>
+    <description>주문 응답이 끊기면 실제로 접수됐는지 알 수 없어 재전송이 중복 주문으로 이어질 수 있다</description>
   </item>
   <item>
     <title>LLM에게 주문을 맡기지 않았다 — 안전 경계를 프롬프트가 아니라 코드에 두기</title>
