@@ -11,17 +11,17 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
 <link rel="canonical" href="https://donghyos.github.io/posts/dongstock-ops-v1-headless-agent/">
-<meta name="description" content="매일 뉴스·촉매 델타를 LLM에게 무인으로 수집시키고 싶다. 그런데 스케줄 위에서 도는 LLM 에이전트는 두 가지가 무섭다. 돈줄(주문, 키, 셸)에 닿는 것, 그리고 잠자기, 인증, 네트워크에 조용히 죽는 것">
+<meta name="description" content="뉴스 수집 에이전트를 주기적으로 실행하면서 주문 경로와 분리하고, 인증·네트워크 실패를 관찰해야 한다">
 <meta property="og:title" content="무인 에이전트에게 셸을 주지 않았다 — 스케줄 위 LLM을 돈에서 떼어놓고 살려두기 — donghyos">
-<meta property="og:description" content="매일 뉴스·촉매 델타를 LLM에게 무인으로 수집시키고 싶다. 그런데 스케줄 위에서 도는 LLM 에이전트는 두 가지가 무섭다. 돈줄(주문, 키, 셸)에 닿는 것, 그리고 잠자기, 인증, 네트워크에 조용히 죽는 것">
+<meta property="og:description" content="뉴스 수집 에이전트를 주기적으로 실행하면서 주문 경로와 분리하고, 인증·네트워크 실패를 관찰해야 한다">
 <meta property="og:url" content="https://donghyos.github.io/posts/dongstock-ops-v1-headless-agent/">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="무인 에이전트에게 셸을 주지 않았다 — 스케줄 위 LLM을 돈에서 떼어놓고 살려두기 — donghyos">
-<meta name="twitter:description" content="매일 뉴스·촉매 델타를 LLM에게 무인으로 수집시키고 싶다. 그런데 스케줄 위에서 도는 LLM 에이전트는 두 가지가 무섭다. 돈줄(주문, 키, 셸)에 닿는 것, 그리고 잠자기, 인증, 네트워크에 조용히 죽는 것">
+<meta name="twitter:description" content="뉴스 수집 에이전트를 주기적으로 실행하면서 주문 경로와 분리하고, 인증·네트워크 실패를 관찰해야 한다">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "무인 에이전트에게 셸을 주지 않았다 — 스케줄 위 LLM을 돈에서 떼어놓고 살려두기", "description": "매일 뉴스·촉매 델타를 LLM에게 무인으로 수집시키고 싶다. 그런데 스케줄 위에서 도는 LLM 에이전트는 두 가지가 무섭다. 돈줄(주문, 키, 셸)에 닿는 것, 그리고 잠자기, 인증, 네트워크에 조용히 죽는 것", "datePublished": "2026-07-11", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/dongstock-ops-v1-headless-agent/", "mainEntityOfPage": "https://donghyos.github.io/posts/dongstock-ops-v1-headless-agent/"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "무인 에이전트에게 셸을 주지 않았다 — 스케줄 위 LLM을 돈에서 떼어놓고 살려두기", "description": "뉴스 수집 에이전트를 주기적으로 실행하면서 주문 경로와 분리하고, 인증·네트워크 실패를 관찰해야 한다", "datePublished": "2026-07-11", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/dongstock-ops-v1-headless-agent/", "mainEntityOfPage": "https://donghyos.github.io/posts/dongstock-ops-v1-headless-agent/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -57,102 +57,109 @@
   <a href="/categories/proj/" class="cat-link">사이드 프로젝트</a>
   <a href="/series/dongstock-ops/" class="series-link">시리즈: dongstock-ops</a>
   <time>2026-07-11</time>
-  <span class="read-time">8분 읽기</span>
+  <span class="read-time">9분 읽기</span>
 </div>
 </div>
-<h1 id="llm">무인 에이전트에게 셸을 주지 않았다 — 스케줄 위 LLM을 돈에서 떼어놓고 살려두기</h1>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
-<li><strong>다루는 문제</strong>: 매일 뉴스·촉매 델타를 LLM에게 무인으로 수집시키고 싶다. 그런데 스케줄 위에서 도는 LLM 에이전트는 두 가지가 무섭다. 돈줄(주문, 키, 셸)에 닿는 것, 그리고 잠자기, 인증, 네트워크에 조용히 죽는 것</li>
-<li><strong>접근</strong>: LLM SDK를 매매 코드에 배선하지 않고 CLI를 launchd가 별도 프로세스로 실행한다. 권한은 프롬프트가 아니라 OS 레이어에서 최소화하고, 산출물은 드래프트로 격리해 사람이 병합한다. 무인 견고성은 낙관이 아니라 방어로 만든다</li>
-<li><strong>결과·학습</strong>: 실제로 launchd로 도는 파이프라인과, 잠자기·토큰 만료와 싸운 로그. 무인 에이전트의 안전은 프롬프트가 아니라 OS 권한 경계에 있고, 스케줄 프로세스의 진짜 적은 로직이 아니라 환경이다</li>
-<li><strong>도움 되는 독자</strong>: LLM 에이전트를 무인·주기 실행으로 돌리려는데, 그 에이전트가 민감한 자원에 닿지 않게 하고 싶은 개발자</li>
+<li><strong>다루는 문제</strong>: 뉴스 수집 에이전트를 주기적으로 실행하면서 주문 경로와 분리하고, 인증·네트워크 실패를 관찰해야 한다</li>
+<li><strong>접근</strong>: launchd가 별도 CLI 프로세스를 실행한다. 도구 사용을 제한하고, 수집 결과는 사람이 검토할 드래프트로 남기도록 구성했다</li>
+<li><strong>결과·학습</strong>: 스케줄과 재시도 경로를 만들었다. 다만 도구 권한을 OS 격리로, 쓰기 허용을 새 파일 전용 권한으로 해석해서는 안 된다</li>
+<li><strong>도움 되는 독자</strong>: LLM 에이전트의 무인 실행에서 권한·산출물·실패 처리를 설계하는 개발자</li>
 </ul></div></aside>
-<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">기계가 만드는 재료, 사람이 당기는 방아쇠</a></li><li class="toc-h2"><a href="#os">접근: 별도 프로세스 + OS 권한 최소화 + 방어적 견고성</a></li><li class="toc-h2"><a href="#1-os">구현 1 — 격리: 권한을 OS에서 최소화한다</a></li><li class="toc-h2"><a href="#2">구현 2 — 생존: 무인 프로세스를 살려두기</a></li><li class="toc-h2"><a href="#_2">결과: 실제로 돌지만, 정직하게 완벽하진 않다</a></li><li class="toc-h2"><a href="#_3">학습</a></li></ul></nav><h2 id="_1">기계가 만드는 재료, 사람이 당기는 방아쇠</h2>
-<p>이 자동매매 시스템에는 뉴스·촉매를 누적하는 지식층이 있다. 매일 이 지식층에 시장 델타를 급유해야 하는데, 사람이 하루 세 번 전 섹터 뉴스를 훑는 일은 지속되지 않는다. LLM에게 맡기는 게 자연스럽다. 그런데 이걸 <em>무인으로, 스케줄로</em> 돌리는 순간 두 가지 공포가 생긴다.</p>
-<p>첫째, 무인 LLM이 무엇에 닿는가. 이 시스템은 실주문을 낼 수 있는 코드(케이지·게이트웨이)와 브로커 API 키를 갖고 있다. 사람 없이 스케줄로 도는 에이전트가 그 표면에 조금이라도 닿을 수 있으면, 내가 자리를 비운 사이 무슨 일이든 일어날 수 있다. <a href="../safe-autotrade-v1-llm-boundary/">1편</a>에서 안전 경계를 프롬프트가 아니라 코드에 뒀다고 했는데, 무인 에이전트에서는 그 경계가 한층 더 엄격해야 한다.</p>
-<p>둘째, 무인 프로세스는 조용히 죽는다. 노트북에서 launchd로 도는 잡은 잠자기, 네트워크, 인증 만료에 취약하고, 죽어도 아무도 즉시 보지 못한다. 매끄럽게 도는 데모를 만드는 것과, 사람이 안 보는 몇 주 동안 <em>실제로</em> 도는 잡을 만드는 것은 다른 문제다.</p>
-<h2 id="os">접근: 별도 프로세스 + OS 권한 최소화 + 방어적 견고성</h2>
-<p>두 축으로 결정했다.</p>
-<p><strong>격리 축.</strong> LLM을 매매 코드에 배선하지 않는다. LLM SDK를 엔진이나 케이지가 import하는 순간, LLM과 돈줄이 같은 프로세스에 산다. 대신 <code>claude</code> CLI를 launchd가 <strong>별도 프로세스로 실행</strong>한다. LLM은 매매 코드와 주소 공간을 공유하지 않는다. 이 시스템의 매매 루프에는 런타임 LLM 호출이 0인데(<a href="../safe-autotrade-v1-llm-boundary/">1편</a>), 무인 지식 수집도 같은 원칙을 따른다. LLM은 프로세스 밖에서 재료만 만든다.</p>
-<p><strong>생존 축.</strong> 무인 견고성은 낙관이 아니라 방어로 만든다. 잠자기, 인증 만료, 네트워크 지연은 "혹시"가 아니라 "반드시" 일어난다고 보고 대비한다.</p>
-<p>이 자동화 레이어에는 잡이 하나 더 있다. 파이썬 모니터가 장중 전 시장을 스캔해 진입 후보 도달 시 macOS 알림만 쏜다(주문은 0). LLM 델타든 파이썬 모니터든 규율은 같다. <strong>자동은 재료를 만들고, 방아쇠는 사람이 당긴다.</strong></p>
-<h2 id="1-os">구현 1 — 격리: 권한을 OS에서 최소화한다</h2>
-<p><code>claude -p</code>(헤드리스)를 <code>--permission-mode dontAsk</code>로 띄운다. 이 모드에서는 허용 목록에 없는 모든 도구·경로가 프롬프트 없이 자동 거부된다. 그래서 보안의 핵심은 <em>좁은 허용 화이트리스트</em>다.</p>
-<pre><code class="language-json">// 무인 루틴 권한 스코프 (settings.json 발췌)
-{
-  &quot;permissions&quot;: {
-    &quot;allow&quot;: [
-      &quot;Read(~/project/dong-stock/**)&quot;,
-      &quot;Write(~/project/dong-stock/wiki/news/**)&quot;,
-      &quot;Edit(~/project/dong-stock/wiki/news/**)&quot;,
-      &quot;mcp__tavily__search&quot;,
-      &quot;mcp__exa__search&quot;
-    ],
-    &quot;deny&quot;: [
-      &quot;Bash&quot;,
-      &quot;Read(~/.toss.env)&quot;,   // 브로커 API 키
-      &quot;Read(~/.env)&quot;,
-      &quot;Read(~/.claude/**)&quot;
-    ]
-  }
-}
+<h1 id="llm">무인 에이전트에게 셸을 주지 않았다 — 스케줄 위 LLM을 돈에서 떼어놓고 살려두기</h1>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">뉴스 수집을 매매 루프 밖으로 옮긴 이유</a></li><li class="toc-h2"><a href="#os">도구 제한과 OS 격리를 구분한다</a></li><li class="toc-h2"><a href="#_2">설정 파일의 존재와 적용 여부는 다르다</a></li><li class="toc-h2"><a href="#_3">잠자기 이후의 실행과 네트워크 대기</a></li><li class="toc-h2"><a href="#_4">종료 타이머와 재시도의 범위</a></li><li class="toc-h2"><a href="#_5">실행 기록과 산출물을 따로 확인한다</a></li><li class="toc-h2"><a href="#_6">결과와 학습</a></li></ul></nav><h2 id="_1">뉴스 수집을 매매 루프 밖으로 옮긴 이유</h2>
+<p>이 자동매매 프로젝트에는 뉴스와 투자 판단의 근거를 모으는 지식층이 있다. 사람이 매번 뉴스를 훑는 부담을 줄이려고, 달라진 내용을 정리하는 작업을 언어 모델(LLM)에 맡겼다. 여기서 자동화하려는 것은 자료 수집이다. 수집한 내용을 정식 지식에 반영하는 판단은 사람이 맡는다.</p>
+<p>무인 실행에서는 두 가지를 따로 확인해야 했다. 하나는 에이전트가 사용할 수 있는 도구와 파일의 범위다. 프로젝트에 주문 코드와 인증 정보가 있으므로, 뉴스 수집에 필요하지 않은 접근을 줄여야 한다. 다른 하나는 실패를 발견하는 방법이다. 작업이 멈춰도 터미널을 보고 있는 사람이 없기 때문이다.</p>
+<p><a href="/posts/safe-autotrade-v1-llm-boundary/">자동매매 1편</a>의 원칙에 따라 뉴스 수집도 매매 루프 밖에 뒀다. 엔진이 LLM 응답을 기다리는 대신, launchd가 <code>run_delta.sh</code>를 호출하고 스크립트가 Claude Code CLI를 실행한다. 뉴스 수집 실패가 매매 루프의 직접적인 호출 실패로 이어지지 않게 한 구조다.</p>
+<p>별도 프로세스로 나누면 주소 공간과 실행 수명이 분리된다. 그러나 같은 사용자로 실행하면 파일 접근 권한과 환경을 공유할 수 있다. <strong>프로세스 분리만으로 주문 코드나 키에 접근할 수 없게 되는 것은 아니다.</strong></p>
+<h2 id="os">도구 제한과 OS 격리를 구분한다</h2>
+<p>실행 시에는 대화형 승인을 기다리지 않도록 <code>dontAsk</code>를 쓰고, 내장 도구인 <code>Bash</code>와 <code>Edit</code>를 금지했다. 다음은 현재 스크립트의 CLI 호출에서 리다이렉션과 백그라운드 실행을 생략한 형태다. <code>PROMPT_TEXT</code>에는 작업 지시가 들어 있다.</p>
+<pre><code class="language-bash">claude -p &quot;$PROMPT_TEXT&quot; \
+  --permission-mode dontAsk \
+  --disallowedTools &quot;Bash,Edit&quot;
 </code></pre>
-<p>읽기는 프로젝트 안으로, 쓰기는 위키 디렉토리로만 연다. 검색 MCP는 허용하되, <strong>셸(Bash)과 브로커 키 파일은 명시적으로 거부</strong>한다. 무인 에이전트가 임의 명령을 실행하거나 키를 읽을 통로가 원천 차단된다.</p>
-<p>여기서 실측으로 배운 함정이 하나 있다. <code>deny</code>가 <code>allow</code>를 이긴다. bare <code>Write</code>나 <code>Edit</code>를 deny에 넣으면 위키 쓰기 허용까지 함께 죽어 에이전트가 아무것도 쓰지 못한다. 그래서 셸과 시크릿은 <em>도구·경로 단위로 좁게</em> 거부하고, 넓은 쓰기 거부는 두지 않는다. 최소권한은 "많이 막기"가 아니라 "정확히 막기"였다.</p>
-<p>실행 플래그에도 하드 가드를 한 겹 더 건다.</p>
-<pre><code class="language-bash">claude -p &quot;$PROMPT&quot; --permission-mode dontAsk --disallowedTools &quot;Bash,Edit&quot;
-</code></pre>
-<p><code>--disallowedTools "Bash,Edit"</code>로 기존 파일 편집과 임의 실행을 한 번 더 막는다. 그 결과 무인 실행이 할 수 있는 일은 <strong>새 드래프트 파일 쓰기, 읽기, 검색뿐</strong>이다. 산출물은 날짜별 드래프트 파일로만 떨어지고, 정식 지식 체인에 반영하는 일은 다음 날 아침 사람이 검토해 병합한다. 자동은 드래프트를 쓰고, 판단과 반영은 사람이 한다.</p>
-<pre class="mermaid">graph LR
-    L["launchd<br/>(스케줄)"] --> S["run_delta.sh"]
-    S --> C["claude -p<br/>dontAsk + deny(Bash·키)"]
-    C -->|"Write 허용"| D["뉴스 드래프트<br/>wiki/news/*-auto.md"]
-    C -.->|"거부됨"| X["셸 · 브로커 키<br/>토스 · 주문 코드"]
-    D --> H["사람 아침 병합"]
-    H --> W["정식 지식 체인"]
-    style L fill:#eef5ff,stroke:#8aa9d9,color:#1a1a1a
-    style S fill:#eef5ff,stroke:#8aa9d9,color:#1a1a1a
-    style C fill:#fffacc,stroke:#c9b84a,color:#1a1a1a
-    style D fill:#e0ffe0,stroke:#8ab98a,color:#1a1a1a
-    style H fill:#e0f0ff,stroke:#8aa9d9,color:#1a1a1a
-    style W fill:#e0ffe0,stroke:#8ab98a,color:#1a1a1a
-    style X fill:#ffd9d9,stroke:#d98a8a,color:#1a1a1a
-</pre>
-<h2 id="2">구현 2 — 생존: 무인 프로세스를 살려두기</h2>
-<p>launchd plist가 매일 정해진 시각에 발화해 <code>run_delta.sh</code>를 부르고, 스크립트가 요일로 모드를 정한다(평일 얕게 여러 번, 토요일 깊게, 일요일 휴식). 여기까지는 쉽다. 어려운 것은 <em>무인 견고성</em>이다. 세 가지를 방어했다.</p>
-<p><strong>첫째, 네트워크 대기.</strong> 노트북이 자다 깨어 launchd가 잡을 실행하면, 네트워크 스택이 아직 안 올라와 첫 요청이 <code>ENOTFOUND</code>로 죽는다. 그래서 실제 작업 전에 API 도달을 최대 5분간 폴링한다.</p>
-<pre><code class="language-bash">for _ in $(seq 1 30); do
-  curl -s -m 5 -o /dev/null https://api.anthropic.com &amp;&amp; { NET_OK=1; break; }
+<p><code>dontAsk</code>는 승인이 필요한 호출을 묻지 않고 거부하는 모드다. 작업 디렉토리 안의 파일 읽기처럼 원래 승인이 필요 없는 동작과 미리 허용한 도구는 실행될 수 있다. 따라서 “허용 목록에 없는 모든 도구와 경로를 거부한다”는 설명은 정확하지 않다. 거부 규칙은 허용 규칙보다 먼저 평가되므로, 도구 전체를 거부하면서 특정 경로만 허용하는 예외를 만들 수도 없다. <a href="https://code.claude.com/docs/en/permissions">Claude Code 권한 규칙</a></p>
+<p>이 규칙을 집행하는 주체는 Claude Code다. OS 샌드박스가 아니다. 공식 샌드박스는 셸 명령과 그 자식 프로세스의 파일·네트워크 접근을 제한하는 별도 계층이며, 모든 MCP 서버와 도구를 자동으로 격리하는 설정도 아니다. 원문의 “OS 레이어에서 통로를 원천 차단했다”는 주장은 이 둘을 혼동했다. <a href="https://code.claude.com/docs/en/sandboxing">권한과 샌드박스의 차이</a></p>
+<h2 id="_2">설정 파일의 존재와 적용 여부는 다르다</h2>
+<p>현재 파일을 대조하니 의도와 실행 배선 사이에도 차이가 있었다.</p>
+<table>
+<thead>
+<tr>
+<th>확인한 대상</th>
+<th>현재 상태</th>
+<th>해석할 때의 한계</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>무인 실행용 설정</td>
+<td>일부 위키 쓰기와 검색 허용, Bash·키 경로 거부 규칙 존재</td>
+<td>스크립트에서 <code>--settings</code>로 지정하지 않음</td>
+</tr>
+<tr>
+<td>프로젝트 설정</td>
+<td><code>Read</code>, <code>Write</code>, <code>Agent</code>, 검색 도구 등을 넓게 허용</td>
+<td>드래프트 경로만 허용한 설정으로 볼 수 없음</td>
+</tr>
+<tr>
+<td>CLI 플래그</td>
+<td><code>Bash,Edit</code> 금지</td>
+<td>셸 도구와 부분 편집 도구를 제한하며, 모든 실행 경로를 격리하지는 않음</td>
+</tr>
+<tr>
+<td>출력 지시</td>
+<td>날짜·시각별 <code>*-auto.md</code>에 쓰도록 프롬프트에 명시</td>
+<td>경로를 기술적으로 강제하는 검사는 없음</td>
+</tr>
+</tbody>
+</table>
+<p>전용 설정 파일을 만들어 뒀다는 사실만으로 실행에 적용됐다고 판단할 수는 없다. 다른 위치의 설정을 지정하려면 해당 파일을 불러오는 배선이 필요하다. 설정의 허용 목록은 여러 출처에서 합쳐질 수 있으므로 좁은 규칙을 추가하는 것만으로 기존의 넓은 허용이 없어지는 것도 아니다. <a href="https://code.claude.com/docs/en/cli-reference">CLI 설정 옵션</a>, <a href="https://code.claude.com/docs/en/settings">설정 파일과 병합 규칙</a></p>
+<p>전용 파일에는 현재 공식 문법과 어긋나는 단일 <code>/</code> 시작의 절대 경로 표기도 있었다. 현재 문서에서 파일 시스템 루트의 절대 경로는 <code>//</code>, 홈 기준 경로는 <code>~/</code>로 표현한다. 이번 검수는 현재 파일과 공식 문서의 대조이며, 당시 CLI 버전의 적용 결과를 복원한 것은 아니다. <a href="https://code.claude.com/docs/en/permissions#read-and-edit">파일 경로 규칙</a></p>
+<p><code>Edit</code> 금지도 새 파일 전용 권한을 뜻하지 않는다. <strong><code>Write</code>는 파일 생성과 기존 파일 전체 덮어쓰기를 모두 수행한다.</strong> 날짜별 이름은 충돌 가능성을 줄이는 운영 규칙일 뿐, 덮어쓰기 방지는 아니다. 특히 현재 스크립트는 재시도 전에 출력 경로를 한 번 정하므로 모든 시도가 같은 경로를 사용한다. <a href="https://code.claude.com/docs/en/tools-reference#write-tool-behavior">Write 도구의 동작</a></p>
+<iframe src="/images/dongstock-ops-v1-headless-agent/agent-boundary.html" title="뉴스 수집 실행 경로와 드래프트 운영 규칙의 적용 범위" width="100%" height="468" loading="lazy" style="border:0;border-radius:8px;"></iframe>
+
+<p><a href="/images/dongstock-ops-v1-headless-agent/agent-boundary.html">도표 크게 보기</a></p>
+<p>사람이 검토한 뒤 병합한다는 운영 방식은 유지할 가치가 있다. 이를 강제하려면 승인된 지식의 읽기 전용 배치, 별도 출력 디렉토리, 파일이 이미 있으면 쓰기를 거부하는 처리, 산출물 검증 같은 통제가 더 필요하다. 키를 받지 않는 실행 환경과 필요한 MCP만 연결하는 구성도 별도로 검증해야 한다. 이들은 현재 구현이 보장하는 성질이 아니라 보완할 항목이다.</p>
+<h2 id="_3">잠자기 이후의 실행과 네트워크 대기</h2>
+<p>평일 작업은 하루 세 시각에 예약하고 스크립트에서 주말 실행을 건너뛴다. 토요일의 전체 수집은 별도 plist로 예약했다. <code>StartCalendarInterval</code> 작업은 잠자기 중 실행 시각을 지나면 깨어난 뒤 실행될 수 있다. 전원이 꺼진 동안 놓친 실행까지 같은 방식으로 보충하지는 않는다. <a href="https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/ScheduledJobs.html">Apple의 예약 작업 설명</a></p>
+<p>깨어난 직후 연결 실패에 대비해 CLI 실행 전에 다음 대기를 넣었다. 현재 스크립트에서 로그 출력을 생략한 예제다.</p>
+<pre><code class="language-bash">NET_OK=0
+for _ in $(seq 1 30); do
+  if curl -s -m 5 -o /dev/null https://api.anthropic.com; then
+    NET_OK=1
+    break
+  fi
   sleep 10
 done
-[ &quot;$NET_OK&quot; = 1 ] || { echo &quot;네트워크 미준비 — 중단&quot;; exit 1; }
+[ &quot;$NET_OK&quot; = 1 ] || exit 1
 </code></pre>
-<p><strong>둘째, 자작 워치독.</strong> macOS에는 <code>timeout</code>(coreutils) 명령이 없다. 무인 잡이 hang하면 몇 시간이고 매달린다. 그래서 백그라운드 실행과 별도 kill 타이머로 15분 상한을 직접 구현했다.</p>
-<pre><code class="language-bash">caffeinate -i &quot;$CLAUDE&quot; -p &quot;$PROMPT&quot; ... &amp;   # caffeinate = 실행 중 잠자기 억제
-pid=$!
-( sleep 900; kill &quot;$pid&quot; 2&gt;/dev/null ) &amp;     # 15분 뒤 강제 종료
-wd=$!
-wait &quot;$pid&quot;; rc=$?
-kill &quot;$wd&quot; 2&gt;/dev/null
+<p>원문은 최대 5분이라고 했지만, 실패한 요청도 매번 최대 5초를 쓴다. 전부 실패하면 요청 시간과 10초 대기를 합쳐 약 <code>30 × (5 + 10) = 450초</code>, 즉 7분 30초의 예산이 된다. 프로세스 스케줄링이나 시스템 잠자기까지 포함한 엄격한 실제 경과 시간 상한은 아니다.</p>
+<p>이 검사는 전송 가능성을 살피는 사전 확인이다. <code>curl</code>에 <code>--fail</code>이 없으므로 HTTP 401이나 500을 받아도 종료 코드가 0일 수 있다. 인증 성공, 모델 호출 성공, 검색 MCP의 연결까지 검증하지 않는다. 사전 확인을 통과해도 실제 작업은 실패할 수 있다. <a href="https://curl.se/docs/manpage.html">curl의 시간 제한과 HTTP 오류 처리</a></p>
+<h2 id="_4">종료 타이머와 재시도의 범위</h2>
+<p>한 시도가 오래 멈추는 상황에 대비해 900초 뒤 종료 신호를 보내는 타이머도 넣었다. 다음은 현재 함수의 핵심이다. <code>CLAUDE</code>는 실행 파일 경로이고, <code>LOG</code>는 작업 로그 경로다.</p>
+<pre><code class="language-bash">run_once() {
+  caffeinate -i &quot;$CLAUDE&quot; -p &quot;$PROMPT_TEXT&quot; \
+    --permission-mode dontAsk --disallowedTools &quot;Bash,Edit&quot; &gt;&gt;&quot;$LOG&quot; 2&gt;&amp;1 &amp;
+  local pid=$!
+  ( sleep 900; kill &quot;$pid&quot; 2&gt;/dev/null ) &amp;
+  local wd=$!
+  wait &quot;$pid&quot;; local rc=$?
+  kill &quot;$wd&quot; 2&gt;/dev/null
+  return $rc
+}
 </code></pre>
-<p><code>caffeinate -i</code>는 <a href="../safe-autotrade-v3-constraints/">3편</a>에서 손절 폴링을 위해 쓴 것과 같은 도구다. 실행 중 절전으로 빠지면 인증이 잠기거나 잡이 멈추므로, 실행하는 동안만 잠자기를 억제한다.</p>
-<p><strong>셋째, 재시도.</strong> 일시적 인증·네트워크 실패를 60초 간격으로 최대 세 번 흡수하고, 성공하면 즉시 빠져나온다. 그리고 이 스케줄은 구독 인증으로 도는데, 이 인증은 API 종량과금이 아니라 사용량 한도만 차감한다. 대신 토큰이 만료되면 조용히 실패하므로, 로그를 진실의 원천으로 삼아 가끔 확인한다.</p>
-<h2 id="_2">결과: 실제로 돌지만, 정직하게 완벽하진 않다</h2>
-<p>이 파이프라인은 지금 실제로 launchd로 돈다. 그런데 로그는 그 과정이 매끄럽지 않았음을 정직하게 보여준다. 아래는 전략 내용을 걷어낸 인프라 라인만 추린 것이다.</p>
-<pre><code>[06-29 08:11] delta 시작 → 401 authentication_error   (구독 토큰 만료)
-[06-30 16:35] delta 시작 → ENOTFOUND                  (자다 깬 직후)
-   ── 네트워크 대기 · 워치독 · 재시도 하드닝 추가 ──
-[07-01 20:49] delta 종료(exit 0)                      (첫 성공)
-[07-06 20:03] 시도 3/3 → 완료(exit 0)                 (재시도가 흡수)
-[07-10 18:13] 시도 2/3 → exit 143                     (워치독이 hang을 kill)
-[07-10 23:07] 시도 3/3 → 종료(exit 0)
-</code></pre>
-<p>하드닝을 넣기 전(6/29~7/1)에는 <code>401</code>, <code>ENOTFOUND</code>, 타임아웃으로 거의 매번 죽었다. 네트워크 대기, 워치독, 재시도를 넣은 뒤 첫 성공이 떴고, 이후로는 재시도가 실패를 흡수해 <code>exit 0</code>에 도달하는 날이 늘었다. <code>exit 143</code>은 워치독이 hang한 시도를 SIGTERM으로 끊은 흔적이다. 설계대로 동작한 실패다.</p>
-<p>정직하게, 완전히 근절되지는 않았다. 잠자기가 깊은 날은 세 번의 재시도가 다 네트워크를 못 잡아 그날 델타를 건너뛴다. 무인 스케줄이 노트북 위에 있는 한, 이것은 <a href="../safe-autotrade-v3-constraints/">3편</a>의 SPOF와 같은 뿌리, 곧 기계가 깨어 있어야 한다는 제약을 공유한다. 그래서 이 델타는 <em>있으면 좋은 재료</em>이지, 없으면 매매가 멈추는 의존이 아니게 설계했다. 실패해도 그날 아침 병합할 드래프트가 하나 비는 것뿐이다.</p>
-<h2 id="_3">학습</h2>
-<p><strong>첫째, 무인 에이전트의 안전은 프롬프트가 아니라 OS 권한 경계에 있다.</strong> "위험한 짓 하지 마"라고 프롬프트에 적는 것은 에이전트의 순응에 기대는 안전이다. 무인으로 도는 에이전트에서는 그 기대가 위험하다. 대신 허용 화이트리스트와 거부 목록으로 도구·경로를 OS 레이어에서 잠그면, 에이전트가 무엇을 하려 하든 돈줄에 닿을 통로 자체가 없다. <a href="../safe-autotrade-v1-llm-boundary/">1편</a>에서 안전을 코드에 뒀던 원칙이, 무인 에이전트에서는 OS 권한 경계로 확장된다.</p>
-<p><strong>둘째, 스케줄 위 프로세스의 진짜 적은 로직이 아니라 환경이다.</strong> 정상 경로를 처리하는 코드는 몇 줄이면 되지만, 잠자기에서 깨어난 순서, 인증 만료, 네트워크 미준비를 견디는 코드가 스크립트의 대부분을 차지했다. 무인 자동화의 난이도는 "무엇을 하는가"가 아니라 "사람이 안 볼 때 어떻게 죽고 어떻게 되살아나는가"에 있었다.</p>
-<p><strong>셋째, 자동화의 산출은 결정이 아니라 재료로 둔다.</strong> 드래프트 전용 격리와 아침 병합은 번거롭지만, 이 번거로움이 무인 LLM을 안전하게 만든다. 자동이 드래프트를 쌓고 사람이 판단을 얹는 경계는, 되돌릴 수 없는 행동을 다루는 모든 자동화에 일반화된다.</p>
+<p>여기서 <code>kill</code>은 기본적으로 <code>SIGTERM</code>을 보낸다. 대상이 이를 무시하면 <code>wait</code>는 계속 기다릴 수 있고, PID 하나에 보낸 신호가 모든 자식 프로세스의 종료를 보장하지도 않는다. 따라서 이 코드는 “15분 뒤 종료 요청”이며, 프로세스 트리를 반드시 정리하는 강제 시간 제한은 아니다. 로컬 재현에서도 종료 신호를 무시하는 시험 프로세스는 타이머 뒤에 남았다.</p>
+<p><code>caffeinate -i</code>는 실행 중 유휴 상태로 인한 시스템 잠자기를 억제한다. 사용자가 직접 유도한 모든 잠자기나 키체인 잠금을 막는다는 뜻은 아니다. 또 현재 배치에서는 CLI 시도에만 적용돼 사전 네트워크 대기와 시도 사이 대기는 포함하지 않는다. <a href="https://github.com/apple-oss-distributions/PowerManagement/blob/main/caffeinate/caffeinate.c">Apple의 caffeinate 구현</a></p>
+<p>시도는 최초 실행을 포함해 최대 세 번이며, 실패 사이에 60초를 기다린다. 현재 구현은 종료 코드가 0이 아닌 모든 실패를 같은 방식으로 재시도한다. 일시적 장애에는 도움이 될 수 있지만, 자격 증명 만료가 대기만으로 해결되는 것은 아니다. 네트워크 사전 확인이 실패하면 이 반복에 진입하지도 않는다.</p>
+<p>인증 경로는 비용에도 영향을 준다. 구독 인증을 사용한다고 추가 과금이 항상 없는 것은 아니다. 현재 공식 안내는 구독 사용량과 API 사용량을 구분하며, API 키 환경변수나 별도 사용량 결제 설정에 따라 비용 경로가 달라질 수 있다고 설명한다. 이 글에서는 실제 인증 정보나 과금 설정을 조사하지 않았다. <a href="https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan">Claude Code 구독과 과금 안내</a></p>
+<h2 id="_5">실행 기록과 산출물을 따로 확인한다</h2>
+<p>작성 당시 원문에는 <code>401</code>, <code>ENOTFOUND</code>, 종료 코드 0과 143을 관찰한 기록이 있었다. 이 코드만으로 원인까지 확정할 수는 없다. <code>401</code>은 토큰 만료 외의 인증 문제도 가능하고, <code>ENOTFOUND</code>만으로 잠자기가 원인이라고 단정할 수 없다. 143 역시 Bash에서 <code>SIGTERM</code> 종료와 부합하지만, 누가 신호를 보냈는지나 실제로 멈춰 있었는지까지 증명하지 않는다.</p>
+<p>2026-09-22 검수에서는 두 launchd 작업이 등록돼 있음을 읽기 전용으로 확인했다. 당시 둘 다 실행 중이 아니었고 마지막 종료 코드는 1이었다. 스케줄 등록과 최근 성공은 다른 사실이다. 과거 운영 로그나 인증 정보는 다시 열지 않았으며, 원문의 기록으로 성공률 개선 수치를 계산하지 않았다.</p>
+<p>종료 코드 0도 올바른 드래프트가 생성됐다는 증거로는 부족하다. 현재 스크립트는 종료 코드를 기록하지만 산출물의 존재·형식·출처·누락 여부를 검사하지 않는다. 실패를 알아차리려면 실행 로그와 함께 마지막 정상 산출물의 시각을 확인하는 절차가 필요하다.</p>
+<h2 id="_6">결과와 학습</h2>
+<p>이번 검수에서는 스크립트와 plist, 프로젝트·전용 설정을 대조하고 16개 검사를 통과했다. 외부 모델 호출 없이 준비한 응답과 짧게 축소한 타이머로 네트워크 대기, 재시도, 종료 신호 처리를 확인했다. 운영 작업을 실행하거나 설정을 바꾸지는 않았다.</p>
+<p>구현의 성과는 뉴스 수집을 매매 루프 밖으로 옮기고, 무인 실행에 대기·재시도·로그를 연결한 데 있다. 사람이 결과를 검토하는 단계도 명시했다. 다만 도구 금지, 출력 지시, OS 접근 제한은 각각 집행하는 주체가 다르므로 하나의 격리 보장으로 묶어 설명해서는 안 된다.</p>
+<p>앞으로 같은 자동화를 만들 때는 세 가지를 완료 조건으로 삼으려 한다. 첫째, 설정 파일의 내용뿐 아니라 실제로 불러오는 설정과 도구를 확인한다. 둘째, 재시도 횟수와 종료 요청을 작업 완료의 보장으로 해석하지 않는다. 셋째, 프로세스의 성공과 산출물의 유효성을 따로 검증한다. 무인 작업에서는 실행을 예약하는 것만큼 실패와 결과를 확인할 경로가 중요하다.</p>
 <div class="page-tags"><button class="tag-chip" data-tag="automation">#automation</button> <button class="tag-chip" data-tag="launchd">#launchd</button> <button class="tag-chip" data-tag="llm-agent">#llm-agent</button> <button class="tag-chip" data-tag="sandboxing">#sandboxing</button> <button class="tag-chip" data-tag="ops">#ops</button></div>
 </article>
 <div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>

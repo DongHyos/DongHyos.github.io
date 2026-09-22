@@ -76,7 +76,7 @@
     <link>https://donghyos.github.io/posts/dongstock-ops-v1-headless-agent/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/dongstock-ops-v1-headless-agent/</guid>
     <pubDate>Fri, 10 Jul 2026 15:00:00 GMT</pubDate>
-    <description>매일 뉴스·촉매 델타를 LLM에게 무인으로 수집시키고 싶다. 그런데 스케줄 위에서 도는 LLM 에이전트는 두 가지가 무섭다. 돈줄(주문, 키, 셸)에 닿는 것, 그리고 잠자기, 인증, 네트워크에 조용히 죽는 것</description>
+    <description>뉴스 수집 에이전트를 주기적으로 실행하면서 주문 경로와 분리하고, 인증·네트워크 실패를 관찰해야 한다</description>
   </item>
   <item>
     <title>죽었다 살아나면 거래소에 되묻는다 — 재시작 후 주문 상태 조정(reconcile)</title>
