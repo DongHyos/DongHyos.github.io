@@ -90,7 +90,7 @@
     <link>https://donghyos.github.io/posts/safe-autotrade-v4-testing/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/safe-autotrade-v4-testing/</guid>
     <pubDate>Fri, 03 Jul 2026 15:00:00 GMT</pubDate>
-    <description>실제 돈이 오가는 주문 API에 샌드박스가 없다. 실거래 테스트는 위험하고, 전부 mock으로 가리면 진짜 동작을 검증하지 못한다</description>
+    <description>실제 주문을 보내지 않고 주문 경로를 검증하되, 테스트 대역이 검증할 동작까지 가리지 않게 해야 한다</description>
   </item>
   <item>
     <title>API가 안 주는 것이 설계를 정한다 — 외부 API 제약과 숨기지 않은 SPOF</title>
