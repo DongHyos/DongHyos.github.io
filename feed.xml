@@ -83,7 +83,7 @@
     <link>https://donghyos.github.io/posts/safe-autotrade-v5-reconcile/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/safe-autotrade-v5-reconcile/</guid>
     <pubDate>Sat, 04 Jul 2026 15:00:00 GMT</pubDate>
-    <description>자동매매 프로세스가 죽었다 살아나면, 나갔는지 모르는 주문과 보내기 전에 죽은 주문이 어중간하게 남는다. 이 어긋남을 안고 매매를 재개하면 위험하다</description>
+    <description>주문 요청 뒤 프로세스가 종료되면 외부 주문과 로컬 기록이 어긋날 수 있다</description>
   </item>
   <item>
     <title>초록불을 믿지 않는다 — 샌드박스 없는 금융 API를 결정론으로 검증하기</title>
