@@ -11,17 +11,17 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
 <link rel="canonical" href="https://donghyos.github.io/posts/safe-autotrade-v3-constraints/">
-<meta name="description" content="외부 API로 시스템을 만들면 설계의 절반은 내가 아니라 그 API가 정한다. 토스 오픈 API가 주는 것과 *안 주는* 것이 자동매매 설계를 어떻게 강제했나">
+<meta name="description" content="외부 API에 의존하는 자동매매에서 제공 기능, 응답 형식, 로컬 감시의 한계를 어떻게 구분할 것인가">
 <meta property="og:title" content="API가 안 주는 것이 설계를 정한다 — 외부 API 제약과 숨기지 않은 SPOF — donghyos">
-<meta property="og:description" content="외부 API로 시스템을 만들면 설계의 절반은 내가 아니라 그 API가 정한다. 토스 오픈 API가 주는 것과 *안 주는* 것이 자동매매 설계를 어떻게 강제했나">
+<meta property="og:description" content="외부 API에 의존하는 자동매매에서 제공 기능, 응답 형식, 로컬 감시의 한계를 어떻게 구분할 것인가">
 <meta property="og:url" content="https://donghyos.github.io/posts/safe-autotrade-v3-constraints/">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="API가 안 주는 것이 설계를 정한다 — 외부 API 제약과 숨기지 않은 SPOF — donghyos">
-<meta name="twitter:description" content="외부 API로 시스템을 만들면 설계의 절반은 내가 아니라 그 API가 정한다. 토스 오픈 API가 주는 것과 *안 주는* 것이 자동매매 설계를 어떻게 강제했나">
+<meta name="twitter:description" content="외부 API에 의존하는 자동매매에서 제공 기능, 응답 형식, 로컬 감시의 한계를 어떻게 구분할 것인가">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "API가 안 주는 것이 설계를 정한다 — 외부 API 제약과 숨기지 않은 SPOF", "description": "외부 API로 시스템을 만들면 설계의 절반은 내가 아니라 그 API가 정한다. 토스 오픈 API가 주는 것과 *안 주는* 것이 자동매매 설계를 어떻게 강제했나", "datePublished": "2026-07-03", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/safe-autotrade-v3-constraints/", "mainEntityOfPage": "https://donghyos.github.io/posts/safe-autotrade-v3-constraints/"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "API가 안 주는 것이 설계를 정한다 — 외부 API 제약과 숨기지 않은 SPOF", "description": "외부 API에 의존하는 자동매매에서 제공 기능, 응답 형식, 로컬 감시의 한계를 어떻게 구분할 것인가", "datePublished": "2026-07-03", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/safe-autotrade-v3-constraints/", "mainEntityOfPage": "https://donghyos.github.io/posts/safe-autotrade-v3-constraints/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -60,119 +60,100 @@
   <span class="read-time">7분 읽기</span>
 </div>
 </div>
-<h1 id="api-api-spof">API가 안 주는 것이 설계를 정한다 — 외부 API 제약과 숨기지 않은 SPOF</h1>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
-<li><strong>다루는 문제</strong>: 외부 API로 시스템을 만들면 설계의 절반은 내가 아니라 그 API가 정한다. 토스 오픈 API가 주는 것과 <em>안 주는</em> 것이 자동매매 설계를 어떻게 강제했나</li>
-<li><strong>접근</strong>: 인터페이스 표면을 어댑터로 격리해 조합하고, API가 안 주는 것(WebSocket, 스톱주문, 샌드박스)을 설계의 제약으로 받아들인다</li>
-<li><strong>결과·학습</strong>: 스톱주문이 없어 손절을 로컬 폴링으로 지키는데, 이건 단일 장애점(SPOF)이다. 없앨 수 없는 약점은 숨기지 않고 가시화한다(미감시 로그, 소액 유지)</li>
-<li><strong>도움 되는 독자</strong>: 외부 API나 서드파티에 의존해 시스템을 설계하는 개발자</li>
+<li><strong>다루는 문제</strong>: 외부 API에 의존하는 자동매매에서 제공 기능, 응답 형식, 로컬 감시의 한계를 어떻게 구분할 것인가</li>
+<li><strong>접근</strong>: 게이트웨이 어댑터로 응답을 변환하고, 진입과 손절 경로를 분리한다. API 기능과 프로젝트의 구현 범위는 따로 확인한다</li>
+<li><strong>결과·학습</strong>: 응답 변환과 주문 관문은 테스트할 수 있었지만, 시세 신선도와 캔들 정렬에는 빈틈이 남았다. 로컬 손절 감시는 프로세스가 멈추면 함께 중단된다</li>
+<li><strong>도움 되는 독자</strong>: 외부 API를 조합하고 장애 시 책임 범위를 설계하는 백엔드 개발자</li>
 </ul></div></aside>
-<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#api">외부 API를 고른다는 건 제약을 고르는 것이다</a></li><li class="toc-h2"><a href="#_1">주는 것: 인터페이스 표면을 어댑터로 감싼다</a></li><li class="toc-h2"><a href="#_2">안 주는 것: 없는 기능이 설계를 강제한다</a></li><li class="toc-h2"><a href="#spof">정직하게: 스톱주문이 없다는 건 SPOF가 있다는 것</a></li><li class="toc-h2"><a href="#_3">학습</a></li></ul></nav><h2 id="api">외부 API를 고른다는 건 제약을 고르는 것이다</h2>
-<p>앞의 두 글(<a href="../safe-autotrade-v1-llm-boundary/">1편</a>, <a href="../safe-autotrade-v2-cage/">2편</a>)에서 나는 안전 경계와 케이지를 다뤘다. 그 방어들은 내가 설계한 것이다. 그러나 자동매매 시스템에는 내가 설계하지 <em>않은</em> 절반이 있다. 증권사 API다.</p>
-<p>주문을 내려면 증권사의 API가 있어야 한다. 나는 토스증권 오픈 API를 골랐다. 그런데 API를 고른다는 것은, 그 API가 주는 기능과 <em>안 주는</em> 기능을 통째로 받아들인다는 뜻이다. 무엇을 실시간으로 받을 수 있는지, 주문에 어떤 종류가 있는지, 테스트를 어떻게 하는지를 전부 이 API의 표면이 미리 정해둔다. 내 설계의 상당 부분은 내 취향이 아니라 이 표면에 대한 반응이었다.</p>
-<p>그래서 이 글은 두 가지를 나눠 본다. 토스 오픈 API가 <em>주는</em> 것을 어떻게 조합했나, 그리고 <em>안 주는</em> 것이 설계를 어떻게 강제했나.</p>
-<h2 id="_1">주는 것: 인터페이스 표면을 어댑터로 감싼다</h2>
-<p>토스 오픈 API가 제공하는 인터페이스는 이렇게 정리된다. 그리고 각각을 매매 루프의 어디에 썼는지가 곧 시스템의 뼈대다.</p>
+<h1 id="api-api-spof">API가 안 주는 것이 설계를 정한다 — 외부 API 제약과 숨기지 않은 SPOF</h1>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#api">API의 기능과 내가 구현한 범위</a></li><li class="toc-h2"><a href="#_1">어댑터가 맡은 응답 변환</a></li><li class="toc-h2"><a href="#_2">진입과 손절의 평가 범위를 나눈다</a></li><li class="toc-h2"><a href="#_3">미지원 기능과 미구현 기능을 구분한다</a></li><li class="toc-h2"><a href="#_4">로컬 손절 감시의 단일 장애점</a></li><li class="toc-h2"><a href="#_5">검증 결과와 학습</a></li></ul></nav><h2 id="api">API의 기능과 내가 구현한 범위</h2>
+<p><a href="/posts/safe-autotrade-v1-llm-boundary/">1편</a>과 <a href="/posts/safe-autotrade-v2-cage/">2편</a>에서는 규칙 승인과 주문 관문을 다뤘다. 그 경로가 실제로 동작하려면 증권사 API에서 시세와 보유 내역을 읽고 주문을 전달해야 한다. 나는 토스증권 오픈 API를 게이트웨이 뒤에 두고, 진입 엔진과 손절 감시기가 필요한 기능을 조합하도록 만들었다.</p>
+<p>먼저 원문의 전제를 정정한다. <strong>2026-09-22 검수 기준 공식 문서에는 WebSocket과 조건주문 API가 있다.</strong> 원문은 두 기능이 없어서 로컬 폴링이 불가피하다고 설명했지만, 현재 기능 목록과 맞지 않는다. 최초 발행 당시의 공식 문서 스냅샷은 확보하지 못했으므로 기능이 언제 추가됐는지도 단정하지 않는다. 아래에서는 확인 가능한 프로젝트 구현과 현재 API의 계약을 구분한다. <a href="https://openapi.tossinvest.com/openapi-docs/overview.md">토스증권 공식 API 개요</a></p>
+<h2 id="_1">어댑터가 맡은 응답 변환</h2>
+<p>이 프로젝트에서 게이트웨이는 인증과 HTTP 호출을 모으고, 외부 응답을 소비자가 사용하는 형태로 바꾼다. 주요 연결은 다음과 같다.</p>
 <table>
 <thead>
 <tr>
-<th>인터페이스</th>
-<th>무엇을 주나</th>
-<th>매매 루프에서 쓴 곳</th>
+<th>게이트웨이 기능</th>
+<th>반환하거나 변환하는 정보</th>
+<th>프로젝트에서 쓰는 곳</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>OAuth2 토큰</td>
-<td>인증</td>
-<td>모든 호출 공통</td>
+<td>토큰 발급</td>
+<td>OAuth 2.0 액세스 토큰</td>
+<td>API 인증</td>
 </tr>
 <tr>
-<td>시세(prices)</td>
-<td>현재가</td>
-<td>진입가 결정, 손절 감시</td>
+<td>시세 조회</td>
+<td>종목별 가격 문자열</td>
+<td>진입 가격과 손절 조건 평가</td>
 </tr>
 <tr>
-<td>캔들(candles)</td>
-<td>봉 데이터</td>
-<td>차트지표(이동평균·RSI) 산출</td>
+<td>캔들 조회</td>
+<td>시각과 시가·고가·저가·종가·거래량</td>
+<td>이동평균·상대강도지수(RSI) 계산</td>
 </tr>
 <tr>
-<td>시장 캘린더</td>
-<td>개장 여부·시간</td>
-<td>09~10시 진입창 판정</td>
+<td>시장 캘린더 조회</td>
+<td>개장 여부와 정규장 시작·종료 시각</td>
+<td>진입 시간창과 세션 실행 범위</td>
 </tr>
 <tr>
-<td>보유(holdings)</td>
-<td>포지션</td>
-<td>청산(손절/익절) 감시</td>
+<td>보유 조회</td>
+<td>종목·수량·평균 매수가</td>
+<td>손절 평가와 매도 수량</td>
 </tr>
 <tr>
-<td>매수가능(buying-power)</td>
-<td>현금 잔고</td>
-<td>어댑터만 구현(현 MVP 루프 미사용)</td>
+<td>매수 가능 금액 조회</td>
+<td>현금 기반 매수 가능액</td>
+<td>메서드는 있으나 확인한 코어·세션에서는 호출하지 않음</td>
 </tr>
 <tr>
-<td>주문(orders)</td>
-<td>생성·정정·취소</td>
-<td>진입·청산 집행</td>
+<td>주문 생성·정정·취소</td>
+<td>주문 요청과 응답</td>
+<td>진입·손절은 생성 경로 사용</td>
 </tr>
 <tr>
-<td>주문 상태조회</td>
-<td>단건 조회</td>
-<td>타임아웃 복구, reconcile</td>
+<td>주문 조회</td>
+<td>주문 키에 대응하는 기록</td>
+<td>타임아웃 복구와 정합성 확인</td>
 </tr>
 </tbody>
 </table>
-<p>이 인터페이스들을 코드 곳곳에서 직접 부르지 않고, 게이트웨이라는 단일 어댑터 뒤에 격리했다. 이유는 토스의 응답이 소비자가 쓰기엔 불편한 형태이기 때문이다. 예를 들어 캔들은 종가가 <code>closePrice</code>라는 키로 중첩된 봉투 안에 들어오는데, 지표를 계산하는 쪽은 그냥 <code>close</code>를 원한다. 어댑터가 그 변환을 흡수한다.</p>
-<pre><code class="language-python">def get_candles(self, symbol, ...) -&gt; list[dict]:
-    # 토스 원형: {&quot;result&quot;: {&quot;candles&quot;: [{&quot;closePrice&quot;: &quot;...&quot;, ...}]}}
-    result = self._get(&quot;/candles&quot;, params).get(&quot;result&quot;) or {}
+<p>캔들 변환이 한 예다. 외부 응답은 <code>result.candles</code> 안에 있고 종가는 <code>closePrice</code>다. 계산기는 이를 <code>close</code>로 받는다. 아래 코드는 실제 변환에서 시각과 종가만 추린 재구성 예제다. HTTP 호출과 다른 가격 필드는 생략했다.</p>
+<pre><code class="language-python">def candle_closes(payload):
+    result = payload.get(&quot;result&quot;) or {}
     rows = result.get(&quot;candles&quot;) or []
     return [
-        # 소비자(지표 계산기)가 원하는 깔끔한 키로 정규화한다.
-        {&quot;timestamp&quot;: r.get(&quot;timestamp&quot;), &quot;close&quot;: r.get(&quot;closePrice&quot;), ...}
-        for r in rows
+        {&quot;timestamp&quot;: row.get(&quot;timestamp&quot;), &quot;close&quot;: row.get(&quot;closePrice&quot;)}
+        for row in rows
     ]
 </code></pre>
-<p>이 격리 덕분에 매매 엔진과 청산 감시기는 토스 스펙의 세부를 모른 채 깔끔한 메서드만 조합한다. 진입은 캘린더로 시간창을 확인하고 시세와 캔들로 신호를 만들어 주문을 내고, 청산은 보유와 시세로 손익을 평가해 주문을 낸다. 조합의 재료가 위 표의 인터페이스다. 다만 매수가능 잔고 조회는 어댑터로 감싸두었을 뿐 현재 매매 루프에선 쓰지 않는다. 진입 수량은 규칙이 정하고 청산은 보유 전량이라, 지금은 잔고를 사이징에 참조할 일이 없기 때문이다. 인터페이스를 감싸는 것과 실제로 조합에 쓰는 것은 다른 문제다.</p>
-<pre class="mermaid">graph LR
-    subgraph ENTRY["진입 (09~10시 창)"]
-        CAL["시장 캘린더"] --> S1["시세 · 캔들<br/>→ 가격·지표 신호"]
-    end
-    subgraph EXIT["청산 (장중 내내)"]
-        HOLD["보유"] --> S2["시세<br/>→ 손익 평가"]
-    end
-    S1 --> CAGE["케이지"]
-    S2 --> CAGE
-    CAGE --> ORD["주문<br/>(진입 LIMIT · 청산 MARKET)"]
-    style ENTRY fill:#eef5ff,stroke:#8aa9d9,color:#1a1a1a
-    style EXIT fill:#fff5f5,stroke:#d98a8a,color:#1a1a1a
-    style CAL fill:#e0f0ff,stroke:#8aa9d9,color:#1a1a1a
-    style S1 fill:#e0f0ff,stroke:#8aa9d9,color:#1a1a1a
-    style HOLD fill:#ffe0e0,stroke:#d98a8a,color:#1a1a1a
-    style S2 fill:#ffe0e0,stroke:#d98a8a,color:#1a1a1a
-    style CAGE fill:#e0ffe0,stroke:#8ab98a,color:#1a1a1a
-    style ORD fill:#ffe9d6,stroke:#d9a86a,color:#1a1a1a
-</pre>
-<h2 id="_2">안 주는 것: 없는 기능이 설계를 강제한다</h2>
-<p>더 흥미로운 쪽은 토스 오픈 API가 <em>안 주는</em> 것이었다. 없는 기능은 각각 하나의 설계 결정을 강제했다.</p>
-<ul>
-<li><strong>실시간 스트림(WebSocket)이 없다.</strong> 시세를 밀어주는 채널이 없으니 REST 폴링으로 당겨와야 한다. 그래서 시세 조회에 주기를 두고, 요청이 한도를 넘으면(429) 서버가 준 대기 시간을 존중해 재시도하되, 한도를 반복해 넘길 바에는 보수적으로 멈춘다. 오래된 시세로는 주문하지 않도록 신선도도 확인한다.</li>
-<li><strong>샌드박스(모의투자)가 없다.</strong> 주문을 안전하게 시험할 가짜 환경이 없다. 그래서 테스트는 소액 실거래로만 가능하고, 이 제약이 앞 글의 믿음의 사다리(SHADOW → DRY → LIVE)를 <em>필수</em>로 만들었다. 가짜 환경이 없으니 진짜 환경을 아주 작게 쪼개 오를 수밖에 없다.</li>
-<li><strong>뉴스가 없다.</strong> 매매 판단에 쓸 뉴스는 공식 API에 없어서 외부 소스에서 따로 수집한다.</li>
-</ul>
-<p>이 셋은 불편하지만 우회할 수 있는 제약이다. 그런데 마지막 하나는 성격이 다르다.</p>
-<h2 id="spof">정직하게: 스톱주문이 없다는 건 SPOF가 있다는 것</h2>
-<p>토스 오픈 API의 주문 종류는 지정가(LIMIT)와 시장가(MARKET) 둘뿐이다. <strong>스톱주문이 없다.</strong> 스톱주문은 "가격이 이 선을 넘으면 자동으로 팔아라"를 <em>거래소 쪽에</em> 걸어두는 주문이다. 손절의 표준 도구다. 이게 없다는 것은, 손절을 걸어둘 곳이 서버에 없다는 뜻이다.</p>
-<p>그래서 손절을 <em>내 로컬 프로세스</em>가 대신 지킨다. 청산 감시기가 장중 내내 보유 종목의 시세를 폴링하며 손절선에 닿았는지 확인하고, 닿으면 그 자리에서 시장가 매도를 낸다. 시장가인 이유는 손절만큼은 체결이 보장돼야 하기 때문이다. 나는 감시 코드에 이 사실을 주석으로 박아뒀다. <em>"토스에 스톱주문이 없다 → 이 로컬 폴링이 손절의 유일한 경로다."</em></p>
-<p>여기서 정직해야 한다. <strong>이 구조에는 단일 장애점(SPOF)이 있다.</strong> 손절이 내 노트북의 프로세스 하나에 매달려 있다. 노트북이 꺼지거나 잠들거나 네트워크가 끊기면, 그동안 손절은 걸리지 않는다. 스톱주문이라면 거래소가 대신 지켜줬을 방어가, 지금은 내 기기가 깨어 있는 동안에만 작동한다. 세션을 재우지 않도록 <code>caffeinate</code>로 묶어두긴 했지만, 그것은 완화이지 해결이 아니다.</p>
-<p>나는 이 약점을 감추는 대신 코드가 <em>가시화</em>하게 했다. 감시기는 시세를 못 받아 손익을 평가하지 못한 종목을 그냥 넘기지 않고, "미감시 포지션 주의"라고 로그에 남긴다. 손절 사유가 충족됐는데 수량 문제로 주문을 못 낸 경우도 마찬가지로 남긴다. 지속적으로 감시되지 못하는 포지션은 그 자체가 리스크이고, 리스크는 조용히 두기보다 드러내는 편이 안전하기 때문이다.</p>
-<p>이것이 지금 이 시스템이 소액 SHADOW 단계에 머무는 이유 중 하나다. SPOF를 알면서도 실탄을 키우는 건 정직하지 못하다. 근본 해결은 서버가 지켜주는 스톱주문인데, 그건 내가 만들 수 없고 API가 열어줘야 한다. 그때까지 이 약점은 설계의 일부로 남고, 나는 그것을 문서와 로그에 적어둔다.</p>
-<h2 id="_3">학습</h2>
-<p><strong>첫째, 외부 API를 고르는 것은 제약을 고르는 것이다.</strong> 기능 목록을 볼 때 "무엇을 주는가"만큼 "무엇을 안 주는가"가 설계를 정한다. WebSocket이 없어 폴링이 됐고, 샌드박스가 없어 믿음의 사다리가 필수가 됐고, 스톱주문이 없어 SPOF를 안게 됐다. 없는 기능의 목록은 곧 내가 떠안아야 할 설계 부채의 목록이다.</p>
-<p><strong>둘째, 어댑터는 스펙을 격리하지만 없는 기능까지 만들어주진 못한다.</strong> 게이트웨이 어댑터로 토스의 응답 형태는 깔끔하게 감쌀 수 있었다. 하지만 스톱주문처럼 <em>존재하지 않는</em> 기능은 어댑터로도 못 채운다. 어댑터가 숨길 수 있는 것은 형태의 불편함이지 기능의 부재가 아니다.</p>
-<p><strong>셋째, 없앨 수 없는 약점은 숨기지 말고 가시화한다.</strong> SPOF를 지금 당장 없앨 방법은 없다. 그렇다면 할 수 있는 건 그것을 아는 상태로 두는 것이다. 코드에 주석으로, 로그에 경고로, 운영 문서에 한계로 적어둔다. 그리고 그 약점이 감당 가능한 범위(소액) 안에 있도록 규모를 묶는다. 안전은 완벽한 방어만이 아니라, 불완전한 방어를 정직하게 아는 것까지 포함한다.</p>
+<p>이 변환은 가격 문자열을 유지하고 외부 필드명을 한곳에 모은다. 다만 필드명을 바꾸는 것만으로 계산기의 입력 계약이 완성되지는 않는다. 현재 공식 스펙은 캔들을 최신순으로 반환한다. 확인한 어댑터는 그 순서를 유지하지만 계산기는 배열 뒤쪽을 최근 구간으로 사용한다. <a href="https://openapi.tossinvest.com/openapi-docs/latest/openapi.json">공식 캔들 응답 명세</a></p>
+<p>가상 종가가 최신순으로 <code>30, 20, 10</code>일 때 최근 두 봉의 평균은 <code>25</code>다. 현재 코드에 그대로 넣으면 뒤의 두 값을 골라 <code>15</code>를 계산한다. 상대강도지수도 시간 방향의 영향을 받는다. 이 불일치는 별도 재현으로 확인했으며, 이번 글 검수에서 거래 프로그램을 수정하지는 않았다. 어댑터의 테스트에는 필드명뿐 아니라 시간순서와 누락 값 처리까지 포함해야 한다.</p>
+<h2 id="_2">진입과 손절의 평가 범위를 나눈다</h2>
+<p>진입 엔진은 캘린더의 개장 시각부터 한 시간 동안 활성 규칙을 평가한다. 정상 개장이 09:00이면 10:00 전까지이고, 지연 개장이라면 시작 시각도 달라진다. 조건을 충족하면 현재가를 기준으로 지정가 주문 의도를 만들어 케이지에 제출한다. 현재가를 지정가로 썼다고 즉시 체결되는 것은 아니다.</p>
+<p>손절 감시기는 진입 시간창을 적용하지 않는다. 세션 루프가 실행되는 동안 보유 종목의 시세를 조회하고 손절 조건을 평가한다. 확인한 구현은 익절을 자동 처리하지 않으며, 지원하는 정수 수량의 보유분 전체를 시장가 매도 의도로 제출한다. 두 경로 모두 실제 전송 여부는 케이지의 검사와 실행 모드에 달려 있다.</p>
+<iframe src="/images/safe-autotrade-v3-constraints/api-paths.html" title="프로젝트의 진입과 손절 주문 경로" width="100%" height="468" loading="lazy" style="border:0;border-radius:8px;"></iframe>
+
+<p><a href="/images/safe-autotrade-v3-constraints/api-paths.html">도표 크게 보기</a></p>
+<p>원문은 오래된 시세를 차단한다고도 설명했다. 하지만 확인한 <code>get_prices</code>는 응답의 시각을 버리고 가격만 반환하며, 가격 신호 제공자에도 경과 시간 검사가 없다. 가격 누락이나 조회 실패를 처리하는 것과 오래된 가격을 식별하는 것은 다른 검사다. 현재 구현에 신선도 검사가 있다고 설명할 근거는 없다.</p>
+<h2 id="_3">미지원 기능과 미구현 기능을 구분한다</h2>
+<p>현재 공식 API는 WebSocket으로 체결·호가·주문 이벤트를 제공한다. 확인한 프로젝트의 주문 코어는 REST 폴링을 사용한다. 따라서 폴링은 이 구현의 방식이며, API에 실시간 채널이 없다는 증거가 아니다. 요청 한도에 걸리면 게이트웨이는 제한된 횟수로 재시도하고, 소진되면 예외를 전달한다. 상위 루프는 다음 주기에 다시 조회할 수 있으므로 이를 시스템 전체의 영구 중지로 표현해서도 안 된다.</p>
+<p>조건주문 역시 별도 API로 제공된다. 국내 주식은 KRX 정규장에서 발동하며, 주문 유형마다 허용되는 호가 유형과 조건이 다르다. 따라서 <code>LIMIT</code>·<code>MARKET</code>만 사용한 프로젝트의 주문 함수를 보고 서버 측 조건 감시 기능도 없다고 판단할 수는 없다. 도입하려면 발동 세션, 수량, 만료와 상태 조회 계약을 함께 검토해야 한다. <a href="https://openapi.tossinvest.com/openapi-docs/latest/openapi.json">공식 조건주문 명세</a></p>
+<p>샌드박스와 뉴스 API도 원문에서는 미제공으로 단정했다. 이번에 확인한 공식 문서만으로는 두 기능의 제공 여부를 확정하지 못했다. 분명한 것은 이 프로젝트가 가짜 전송 객체와 임시 데이터베이스로 주문 경로를 시험할 수 있다는 점이다. 공식 모의 주문 환경을 쓰지 않는다고 테스트가 소액 실거래로만 가능한 것은 아니다. SHADOW·DRY도 실제 체결을 재현하는 증권사 모의투자 환경이 아니며, 케이지에서는 둘 다 검사 결과를 반환하고 주문 전송을 생략한다.</p>
+<h2 id="_4">로컬 손절 감시의 단일 장애점</h2>
+<p>이 구현의 자동 손절은 로컬 프로세스에 의존한다. 노트북이 꺼지거나 프로세스가 종료되면 조건 평가와 주문 제출이 함께 멈춘다. 전원·네트워크·프로세스 중 한 곳의 장애가 감시 경로를 끊을 수 있다는 의미에서 단일 장애점(SPOF, Single Point of Failure)이 남아 있다.</p>
+<p>시장가를 선택한 목적은 지정가 제한으로 주문이 미체결되는 상황을 줄이려는 것이다. 그렇다고 원하는 가격이나 즉시 체결이 보장되는 것은 아니다. 유동성이 부족하거나 거래가 정지되면 기대한 대로 실행되지 않을 수 있다. 스톱주문도 조건 충족 후 주문을 내는 방식이며 손실 한도를 보장하지 않는다. 감시 주체를 언제나 거래소로 단정할 수도 없고, 증권사와 주문별 계약을 확인해야 한다. <a href="https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-14">SEC 주문 유형 설명</a></p>
+<p>구현에는 완화 장치가 있다. <code>caffeinate</code>로 세션 중 절전을 억제하고, 시세가 누락되거나 지원하지 않는 수량이라 손절 주문을 만들지 못하면 경고를 남긴다. 하지만 프로세스가 죽으면 그 프로세스의 로그도 멈춘다. 또 세션 캘린더 조회 실패를 장이 닫힌 것으로 처리해 감시 루프가 끝나는 경로가 있다. 새 진입을 막는 처리가 기존 보유분의 감시까지 멈추게 할 수 있다는 뜻이다.</p>
+<p>운영 호스트 변경, 프로세스 외부의 생존 감시, 서버 측 조건주문 연동은 각각 검토할 수 있는 보완책이다. 어느 하나만으로 모든 장애가 사라지지는 않는다. 여러 실행기를 두려면 중복 주문 방지도 함께 설계해야 한다. 이번 검수는 이 대안을 구현하거나 실거래 안전성을 입증한 작업은 아니다.</p>
+<h2 id="_5">검증 결과와 학습</h2>
+<p>검수에서는 필요한 소스를 임시 폴더로 복사해 외부 통신을 막고 관련 테스트 129개를 실행했다. 응답 변환, 진입 시간창, 손절 조건, 모드별 주문 차단, 세션과 절전 억제 호출을 가짜 객체로 확인했으며 모두 통과했다. 추가로 본문 예제와 캔들 정렬 불일치, 시세 시각 누락, 캘린더 실패 시 감시 종료, 미감시 경고를 재현했다. 실제 증권사 접수·체결이나 운영체제의 절전 동작을 시험한 결과는 아니다.</p>
+<p>이 작업에서 얻은 기준은 세 가지다. API가 제공하는 기능, 내가 연결한 기능, 테스트로 입증한 동작을 나누어 적어야 한다. 응답 변환에는 필드명뿐 아니라 데이터의 시간순서와 유효성도 포함된다. 로컬 감시에 의존한다면 감시기가 멈췄다는 사실을 누가 알아낼지도 설계해야 한다.</p>
+<p>외부 API의 제약은 설계에 영향을 주지만, 구현하지 않은 기능까지 API의 부재로 설명할 수는 없다. API 계약을 확인한 날짜와 구현 범위를 함께 남겨야 나중에도 설계 판단의 근거를 다시 검토할 수 있다.</p>
 <div class="page-tags"><button class="tag-chip" data-tag="api-design">#api-design</button> <button class="tag-chip" data-tag="constraints">#constraints</button> <button class="tag-chip" data-tag="adapter-pattern">#adapter-pattern</button> <button class="tag-chip" data-tag="fintech">#fintech</button> <button class="tag-chip" data-tag="design-decision">#design-decision</button></div>
 </article>
 <div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
