@@ -11,17 +11,17 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
 <link rel="canonical" href="https://donghyos.github.io/posts/verified-not-finished/">
-<meta name="description" content="튜닝이 &quot;끝났다&quot;는 판정을 무엇으로 내리는가. 도구에서 빨라진 것을 확인하면 충분한가">
+<meta name="description" content="관리 도구에서 빨라진 실행 하나를 확인하고 튜닝이 끝났다고 판단했다.">
 <meta property="og:title" content="계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록 — donghyos">
-<meta property="og:description" content="튜닝이 &quot;끝났다&quot;는 판정을 무엇으로 내리는가. 도구에서 빨라진 것을 확인하면 충분한가">
+<meta property="og:description" content="관리 도구에서 빨라진 실행 하나를 확인하고 튜닝이 끝났다고 판단했다.">
 <meta property="og:url" content="https://donghyos.github.io/posts/verified-not-finished/">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록 — donghyos">
-<meta name="twitter:description" content="튜닝이 &quot;끝났다&quot;는 판정을 무엇으로 내리는가. 도구에서 빨라진 것을 확인하면 충분한가">
+<meta name="twitter:description" content="관리 도구에서 빨라진 실행 하나를 확인하고 튜닝이 끝났다고 판단했다.">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록", "description": "튜닝이 \"끝났다\"는 판정을 무엇으로 내리는가. 도구에서 빨라진 것을 확인하면 충분한가", "datePublished": "2026-08-02", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/verified-not-finished/", "mainEntityOfPage": "https://donghyos.github.io/posts/verified-not-finished/"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록", "description": "관리 도구에서 빨라진 실행 하나를 확인하고 튜닝이 끝났다고 판단했다.", "datePublished": "2026-08-02", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/verified-not-finished/", "mainEntityOfPage": "https://donghyos.github.io/posts/verified-not-finished/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -57,39 +57,38 @@
   <a href="/categories/work/" class="cat-link">실무 경험</a>
   
   <time>2026-08-02</time>
-  <span class="read-time">5분 읽기</span>
+  <span class="read-time">7분 읽기</span>
 </div>
 </div>
-<h1 id="_1">계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록</h1>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
-<li><strong>다루는 문제</strong>: 튜닝이 "끝났다"는 판정을 무엇으로 내리는가. 도구에서 빨라진 것을 확인하면 충분한가</li>
-<li><strong>접근</strong>: 이미 발행한 튜닝 사례를 다시 열어, 판정이 어긋난 두 지점을 남아 있던 계획 캡처로 재검사했다</li>
-<li><strong>결과·학습</strong>: 두 어긋남은 같은 모양이었다. 첫 번째는 쿼리 표본이, 두 번째는 값 표본이 하나였다. 세 번째 처방에 와서야 표본을 늘려 판정했다</li>
-<li><strong>도움 되는 독자</strong>: 실행계획을 읽고 튜닝하지만 "이제 됐다"의 기준이 흐릿한 백엔드 개발자</li>
+<li><strong>다루는 문제</strong>: 관리 도구에서 빨라진 실행 하나를 확인하고 튜닝이 끝났다고 판단했다.</li>
+<li><strong>접근</strong>: 인덱스 추가와 쿼리 분해를 검증했던 범위를 돌아보고, 남아 있는 실행계획의 수치를 다시 비교했다.</li>
+<li><strong>결과·학습</strong>: 첫 번째 검증에서는 다른 조회를, 두 번째 검증에서는 다른 입력값을 충분히 확인하지 않았다. 이후 CPU 관찰 범위는 넓혔지만 애플리케이션 응답 시간의 정량 검증은 남았다.</li>
+<li><strong>도움 되는 독자</strong>: 실행계획으로 튜닝한 뒤 운영 반영과 완료를 판단해야 하는 백엔드 개발자.</li>
 </ul></div></aside>
-<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_2">끝났다고 쓴 글</a></li><li class="toc-h2"><a href="#_3">첫 번째 어긋남 — 검증 환경에서 돌려본 것은 조회 하나였다</a></li><li class="toc-h2"><a href="#_4">두 번째 어긋남 — 도구에서 잰 것은 실행 하나였다</a></li><li class="toc-h2"><a href="#_5">세 번째 처방과 그 대가</a></li><li class="toc-h2"><a href="#_6">세 번째 질문</a></li><li class="toc-h2"><a href="#_7">학습</a></li></ul></nav><h2 id="_2">끝났다고 쓴 글</h2>
-<p><a href="/posts/index-two-faces/">「느린 쿼리의 두 얼굴」</a>에서 나는 인계받아 맡은 사내 업무 시스템의 느린 목록 조회를 다뤘다. 인덱스를 추가했다가 되돌리고, 대신 쿼리를 임시 테이블로 분해해 옵티마이저 추정 비용을 약 35에서 9로 떨어뜨린 이야기다. 그 글을 나는 이렇게 닫았다.</p>
+<h1 id="_1">계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록</h1>
+<nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_2">끝났다고 쓴 글</a></li><li class="toc-h2"><a href="#_3">첫 번째 오판: 검증 환경에서 조회 하나만 확인했다</a></li><li class="toc-h2"><a href="#_4">두 번째 오판: 같은 값으로 비교한 한 번의 실행</a></li><li class="toc-h2"><a href="#_5">계획 두 장에서 확인한 것과 추론한 것</a></li><li class="toc-h2"><a href="#_6">재컴파일을 선택한 뒤에도 남은 검증</a></li><li class="toc-h2"><a href="#_7">완료를 판단할 때 남겨야 할 것</a></li></ul></nav><h2 id="_2">끝났다고 쓴 글</h2>
+<p><a href="/posts/index-two-faces/">「느린 쿼리의 두 얼굴」</a>에서 나는 인계받은 사내 업무 시스템의 느린 목록 조회를 다뤘다. 인덱스를 추가했다가 다른 조회의 지연 때문에 되돌리고, 쿼리를 임시 테이블로 분해한 사례다. 선행글의 초기 발행본은 다음 문장으로 판단을 정리했다.</p>
 <blockquote>
 <p>판단의 근거는 둘 다 <em>실행계획</em>이었다. (…) 추측이 아니라 계획을 읽고 갈랐다.</p>
 </blockquote>
-<p>계획은 실제로 읽었다. 다만 <strong>한 장씩</strong> 읽었다.</p>
-<p>그 글을 발행한 뒤 같은 시스템에서 두 번째 어긋남이 있었고, 그 사실은 발행본에 반영되지 않았다. 두 번째 어긋남을 증명하는 계획 캡처는 발행 시점에 이미 내 손에 있었다. 열어보지 않았을 뿐이다.</p>
-<p>이 글은 그 정정이다. 두 어긋남을 나란히 놓으면 둘이 같은 모양이라는 게 드러난다.</p>
-<h2 id="_3">첫 번째 어긋남 — 검증 환경에서 돌려본 것은 조회 하나였다</h2>
-<p>인덱스를 넣기 전에 절차는 밟았다. 운영과 별개인 개발·테스트 DB에서 대상 조회를 돌려 빨라지는 것을 확인했고, 운영 반영은 업무가 끝나 사용자가 없는 시간에 했다. 검증 환경을 거쳤고 반영 시점도 골랐다.</p>
-<p>그런데 운영에 넣자 <em>같은 테이블을 쓰는 다른 조회들</em>이 무너졌다. 지연은 애플리케이션 타임아웃을 넘겼고, 한 쿼리를 고치려다 여러 조회를 장애로 만들었다. 경위는 선행글에 썼다. 인덱스는 되돌렸다.</p>
-<p>인덱스가 그 테이블을 공유하는 모든 쿼리에 대한 전역 변경이라는 결론도 그 글에 썼다. 여기서 새로 여는 것은 결론이 아니라 <strong>그 앞단</strong>이다. 검증 환경에서 나는 무엇을 확인했나.</p>
-<p>대상 조회 하나였다. 그 테이블을 쓰는 다른 프로시저는 한 번도 돌려보지 않았다. 인덱스가 전역 변경이라는 걸 사후에 배웠다고 썼지만, 정확히 적자면 나는 그것을 <em>반영 전에</em> 확인할 자리를 갖고 있으면서 쓰지 않았다. 검증 환경은 있었다. 거기서 돌려본 쿼리가 하나였을 뿐이다.</p>
-<p>조심의 형식은 지켰는데 표본이 하나였다. 이것이 첫 번째 어긋남의 정확한 모양이다.</p>
-<h2 id="_4">두 번째 어긋남 — 도구에서 잰 것은 실행 하나였다</h2>
-<p>인덱스를 접고 쿼리 구조를 바꿨다. 조인이 폭발하기 전에 후보 키를 <code>#cand</code>로 끊고 그 작은 집합에만 나머지를 붙이는 2단 분해다.</p>
-<p>측정은 공정하게 했다. 관리 도구에서 <strong>같은 파라미터 값</strong>을 원본과 분해판에 각각 넣고, 실행 시간 통계와 실행계획을 나란히 놓고 비교했다. 분해판은 수백 밀리초 안쪽이었고 화면에서도 곧바로 떴다. 나는 여기서 끝났다고 판정했다. 그리고 선행글에 이렇게 썼다.</p>
+<p>계획은 실제로 읽었다. 다만 확인한 실행의 범위가 좁았다. 초기 발행본에는 쿼리 분해 뒤에도 다른 입력값에서 지연이 남았다는 사실이 빠져 있었다. 그때 이미 관련 계획 캡처를 갖고 있었지만 글을 정리하면서 다시 대조하지 않았다.</p>
+<p>이 글은 그 판단을 돌아본 기록이다. 현재 선행글에도 후속 지연과 검증 범위를 반영했으며, 여기서 인용하는 문장은 수정 전 표현이다. 선행글에 있던 추정 비용 ‘약 35→9’도 프로시저 전체의 전후 비교가 아니어서, 전체 성능 개선 수치로 쓰지 않았다.</p>
+<h2 id="_3">첫 번째 오판: 검증 환경에서 조회 하나만 확인했다</h2>
+<p>인덱스를 운영에 반영하기 전에는 개발·테스트 데이터베이스에 먼저 적용하고 대상 조회를 실행했다. 빨라지는 것을 확인했고 운영 반영은 업무가 끝나 사용자가 없는 시간에 했다. 검증 환경을 거쳤고 반영 시점도 골랐다.</p>
+<p>그런데 인덱스를 추가하자 같은 테이블을 쓰는 다른 조회들이 느려졌다. 지연이 애플리케이션 타임아웃을 넘겨 해당 화면의 조회가 실패했고, 추가한 인덱스를 되돌렸다. 대상 조회를 개선한 결과만으로 다른 조회에 미치는 영향까지 판단한 것이 문제였다.</p>
+<p>인덱스는 특정 조회에만 적용되는 설정이 아니다. 같은 테이블을 사용하는 다른 쿼리에도 접근 경로를 제공하며 데이터 변경 시 유지 비용이 든다. 다만 모든 쿼리의 계획이 반드시 바뀐다는 뜻은 아니다. 당시 확인한 장애의 원인을 각 조회의 조인 순서나 특정 연산 하나로 단정할 근거도 충분하지 않다.</p>
+<p>검증 환경에서는 다른 프로시저를 실행하지 않았다. 반영 전에 관련 조회를 확인할 환경이 있었는데도 대상 조회 하나만 보고 넘어갔다. 사용자 없는 시간을 골랐다는 사실이 빠진 검증을 대신해 주지는 못했다.</p>
+<h2 id="_4">두 번째 오판: 같은 값으로 비교한 한 번의 실행</h2>
+<p>인덱스를 되돌린 뒤에는 쿼리를 분해했다. 후보 키를 임시 테이블 <code>#cand</code>에 먼저 담고 그 집합에 나머지 데이터를 연결하는 방식이다. 관리 도구에서 원본과 분해한 쿼리에 같은 파라미터 값을 넣고, 실행 시간과 실행계획을 나란히 비교했다.</p>
+<p>수백 밀리초 수준으로 줄어든 실행이 있었고 화면에서도 개선을 확인했다. 나는 여기서 끝났다고 판단했다. 선행글의 초기 발행본에는 이렇게 썼다.</p>
 <blockquote>
 <p>무엇보다 이 변경은 프로시저 하나에 갇혀 있어서 다른 조회를 건드리지 않았다. 되돌리기도 쉬웠다.</p>
 </blockquote>
-<p>갇혀 있던 건 맞다. 다만 그 안에서 흔들리고 있었다.</p>
-<p>그런데 "아직 좀 느리다"는 얘기가 들어왔다. 애플리케이션 경로에서는 지연이 그대로 남아 있었던 것이다. 확인은 두 층으로 했다. 사용자 쪽 신고가 첫 신호였고, 확증은 캐시에 올라와 있는 계획의 <strong>실행 통계</strong>를 조회해 얻었다. 계획별 사용 내역을 훑자 느린 쪽 항목 하나가 계속 재사용되고 있는 것이 보였다. 내가 도구에서 잰 그 빠른 실행은 거기 없었다.</p>
-<p>남아 있던 계획 캡처를 지금 다시 열어보니 대비가 기계적으로 확인된다. 같은 프로시저의 두 실행이다.</p>
+<p>수정한 코드의 범위는 프로시저 안이었다. 하지만 CPU나 <code>tempdb</code> 같은 자원까지 다른 조회와 분리된 것은 아니었다. 무엇보다 그 프로시저 자체도 입력값에 따라 실행 시간이 달랐다.</p>
+<p>사용자로부터 여전히 느리다는 신고를 받은 뒤 캐시된 계획의 실행 통계를 확인했다. 당시에는 느린 실행과 관련된 계획의 재사용을 의심하는 근거로 삼았다. 다만 캐시 통계를 개별 요청의 전체 실행 이력으로 읽어서는 안 된다. 예를 들어 SQL Server의 <code>sys.dm_exec_query_stats</code>는 캐시에 남은 계획의 완료된 실행을 집계하며, 계획이 제거되면 관련 통계도 사라진다. 빠른 실행이 조회 결과에서 보이지 않는다는 사실만으로 그 실행이 없었다고 결론 낼 수는 없다. (<a href="https://learn.microsoft.com/en-us/sql/relational-databases/system-dynamic-management-objects/sys-dm-exec-query-stats-transact-sql">실행 통계의 범위</a>)</p>
+<h2 id="_5">계획 두 장에서 확인한 것과 추론한 것</h2>
+<p>남아 있는 두 실행계획에서 같은 중간 결과 적재 문장(<code>SELECT INTO</code>)을 비교했다. 아래 수치는 그 문장의 기록이다. 프로시저 전체나 애플리케이션 요청 전체의 응답 시간이 아니다.</p>
 <table>
 <thead>
 <tr>
@@ -100,59 +99,55 @@
 </thead>
 <tbody>
 <tr>
-<td>쿼리, 계획 해시, 컴파일 시간</td>
+<td>SQL 문장·쿼리 해시·계획 해시</td>
 <td>동일</td>
 <td>동일</td>
 </tr>
 <tr>
-<td>계획 출처</td>
-<td>캐시에서 꺼냄</td>
-<td>캐시에서 꺼냄</td>
+<td>캐시에서 계획을 가져왔는가</td>
+<td>예</td>
+<td>예</td>
 </tr>
 <tr>
-<td>컴파일 시점 값 = 실행 값</td>
-<td>파라미터 전부 일치</td>
-<td>스무 개 남짓 중 셋 불일치</td>
+<td>컴파일 값과 실행 값 비교</td>
+<td>기록된 파라미터 17개 모두 일치</td>
+<td>17개 중 3개 불일치</td>
 </tr>
 <tr>
-<td>결과 행 수</td>
-<td>수십 행</td>
-<td>이천 행 가까이</td>
+<td>해당 문장의 추정 행 수</td>
+<td>1행</td>
+<td>1행</td>
 </tr>
 <tr>
-<td>tempdb spill</td>
+<td>실제 적재 행 수</td>
+<td>36행</td>
+<td>1,951행</td>
+</tr>
+<tr>
+<td><code>tempdb</code> spill 경고</td>
 <td>없음</td>
-<td>발생</td>
+<td>있음</td>
 </tr>
 <tr>
-<td>경과 시간</td>
-<td>기준</td>
-<td><strong>13배</strong></td>
+<td>문장 경과 시간</td>
+<td>486ms</td>
+<td>6,578ms</td>
 </tr>
 </tbody>
 </table>
-<p>쿼리가 같고 계획이 같고 컴파일까지 같다. 양쪽 다 새로 만든 계획이 아니라 캐시에서 꺼내 쓴 것이다. 다른 것은 파라미터뿐인데 경과 시간이 13배 벌어졌다. 계획은 문제의 지점을 1행으로 추정했는데 실제로는 이천 행 가까이 흘렀고, 그만큼의 중간 결과를 감당하지 못해 tempdb로 넘쳤다.</p>
-<p>원인은 여기까지 단정할 수 있다. <strong>첫 실행 값에 맞춰 만들어진 계획이 캐시에 남아, 값 분포가 다른 요청도 같은 계획을 그대로 탔다.</strong></p>
-<p>내가 도구에서 잰 실행은 파라미터가 전부 맞아떨어진 쪽이었다. 원본과 분해판에 같은 값을 넣었으니 <em>개선폭 측정</em>으로는 공정했다. 다만 그 값 하나가 운영에서 도는 실행 전체의 대표값이 아니었다. 첫 번째 어긋남과 같은 모양이다. 그때는 쿼리 표본이 하나였고, 이번엔 값 표본이 하나였다.</p>
-<h2 id="_5">세 번째 처방과 그 대가</h2>
-<p>풀이는 실행 시점마다 계획을 다시 만들게 하는 것이었다. 캐시에 굳은 계획을 재사용하지 않으니 값이 바뀌면 그 값에 맞는 계획이 선다.</p>
-<p>이 처방에도 대가가 있다. 매 실행마다 컴파일 비용을 낸다. 앞의 두 처방이 각각 대가를 치른 뒤였으니 이번엔 대가부터 지켜보기로 했다.</p>
-<p>반영 후에는 시간대를 지정해 CPU 사용량을 꾸준히 관찰했다. 피크 타임에도 미미한 것을 확인하고 나서 반영을 확정했다.</p>
-<p>여기서 처음으로 표본을 늘렸다. 앞의 두 판정은 각각 한 번의 관찰이었는데, 이번엔 시간대를 나눠 여러 번 봤고 가장 불리한 구간을 일부러 포함했다.</p>
-<p>결말은 정성으로만 쓸 수 있다. 그 뒤로 그 화면은 바로 열린다. <strong>애플리케이션 기준 응답시간은 그때 재두지 않았다.</strong> 도구에서 잰 숫자는 남아 있는데 애플리케이션 경로에서 잰 숫자는 없다. 그 경로가 문제였다는 걸 겪고도 정작 거기에는 눈금을 붙이지 않은 셈이다.</p>
-<h2 id="_6">세 번째 질문</h2>
-<p>선행글은 느린 쿼리 앞에서 던지는 두 질문으로 닫았다. 내가 인덱스를 막고 있나, 이 느림이 인덱스로 풀리는 종류인가. 둘 다 <em>무엇이 느린가</em>를 묻는다.</p>
-<p>세 번째 질문은 방향이 다르다. <strong>내가 잰 것이 몇 개인가.</strong></p>
-<p>두 번의 어긋남은 같은 자리에서 나왔다. 측정 자체는 옳았다. 그 인덱스는 정말 대상 조회를 빠르게 했고, 그 분해판은 정말 빨랐다. 틀린 것은 측정이 아니라 측정의 표본이었다. 하나를 재고 전체를 결론지었다.</p>
-<p>지금은 인덱스를 반영하기 전에 그 테이블을 쓰는 <strong>전체 프로시저를 먼저 뽑는다.</strong> 각 조회 쿼리를 확인해 인덱스가 어디에 어떻게 닿는지 영향도부터 본다. 첫 번째 어긋남이 남긴 절차다.</p>
-<p>값 표본 쪽은 아직 그만큼 정리되지 않았다. 두 번째 어긋남에서 얻은 것은 "도구에서 한 번 잰 것은 한 번 잰 것"이라는 사실이지, 그것을 매번 어떻게 확인하겠다는 절차가 아니다. 목록에 있는 것과 아직 없는 것을 갈라 적어 두는 게 지금의 정직한 상태다.</p>
-<h2 id="_7">학습</h2>
-<ul>
-<li><strong>검증 환경을 갖는 것과 검증하는 것은 다르다.</strong> 별개 DB가 있었고 사용자 없는 시간을 골랐는데도 뚫린 이유는 환경이 아니라 거기서 돌려본 쿼리가 하나였다는 데 있다.</li>
-<li><strong>같은 쿼리, 같은 계획, 같은 컴파일이어도 파라미터가 다르면 다른 시간이 나온다.</strong> 도구에서 한 번 재고 끝났다고 판정하면 그 판정은 그 한 번에 대해서만 참이다.</li>
-<li><strong>세 처방 다 대가가 있었는데, 그것을 안 시점이 매번 달랐다.</strong> 인덱스는 남의 쿼리가, 쿼리 재작성은 안 풀린 경로가, 실행마다 재계산은 CPU가 대가였다. 앞의 둘은 운영 사고와 사용자 신고가 알려줬고, 마지막 하나만 내가 관찰 구간을 정해 놓고 확인했다.</li>
-<li>"느리면 인덱스"는 절반만 맞다고 썼는데, 그 문장에 하나를 더한다. <strong>빨라진 것을 확인했다고 끝난 것도 아니다.</strong> 무엇을 몇 개나 확인했는지 적어 두지 않으면 측정은 아직 끝나지 않았다.</li>
-</ul>
+<p>이 문장의 경과 시간은 약 13.5배 차이 난다. B에서는 추정 행 수와 실제 행 수의 차이가 크고 spill 경고도 나타났다. spill은 정렬·해시 작업 등의 중간 데이터를 메모리에 모두 담지 못해 <code>tempdb</code>로 내보내는 현상이다. 이를 해석할 때는 행 수뿐 아니라 연산별 메모리 사용과 할당도 함께 봐야 한다. 경고가 있다는 사실만으로 지연 전부를 설명할 수는 없다. (<a href="https://learn.microsoft.com/en-us/troubleshoot/sql/database-engine/performance/troubleshoot-memory-grant-issues">메모리 할당과 spill 진단</a>)</p>
+<p>두 캡처의 <code>CompileTime</code> 값도 같지만 이는 컴파일에 걸린 시간이지 컴파일한 시각이 아니다. 계획 해시가 같다는 사실 역시 같은 캐시 항목이나 같은 컴파일 사건을 증명하지 않는다. 동일한 해시를 갖는 별도 캐시 항목도 있을 수 있다. 따라서 “컴파일까지 같고 다른 것은 파라미터뿐”이라고 단정했던 설명은 범위를 넘었다. (<a href="https://learn.microsoft.com/en-us/sql/relational-databases/query-processing-architecture-guide">계획 식별과 캐시 재사용</a>)</p>
+<p>확인된 것은 같은 문장과 계획 해시에서 입력값, 처리 행 수, spill 여부와 시간이 달랐다는 점이다. 이는 컴파일 때 참고한 값에 맞는 계획을 다른 값에도 재사용하는 파라미터 민감도 문제를 의심할 근거다. 하지만 두 캡처만으로 당시 동시 부하나 대기 상태까지 같았다고 볼 수는 없다. 컴파일 값과 실행 값이 다르다는 사실 자체가 항상 문제인 것도 아니다. 문제는 재사용한 계획이 다른 입력에서도 적절한가에 있다.</p>
+<p>원본과 분해한 쿼리에 같은 값을 넣은 비교는 그 값에서의 개선을 확인하는 데 유효했다. 빠진 것은 다른 값에서도 같은 효과가 나는지 보는 과정이었다. 첫 번째에는 다른 조회를, 두 번째에는 다른 입력값을 검증 범위에서 놓쳤다.</p>
+<h2 id="_6">재컴파일을 선택한 뒤에도 남은 검증</h2>
+<p>후속 조치는 실행할 때 계획을 다시 만들도록 하는 것이었다. 다만 남아 있는 기록만으로는 당시 재컴파일을 문장 단위와 프로시저 단위 중 어디에 적용했는지 확정할 수 없다. 두 방식의 범위와 비용은 구분해야 한다.</p>
+<p>SQL Server의 문장 단위 <code>OPTION (RECOMPILE)</code>은 현재 값을 사용해 임시 계획을 만들고 실행 후 버린다. 프로시저 전체를 재컴파일하는 방식보다 적용 범위를 좁힐 수 있다. 재컴파일은 새로운 계획을 만들 기회를 주지만, 언제나 더 빠른 계획이나 정확한 행 수 추정을 보장하지는 않는다. 실행할 때마다 컴파일 비용도 추가된다. (<a href="https://learn.microsoft.com/en-us/sql/relational-databases/stored-procedures/recompile-a-stored-procedure">재컴파일 방식과 범위</a>, <a href="https://learn.microsoft.com/en-us/sql/t-sql/queries/hints-transact-sql-query#recompile">RECOMPILE 힌트</a>)</p>
+<p>반영 후에는 시간대를 나눠 CPU 사용량을 관찰했다. 피크 시간에도 부담이 크지 않다고 판단해 변경을 유지했다. 앞선 검증보다 관찰 시간대는 넓혔지만, 이는 CPU 부담을 살핀 결과다. 여러 파라미터 조합의 응답 시간을 검증한 결과와 같지는 않다.</p>
+<p>화면이 바로 열린다는 개선은 확인했다. 그러나 애플리케이션 경로의 응답 시간을 수치로 남기지 않았다. CPU 관찰만으로 컴파일 비용을 정확히 분리해 측정한 것도 아니다. 따라서 후속 조치의 결과는 당시의 화면 확인과 CPU 관찰 범위까지로 적는다.</p>
+<h2 id="_7">완료를 판단할 때 남겨야 할 것</h2>
+<p>지금은 인덱스를 반영하기 전에 같은 테이블을 사용하는 관련 프로시저와 조회 쿼리를 먼저 모아 영향도를 살핀다. 첫 번째 실패 뒤 실제로 바꾼 절차다. 다만 목록을 만들었다는 사실만으로 동적 SQL이나 애플리케이션에서 직접 실행하는 쿼리까지 모두 확인했다고 볼 수는 없다.</p>
+<p>입력값의 표본을 고르는 절차는 아직 그만큼 정리하지 못했다. 다음 검증에서는 결과가 적은 값과 많은 값, 자주 쓰는 조건과 드문 조건을 나눠 볼 필요가 있다. 각 경우의 결과 동등성, 문장별 실행 시간과 전체 요청 시간, 논리적 읽기·CPU·spill을 함께 남기는 것이 보완할 과제다. 이 항목들을 당시 모두 측정했다고 쓰지는 않는다.</p>
+<p>두 번의 실패에서 빠른 실행 자체가 거짓이었던 것은 아니다. 그 실행 하나의 결과를 다른 조회와 입력값에도 적용한 판단이 잘못됐다. 이제 완료를 설명할 때는 무엇을 바꿨는지에 더해 어떤 조회·값·호출 경로에서 확인했고, 무엇을 아직 측정하지 않았는지 함께 남기려 한다.</p>
 <div class="page-tags"><button class="tag-chip" data-tag="database">#database</button> <button class="tag-chip" data-tag="performance">#performance</button> <button class="tag-chip" data-tag="query-tuning">#query-tuning</button> <button class="tag-chip" data-tag="execution-plan">#execution-plan</button> <button class="tag-chip" data-tag="postmortem">#postmortem</button></div>
 </article>
 <div class="post-backlink"><a href="/posts/">← 전체 글 목록</a></div>
