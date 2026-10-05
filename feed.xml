@@ -41,7 +41,7 @@
     <link>https://donghyos.github.io/posts/agent-pipeline-v2-dogfooding/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/agent-pipeline-v2-dogfooding/</guid>
     <pubDate>Sun, 09 Aug 2026 15:00:00 GMT</pubDate>
-    <description>내가 만든 AI 개발 파이프라인의 결함을 어떻게 찾았나. 그리고 그 방법으로는 무엇이 안 잡히나</description>
+    <description>내가 만든 AI 개발 파이프라인을 사용하며 어떤 결함을 찾았고, 어떤 맹점을 놓쳤나</description>
   </item>
   <item>
     <title>고칠 수 없는 도구는 내 것이 아니다 — 오픈소스 워크플로 둘을 계승해 내 파이프라인으로</title>
