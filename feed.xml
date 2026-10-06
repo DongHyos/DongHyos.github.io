@@ -27,7 +27,7 @@
     <link>https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/</guid>
     <pubDate>Fri, 14 Aug 2026 15:00:00 GMT</pubDate>
-    <description>파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 원인은 문서 쪽에 없었고 그 문서를 쓰게 만드는 지시문에 있었다</description>
+    <description>파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 지시문에도 같은 문체가 반복돼 교정 대상으로 삼았다</description>
   </item>
   <item>
     <title>사실은 기계가 뽑고 규범은 사람이 정한다 — LLM이 프로젝트를 모를 때 무엇을 채웠나</title>

@@ -11,17 +11,17 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="alternate" type="application/rss+xml" title="donghyos" href="/feed.xml">
 <link rel="canonical" href="https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/">
-<meta name="description" content="파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 원인은 문서 쪽에 없었고 그 문서를 쓰게 만드는 지시문에 있었다">
+<meta name="description" content="파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 지시문에도 같은 문체가 반복돼 교정 대상으로 삼았다">
 <meta property="og:title" content="용어는 지키고 문장만 고쳤다 — LLM 지시문 32만 자를 다시 쓴 기록 — donghyos">
-<meta property="og:description" content="파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 원인은 문서 쪽에 없었고 그 문서를 쓰게 만드는 지시문에 있었다">
+<meta property="og:description" content="파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 지시문에도 같은 문체가 반복돼 교정 대상으로 삼았다">
 <meta property="og:url" content="https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="용어는 지키고 문장만 고쳤다 — LLM 지시문 32만 자를 다시 쓴 기록 — donghyos">
-<meta name="twitter:description" content="파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 원인은 문서 쪽에 없었고 그 문서를 쓰게 만드는 지시문에 있었다">
+<meta name="twitter:description" content="파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 지시문에도 같은 문체가 반복돼 교정 대상으로 삼았다">
 <meta property="og:image" content="https://donghyos.github.io/images/og-default.png">
 <meta name="twitter:image" content="https://donghyos.github.io/images/og-default.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "용어는 지키고 문장만 고쳤다 — LLM 지시문 32만 자를 다시 쓴 기록", "description": "파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 원인은 문서 쪽에 없었고 그 문서를 쓰게 만드는 지시문에 있었다", "datePublished": "2026-08-15", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/", "mainEntityOfPage": "https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "용어는 지키고 문장만 고쳤다 — LLM 지시문 32만 자를 다시 쓴 기록", "description": "파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 지시문에도 같은 문체가 반복돼 교정 대상으로 삼았다", "datePublished": "2026-08-15", "author": {"@type": "Person", "name": "donghyos"}, "publisher": {"@type": "Person", "name": "donghyos"}, "url": "https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/", "mainEntityOfPage": "https://donghyos.github.io/posts/agent-pipeline-v4-instruction-prose/"}</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{const d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;mermaid.initialize({startOnLoad:true,theme:d?'dark':'default'});});</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
@@ -60,13 +60,13 @@
   <span class="read-time">8분 읽기</span>
 </div>
 </div>
-<h1 id="llm-32">용어는 지키고 문장만 고쳤다 — LLM 지시문 32만 자를 다시 쓴 기록</h1>
 <aside class="callout callout-intro"><div class="callout-title">이 글은</div><div class="callout-body"><ul>
-<li><strong>다루는 문제</strong>: 파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 원인은 문서 쪽에 없었고 그 문서를 쓰게 만드는 지시문에 있었다</li>
-<li><strong>접근</strong>: 한국어 문체 검수 도구를 들였으나 기술 용어까지 한글로 바꿔 버려 그대로 쓸 수 없었다. 용어를 세 층으로 가르는 사전을 먼저 세우고, 문체 규칙은 가장 작은 파일을 실제로 고치면서 뽑았다</li>
-<li><strong>결과·학습</strong>: 열세 차례에 걸쳐 약 32만 자를 교정했다. 강조 밀도는 3분의 1이 됐는데 분량은 늘지 않았고, 용어와 ID는 그대로 남았다</li>
+<li><strong>다루는 문제</strong>: 파이프라인이 뱉는 문서가 읽히지 않는다는 보고. 지시문에도 같은 문체가 반복돼 교정 대상으로 삼았다</li>
+<li><strong>접근</strong>: 한국어 문체 검수 도구를 살폈지만 기술 용어까지 바꿀 위험이 있어 그대로 적용하지 않았다. 용어를 세 층으로 가르는 사전을 먼저 세우고, 문체 규칙은 가장 작은 파일을 실제로 고치면서 뽑았다</li>
+<li><strong>결과·학습</strong>: 열세 차례에 걸쳐 약 32만 자를 교정했다. 첫 파일에서 줄표·괄호 밀도는 약 3분의 1로 줄었고 분량은 2.7% 늘었다. 용어와 ID는 그대로 남겼다</li>
 <li><strong>도움 되는 독자</strong>: 에이전트 스킬이나 프롬프트를 한국어로 써서 남에게 쓰게 하려는 개발자</li>
 </ul></div></aside>
+<h1 id="llm-32">용어는 지키고 문장만 고쳤다 — LLM 지시문 32만 자를 다시 쓴 기록</h1>
 <p><a href="/posts/agent-pipeline-v3-project-knowledge/">3편</a>에서 LLM이 프로젝트를 모를 때 무엇을 채웠는지 썼다. 이 글은 그렇게 채워 만든 문서가 정작 읽히지 않는다는 보고를 받고 원인을 찾아간 기록이다.</p>
 <nav class="toc"><div class="toc-title">목차</div><ul><li class="toc-h2"><a href="#_1">문서는 나오는데 읽히지 않는다</a></li><li class="toc-h2"><a href="#_2">진단이 두 번 틀렸다</a></li><li class="toc-h2"><a href="#_3">고칠 자리는 산출물이 아니었다</a></li><li class="toc-h2"><a href="#_4">검수 도구를 들였는데 못 썼다</a></li><li class="toc-h2"><a href="#_5">판정이 갈리는 말은 지킨다</a></li><li class="toc-h2"><a href="#_6">규칙은 실물에서 뽑았다</a></li><li class="toc-h2"><a href="#_7">분모까지 빌려야 한다</a></li><li class="toc-h2"><a href="#_8">결과</a></li><li class="toc-h2"><a href="#_9">학습</a></li></ul></nav><h2 id="_1">문서는 나오는데 읽히지 않는다</h2>
 <p>이 파이프라인은 변경 요청 하나를 분석부터 테스트까지 여섯 단계로 흘려보낸다. 단계마다 명세가 떨어지고 다음 단계는 앞 단계가 남긴 명세를 읽고 움직인다. 사람도 그 문서를 읽고 승인한다. 그래서 문서가 읽히지 않으면 파이프라인 전체가 흔들린다.</p>
@@ -79,14 +79,14 @@
 <h2 id="_3">고칠 자리는 산출물이 아니었다</h2>
 <p>원인을 산출물에서 찾으면 산출물을 고치게 된다. 그런데 산출물은 매번 새로 나온다.</p>
 <p>분석 명세의 볼드 밀도를 시간순으로 늘어놓고 확인했다. 가장 오래된 산출물이 이미 1000자당 10.6이었고, 두 달이 지나도 그 값이 올라가지 않았다. 중간에 5.5로 내려갔다가 다시 9.2가 되는 식이다.</p>
-<p>산출물이 산출물을 물들이는 중이라면 값이 시간에 따라 누적돼야 한다. 그렇지 않다는 것은 <strong>처음부터 그 밀도로 나오게 되어 있다</strong>는 뜻이다. 문체는 앞 산출물에서 옮아오지 않았다. 스킬과 템플릿이 처음부터 그렇게 쓰게 하고 있었다. 고칠 것은 지시문이다.</p>
+<p>앞 산출물의 문체가 계속 누적되는 것만으로는 이 변화를 설명하기 어려웠다. 반면 첫 산출물부터 높은 값이 나온 점은 스킬과 템플릿을 살펴볼 이유가 됐다. 실제 지시문에도 같은 강조와 압축된 문장이 반복됐다. 이 측정만으로 원인을 확정한 것은 아니지만, 반복해서 만들어지는 산출물보다 그것을 만드는 지시문을 고치는 편이 맞았다.</p>
 <h2 id="_4">검수 도구를 들였는데 못 썼다</h2>
-<p>한국어 문체를 고치는 일이니 쓸 도구가 있었다. <code>humanizer</code>, <code>grammar-checker</code>, <code>style-guide</code>. 공개된 MIT 스킬이고 이 블로그 글도 이것으로 검수한다.</p>
+<p>당시 검토한 도구는 <code>humanizer</code>, <code>grammar-checker</code>, <code>style-guide</code>였다. 이 글을 쓴 뒤 블로그 검수 기준은 바뀌었다. 현재는 <code>grammar-checker</code>와 <code>style-guide</code>만 쓴다.</p>
 <p>그대로 돌리려다 멈췄다. 지시문에 기술 용어가 940회 넘게 노출돼 있었다.</p>
 <pre><code>route 195 · backlog 124 · frontmatter 121 · mock 102
 HARD-GATE 52 · stale 52 · placeholder 36 · seam 21
 </code></pre>
-<p><code>humanizer</code>의 검사 항목 중 셋이 정확히 이것들을 노린다. 불필요한 한자어, 영어 관용구 직역, AI 유행어 과다. 940곳을 그대로 훑게 두면 <code>stale</code>도 <code>mock</code>도 <code>seam</code>도 한글로 바뀐다. 그러면 그 용어로 판정하는 다른 파일과 연결이 끊긴다.</p>
+<p><code>humanizer</code>에는 불필요한 한자어, 영어 관용구 직역, AI 유행어 과다를 찾는 항목이 있었다. 그대로 교정하면 <code>stale</code>이나 <code>mock</code>, <code>seam</code> 같은 판정 용어까지 바꿀 위험이 있었다. 그런 용어가 다른 파일과 다르게 표기되면 연결이 끊긴다.</p>
 <p>도구가 잘못된 것은 아니다. 일반 산문용이라 <strong>용어 보존이라는 축이 아예 없다.</strong> 소설이나 에세이에 지켜야 할 식별자는 없으니 있을 이유도 없다. 도구를 옮겨 쓸 때는 그 도구가 좋은지를 묻는 것으로 부족하다. 내 대상에는 있는 축이 그 도구에도 있는지를 물어야 한다.</p>
 <h2 id="_5">판정이 갈리는 말은 지킨다</h2>
 <p>그래서 도구를 돌리기 전에 사전부터 세웠다. 용어를 세 층으로 갈랐다.</p>
@@ -137,7 +137,7 @@ HARD-GATE 52 · stale 52 · placeholder 36 · seam 21
 전      4.9    8.4    9.9    2,015자
 후      1.4    4.8    2.8    2,070자  (+2.7%)
 </code></pre>
-<p>밀도는 3분의 1이 됐는데 분량은 그대로다. <strong>압축을 걷어내도 길어지지 않는다.</strong> 괄호와 볼드와 줄표는 정보를 담은 척하고 있었을 뿐이다. 괄호에 접어 넣은 부연은 문장으로 펴도 길이가 같고, 줄표로 이어 붙인 이유는 마침표로 끊으면 오히려 짧아진다. 접어 두면 글자 수는 그대로고 읽는 사람에게 남는 실마리만 사라진다.</p>
+<p>줄표와 괄호 밀도는 각각 약 3분의 1로 줄었고, 볼드는 8.4에서 4.8로 내려갔다. 분량은 2.7% 늘었다. <strong>압축을 걷어내도 크게 길어지지는 않았다.</strong> 괄호에 접어 넣은 부연을 문장으로 풀고 줄표로 이은 이유를 끊어 쓰면서, 독자가 따라갈 실마리는 더 분명해졌다. 다만 이 수치만으로 읽기 쉬워졌다고 판정하지는 않았다.</p>
 <p>일곱 번째 규칙이 앞의 사전과 같은 말이다. 정밀도와 문체는 별개 축이다. 그전까지 이 파이프라인은 「쉽게 쓰기」를 「식별자를 빼기」와 한 덩어리로 묶어 뒀고, 그래서 ID가 꼭 필요한 문서는 문체 규칙의 적용 밖에 있었다. 용어를 그대로 둔 채 문장만 고쳐도 된다는 것이 확인되면서 그 예외가 없어졌다.</p>
 <h2 id="_7">분모까지 빌려야 한다</h2>
 <p>규칙대로 고치고 나서 지표를 하나 더 재봤다. <code>humanizer</code>가 AI 문체를 가려낼 때 가장 강한 신호로 쓰는 것이 쉼표인데, 문장을 잘게 끊는 교정이 그 값을 나쁘게 만들었을 수 있어서다.</p>
@@ -154,7 +154,7 @@ HARD-GATE 52 · stale 52 · placeholder 36 · seam 21
 <li><strong>대리 지표를 재고 대상을 판정하지 않는다.</strong> 상관 지표는 어디를 볼지 고르는 데 쓰고, 합격 판정은 대상을 직접 확인해서 내린다. 이번 작업에서 이 구분이 세 번 미끄러졌다. 없는 원인을 지목했고, 그다음엔 있는 문제를 없다고 했고, 마지막에는 분모를 잘못 잡아 멀쩡한 교정을 되돌릴 뻔했다. 세 번 다 실물을 다시 재서 잡았다.</li>
 <li><strong>정밀도와 문체는 별개 축이다.</strong> 용어를 지키면서 문장을 고칠 수 있다. 둘을 한 덩어리로 묶어 두면 식별자가 필요한 문서는 통째로 개선 대상 밖으로 밀려난다.</li>
 <li><strong>지켜야 할 말은 어려움으로 고르지 않는다. 판정이 갈리는가로 고른다.</strong> 어려움은 사람마다 다르고 근거를 남길 수 없다. 판정이 갈리는지는 문서에서 확인되고 한 줄로 적히며, 그 한 줄이 다음 사람의 되돌림을 막는다.</li>
-<li><strong>압축은 정보가 아니다.</strong> 볼드와 괄호와 줄표를 걷어내도 분량은 늘지 않았다. 강조가 사방에 있으면 강조가 아니고, 괄호에 접어 둔 말은 짧아 보일 뿐 읽는 값은 더 든다.</li>
+<li><strong>압축된 표기를 풀어도 글이 크게 길어지지는 않는다.</strong> 첫 파일에서 줄표와 괄호를 줄이고 부연을 문장으로 풀었을 때 분량은 2.7% 늘었다. 강조가 사방에 있으면 훑을 때 구분이 어려워진다.</li>
 </ul>
 <div class="page-tags"><button class="tag-chip" data-tag="claude-code">#claude-code</button> <button class="tag-chip" data-tag="ai-workflow">#ai-workflow</button> <button class="tag-chip" data-tag="prose">#prose</button> <button class="tag-chip" data-tag="terminology">#terminology</button> <button class="tag-chip" data-tag="tooling">#tooling</button></div>
 </article>
