@@ -7,7 +7,14 @@
   <link>https://donghyos.github.io</link>
   <description>성능·장애를 다루는 백엔드 엔지니어 — AI 도구·자동화도 직접 만든다</description>
   <language>ko</language>
-  <lastBuildDate>Fri, 21 Aug 2026 15:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Wed, 07 Oct 2026 15:00:00 GMT</lastBuildDate>
+  <item>
+    <title>같은 발신자 표시, 다른 구현: Android 오버레이와 iOS Call Directory</title>
+    <link>https://donghyos.github.io/posts/caller-id-platform-boundaries/</link>
+    <guid isPermaLink="true">https://donghyos.github.io/posts/caller-id-platform-boundaries/</guid>
+    <pubDate>Wed, 07 Oct 2026 15:00:00 GMT</pubDate>
+    <description>개인 주소록을 수정하지 않고 앱이 관리하는 목록으로 일반 전화의 발신자 이름을 표시하는 기능을 구현했다.</description>
+  </item>
   <item>
     <title>낮추는 건 한 줄이었다 — 구동 권한을 내리고 깨진 자리로 폴더 기준 만들기</title>
     <link>https://donghyos.github.io/posts/least-privilege-folder-baseline/</link>
@@ -210,13 +217,6 @@
     <guid isPermaLink="true">https://donghyos.github.io/posts/ai-shorts-pipeline-v3-diversification/</guid>
     <pubDate>Fri, 29 May 2026 15:00:00 GMT</pubDate>
     <description>PC 부품 청소에서 여러 주제로 영상을 확장하면서, 매번 프롬프트를 다시 쓰는 수작업을 줄이는 문제</description>
-  </item>
-  <item>
-    <title>AI 영상은 시간 순서를 모른다 — Veo 3.1 Extension 실험 회고 (2편)</title>
-    <link>https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/</link>
-    <guid isPermaLink="true">https://donghyos.github.io/posts/ai-shorts-pipeline-v2-iteration/</guid>
-    <pubDate>Thu, 28 May 2026 15:00:00 GMT</pubDate>
-    <description>숏폼 영상의 조회수를 높이려 길이와 품질을 개선하는 과정에서 겪은 세척 장면의 불연속성</description>
   </item>
 </channel>
 </rss>
