@@ -55,7 +55,7 @@
     <link>https://donghyos.github.io/posts/agent-pipeline-v1-ownership/</link>
     <guid isPermaLink="true">https://donghyos.github.io/posts/agent-pipeline-v1-ownership/</guid>
     <pubDate>Sun, 09 Aug 2026 15:00:00 GMT</pubDate>
-    <description>오픈소스 AI 개발 워크플로를 쓰면서 기능 선택과 수정 영향 파악에 드는 비용이 커졌다</description>
+    <description>공개 AI 개발 워크플로 두 개를 쓰면서, 안 쓰는 기능을 걸러 내는 비용과 한 줄을 고쳤을 때 따라 움직이는 범위를 감당하기 어려웠다</description>
   </item>
   <item>
     <title>계획은 읽었다, 한 장씩 — 튜닝을 두 번 잘못 판정한 기록</title>
